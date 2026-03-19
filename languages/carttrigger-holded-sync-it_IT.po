@@ -184,3 +184,12 @@ msgstr "Codice a barre (EAN, UPC…) inviato a Holded."
 
 msgid "Holded product ID"
 msgstr "ID prodotto Holded"
+
+msgid "Loading…"
+msgstr "Caricamento…"
+
+msgid "— Select warehouse —"
+msgstr "— Seleziona magazzino —"
+
+msgid "No warehouses found."
+msgstr "Nessun magazzino trovato."

@@ -82,11 +82,14 @@ class CTHLS_Admin {
             true
         );
         wp_localize_script( 'cthls-admin', 'cthls', [
-            'nonce'         => wp_create_nonce( 'cthls_admin' ),
-            'i18n_testing'  => esc_html__( 'Testing…', 'carttrigger-holded-sync' ),
-            'i18n_pulling'  => esc_html__( 'Pulling from Holded…', 'carttrigger-holded-sync' ),
-            'i18n_success'  => esc_html__( 'Success', 'carttrigger-holded-sync' ),
-            'i18n_error'    => esc_html__( 'Error', 'carttrigger-holded-sync' ),
+            'nonce'                 => wp_create_nonce( 'cthls_admin' ),
+            'i18n_testing'         => esc_html__( 'Testing…', 'carttrigger-holded-sync' ),
+            'i18n_pulling'         => esc_html__( 'Pulling from Holded…', 'carttrigger-holded-sync' ),
+            'i18n_loading'         => esc_html__( 'Loading…', 'carttrigger-holded-sync' ),
+            'i18n_success'         => esc_html__( 'Success', 'carttrigger-holded-sync' ),
+            'i18n_error'           => esc_html__( 'Error', 'carttrigger-holded-sync' ),
+            'i18n_select_warehouse' => esc_html__( '— Select warehouse —', 'carttrigger-holded-sync' ),
+            'i18n_no_warehouses'   => esc_html__( 'No warehouses found.', 'carttrigger-holded-sync' ),
         ] );
     }
 
