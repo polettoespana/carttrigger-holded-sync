@@ -18,9 +18,9 @@ Bidirectional sync between WooCommerce products/stock and Holded ERP. Changes in
 
 Every time a product is saved or a stock change occurs in WooCommerce, the plugin pushes the update to Holded immediately — no manual work needed.
 
-### Holded → WooCommerce (scheduled pull)
+### Holded → WooCommerce (scheduled or manual pull)
 
-Since Holded does not provide outbound webhooks, the plugin pulls product and stock data from Holded on a scheduled basis (default: every 15 minutes) using Action Scheduler, bundled with WooCommerce. The interval is fully configurable.
+Since Holded does not provide outbound webhooks, the plugin pulls product and stock data from Holded on a scheduled basis (default: every 15 minutes) using Action Scheduler, bundled with WooCommerce. The interval is fully configurable. A manual pull can also be triggered at any time from the settings page.
 
 ## What is synced
 
