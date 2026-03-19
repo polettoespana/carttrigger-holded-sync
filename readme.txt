@@ -59,6 +59,13 @@ WooCommerce takes priority for real-time changes. Holded changes are applied eve
 
 == Changelog ==
 
+= 1.0.3 =
+* Renamed plugin directory to carttrigger-holded-sync and main file accordingly.
+* Renamed all PHP prefixes to cthls_ / CTHLS_ to comply with the WordPress 5-character unique prefix requirement.
+* Updated text domain to carttrigger-holded-sync.
+* Added Italian (it_IT) and Spanish (es_ES) translations.
+* Added cost price and barcode fields to the Holded Sync product tab.
+
 = 1.0.2 =
 * Fix: nonce verification added explicitly in product meta save callback.
 * Fix: plugin name aligned between plugin header and readme.txt.
