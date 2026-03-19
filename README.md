@@ -8,6 +8,8 @@
   <img src="https://img.shields.io/badge/license-GPLv2-38a169?style=flat-square" alt="GPLv2">
 </p>
 
+> **Work in progress** — this plugin is under active development. Features may change and some functionality may not yet be complete. For questions, feedback or support, contact us at [info@poletto.es](mailto:info@poletto.es).
+
 Bidirectional sync between WooCommerce products/stock and Holded ERP. Changes in WooCommerce are pushed to Holded in real time; changes in Holded are pulled into WooCommerce on a configurable schedule via Action Scheduler.
 
 ## How it works
