@@ -31,8 +31,10 @@ Since Holded does not provide outbound webhooks, the plugin pulls product and st
 | Description | ✓ (optional) | ✓ (optional) |
 | SKU | ✓ | ✓ |
 | Stock quantity | ✓ (optional) | ✓ (optional) |
-| Product variants | ✓ | — |
+| Product variants | ✓ ¹ | — |
 | Brand appended to name | ✓ (optional) | — |
+
+_¹ Variable products and variant sync require the **Gemma Inventario** add-on in your Holded subscription._
 
 ## Product matching
 
