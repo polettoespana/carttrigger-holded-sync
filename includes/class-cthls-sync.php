@@ -152,7 +152,9 @@ class CTHLS_Sync {
         $data = [
             'kind'     => $product->is_type( 'variable' ) ? 'variants' : 'simple',
             'name'     => self::product_name_with_brand( $product ),
-            'desc'     => $product->get_meta( '_cthls_description' ),
+            'desc'     => 'full' === get_option( 'cthls_desc_source', 'custom' )
+                            ? $product->get_description()
+                            : $product->get_meta( '_cthls_description' ),
             'sku'      => $product->get_sku(),
             'price'    => self::price_ex_tax( $product ),
             'tax'      => self::get_tax_rate( $product ),

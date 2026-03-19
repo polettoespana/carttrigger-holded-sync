@@ -48,10 +48,11 @@ class CTHLS_Admin {
             'cthls_sync_prices',
             'cthls_sync_stock',
             'cthls_sync_desc',
+            'cthls_desc_source',
             'cthls_append_brand',
             'cthls_debug_log',
         ];
-        $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval' ];
+        $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source' ];
 
         // Reschedule Action Scheduler when interval changes.
         add_action( 'update_option_cthls_pull_interval', function( $old, $new ) {
@@ -295,6 +296,21 @@ class CTHLS_Admin {
                                         <?php checked( get_option( 'cthls_sync_desc', false ) ); ?> />
                                     <?php esc_html_e( 'Sync product description (both directions)', 'carttrigger-holded-sync' ); ?>
                                 </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e( 'Description source', 'carttrigger-holded-sync' ); ?></th>
+                            <td>
+                                <?php $desc_source = get_option( 'cthls_desc_source', 'custom' ); ?>
+                                <select name="cthls_desc_source">
+                                    <option value="custom" <?php selected( $desc_source, 'custom' ); ?>>
+                                        <?php esc_html_e( 'Custom field (Holded Sync tab)', 'carttrigger-holded-sync' ); ?>
+                                    </option>
+                                    <option value="full" <?php selected( $desc_source, 'full' ); ?>>
+                                        <?php esc_html_e( 'Full product description (WooCommerce)', 'carttrigger-holded-sync' ); ?>
+                                    </option>
+                                </select>
+                                <p class="description"><?php esc_html_e( 'Choose which description to send to Holded when "Sync description" is enabled.', 'carttrigger-holded-sync' ); ?></p>
                             </td>
                         </tr>
                         <tr>

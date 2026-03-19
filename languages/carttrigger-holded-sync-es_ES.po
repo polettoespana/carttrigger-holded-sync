@@ -193,3 +193,15 @@ msgstr "— Seleccionar almacén —"
 
 msgid "No warehouses found."
 msgstr "No se han encontrado almacenes."
+
+msgid "Description source"
+msgstr "Fuente de la descripción"
+
+msgid "Custom field (Holded Sync tab)"
+msgstr "Campo personalizado (pestaña Holded Sync)"
+
+msgid "Full product description (WooCommerce)"
+msgstr "Descripción completa del producto (WooCommerce)"
+
+msgid "Choose which description to send to Holded when \"Sync description\" is enabled."
+msgstr "Elige qué descripción enviar a Holded cuando \"Sincronizar descripción\" está activada."
