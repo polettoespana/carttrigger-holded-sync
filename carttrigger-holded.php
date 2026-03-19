@@ -31,6 +31,8 @@ require_once CTHOLDED_DIR . 'includes/class-ctholded-product-meta.php';
  * Bootstrap the plugin after all plugins are loaded.
  */
 function ctholded_init() {
+    load_plugin_textdomain( 'carttrigger-holded', false, dirname( plugin_basename( CTHOLDED_FILE ) ) . '/languages' );
+
     if ( ! class_exists( 'WooCommerce' ) ) {
         add_action( 'admin_notices', 'ctholded_woocommerce_missing_notice' );
         return;

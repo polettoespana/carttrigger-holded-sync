@@ -1,0 +1,248 @@
+# CartTrigger – Holded Sync
+# Copyright (C) 2026 Poletto 1976 S.L.U.
+# This file is distributed under the same license as the CartTrigger – Holded Sync plugin.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: CartTrigger – Holded Sync 1.0.2\n"
+"Report-Msgid-Bugs-To: https://poletto.es\n"
+"POT-Creation-Date: 2026-03-19 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Domain: carttrigger-holded\n"
+
+#: carttrigger-holded.php
+msgid "CartTrigger – Holded requires WooCommerce to be active."
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "CartTrigger – Holded Sync"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Holded Sync"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Connection"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Holded API Key"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Test connection"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Warehouse"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "— Load warehouses —"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Load warehouses"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Default tax rate (%)"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Fallback tax rate if WooCommerce cannot determine it automatically. Default: 21 (Spain — standard VAT)."
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Sync settings"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Enable sync"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Activate bidirectional sync (WooCommerce ↔ Holded)"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Pull interval"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "minutes"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "How often to pull changes from Holded into WooCommerce. Minimum: 5 min. Default: 15."
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Prices include tax"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Prices in WooCommerce are tax-inclusive — strip tax before sending to Holded"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Sync stock"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Sync stock quantity (both directions)"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Sync prices"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Sync regular price (both directions)"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Sync description"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Sync product description (both directions)"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Append brand to name"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Append the product brand (product_brand taxonomy) to the product name when syncing to Holded"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Enable log"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Enable log (last 100 messages)"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Save settings"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Manual sync"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+#, php-format
+msgid "Pull all products from Holded and update WooCommerce. Last pull: %s"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "never"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Pull from Holded now"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "System log"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Clear log"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Time"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Event"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Product ID"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Message"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Unauthorized"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Connection successful."
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Pull completed."
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Testing…"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Pulling from Holded…"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Success"
+msgstr ""
+
+#: includes/class-ctholded-admin.php
+msgid "Error"
+msgstr ""
+
+#: includes/class-ctholded-api.php
+msgid "Holded API key is not configured."
+msgstr ""
+
+#: includes/class-ctholded-product-meta.php
+msgid "Holded Sync"
+msgstr ""
+
+#: includes/class-ctholded-product-meta.php
+msgid "Description for Holded"
+msgstr ""
+
+#: includes/class-ctholded-product-meta.php
+msgid "Short description sent to Holded. Leave empty to skip."
+msgstr ""
+
+#: includes/class-ctholded-product-meta.php
+msgid "Replaces the full product description when syncing to Holded."
+msgstr ""
+
+#: includes/class-ctholded-product-meta.php
+msgid "Cost price"
+msgstr ""
+
+#: includes/class-ctholded-product-meta.php
+msgid "Cost price sent to Holded (net, excluding tax)."
+msgstr ""
+
+#: includes/class-ctholded-product-meta.php
+msgid "Barcode"
+msgstr ""
+
+#: includes/class-ctholded-product-meta.php
+msgid "Barcode (EAN, UPC…) sent to Holded."
+msgstr ""
+
+#: includes/class-ctholded-product-meta.php
+msgid "Holded product ID"
+msgstr ""
