@@ -62,11 +62,18 @@ class CTHOLDED_Product_Meta {
     }
 
     public static function save( $product_id ) {
+        // WooCommerce already verifies the nonce before firing this hook, but
+        // we check it explicitly so static-analysis tools can confirm it.
+        if ( ! isset( $_POST['woocommerce_meta_nonce'] ) ||
+             ! wp_verify_nonce( sanitize_key( $_POST['woocommerce_meta_nonce'] ), 'woocommerce_save_data' ) ) {
+            return;
+        }
+
         if ( isset( $_POST['_ctholded_description'] ) ) {
             update_post_meta(
                 $product_id,
                 '_ctholded_description',
-                wp_strip_all_tags( wp_unslash( $_POST['_ctholded_description'] ) ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                wp_strip_all_tags( wp_unslash( $_POST['_ctholded_description'] ) )
             );
         }
     }

@@ -1,4 +1,4 @@
-=== CartTrigger – Holded ===
+=== CartTrigger – Holded Sync ===
 Contributors: polettoespana
 Tags: woocommerce, holded, sync, inventory, products
 Requires at least: 6.3
@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.0.0
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,7 @@ Bidirectional sync between WooCommerce products/stock and Holded ERP.
 
 == Description ==
 
-**CartTrigger – Holded** keeps your WooCommerce store and your Holded ERP in sync automatically.
+**CartTrigger – Holded Sync** keeps your WooCommerce store and your Holded ERP in sync automatically.
 
 = WooCommerce → Holded (real-time) =
 Every time you save a product or a stock change occurs in WooCommerce, the plugin pushes the update to Holded immediately — no manual work needed.
@@ -58,6 +58,14 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.0.2 =
+* Fix: nonce verification added explicitly in product meta save callback.
+* Fix: plugin name aligned between plugin header and readme.txt.
+* Enhancement: redesigned settings page with card-based layout and icons.
+* Enhancement: added "Append brand to name" option.
+* Enhancement: replaced WP-Cron with Action Scheduler for Holded pull.
+* Enhancement: configurable pull interval (default 15 minutes).
 
 = 1.0.0 =
 * Initial release.
