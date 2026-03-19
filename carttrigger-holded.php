@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Plugin Name:  CartTrigger – Holded
+ * Plugin Name:  CartTrigger – Holded Sync
  * Plugin URI:   https://poletto.es
  * Description:  Bidirectional sync between WooCommerce products/stock and Holded ERP.
- * Version:      1.0.0
+ * Version:      1.0.2
  * Author:       Poletto 1976 S.L.U.
  * Author URI:   https://poletto.es
  * License:      GPLv2 or later
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CTHOLDED_VERSION', '1.0.0' );
+define( 'CTHOLDED_VERSION', '1.0.2' );
 define( 'CTHOLDED_FILE', __FILE__ );
 define( 'CTHOLDED_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CTHOLDED_URL', plugin_dir_url( __FILE__ ) );
@@ -51,7 +51,12 @@ function ctholded_woocommerce_missing_notice() {
 
 register_activation_hook( CTHOLDED_FILE, 'ctholded_activate' );
 function ctholded_activate() {
-    CTHOLDED_Cron::schedule();
+    // Schedule after WC/Action Scheduler are loaded.
+    add_action( 'plugins_loaded', function() {
+        if ( function_exists( 'as_schedule_recurring_action' ) ) {
+            CTHOLDED_Cron::schedule();
+        }
+    }, 20 );
 }
 
 register_deactivation_hook( CTHOLDED_FILE, 'ctholded_deactivate' );

@@ -28,7 +28,7 @@ class CTHOLDED_Admin {
     public static function add_menu() {
         add_submenu_page(
             'woocommerce',
-            esc_html__( 'Holded Sync', 'carttrigger-holded' ),
+            esc_html__( 'CartTrigger – Holded Sync', 'carttrigger-holded' ),
             esc_html__( 'Holded Sync', 'carttrigger-holded' ),
             'manage_woocommerce',
             'ctholded-settings',
@@ -43,13 +43,20 @@ class CTHOLDED_Admin {
             'ctholded_warehouse_name',
             'ctholded_default_tax_rate',
             'ctholded_prices_include_tax',
+            'ctholded_pull_interval',
             'ctholded_sync_enabled',
             'ctholded_sync_prices',
             'ctholded_sync_stock',
             'ctholded_sync_desc',
+            'ctholded_append_brand',
             'ctholded_debug_log',
         ];
-        $text_options = [ 'ctholded_api_key', 'ctholded_warehouse_id', 'ctholded_warehouse_name', 'ctholded_default_tax_rate', 'ctholded_prices_include_tax' ];
+        $text_options = [ 'ctholded_api_key', 'ctholded_warehouse_id', 'ctholded_warehouse_name', 'ctholded_default_tax_rate', 'ctholded_prices_include_tax', 'ctholded_pull_interval' ];
+
+        // Reschedule Action Scheduler when interval changes.
+        add_action( 'update_option_ctholded_pull_interval', function( $old, $new ) {
+            CTHOLDED_Cron::schedule( (int) $new );
+        }, 10, 2 );
         foreach ( $options as $option ) {
             register_setting( 'ctholded_settings_group', $option, [
                 'sanitize_callback' => in_array( $option, $text_options, true ) ? 'sanitize_text_field' : 'rest_sanitize_boolean',
@@ -147,67 +154,82 @@ class CTHOLDED_Admin {
         <div class="wrap ctholded-wrap">
 
             <div class="ctholded-header">
-                <h1><?php esc_html_e( 'CartTrigger – Holded', 'carttrigger-holded' ); ?></h1>
+                <h1><?php esc_html_e( 'CartTrigger – Holded Sync', 'carttrigger-holded' ); ?></h1>
                 <span class="ctholded-version">v<?php echo esc_html( CTHOLDED_VERSION ); ?></span>
             </div>
 
             <form method="post" action="options.php">
                 <?php settings_fields( 'ctholded_settings_group' ); ?>
 
-                <!-- ── API ── -->
+                <!-- ── Connection ── -->
                 <div class="ctholded-card">
-                    <h2><?php esc_html_e( 'Connection', 'carttrigger-holded' ); ?></h2>
+                    <h2>
+                        <span class="dashicons dashicons-admin-plugins"></span>
+                        <?php esc_html_e( 'Connection', 'carttrigger-holded' ); ?>
+                    </h2>
 
                     <table class="form-table">
                         <tr>
                             <th><?php esc_html_e( 'Holded API Key', 'carttrigger-holded' ); ?></th>
                             <td>
-                                <input type="password"
-                                    name="ctholded_api_key"
-                                    id="ctholded_api_key"
-                                    value="<?php echo esc_attr( get_option( 'ctholded_api_key' ) ); ?>"
-                                    class="regular-text"
-                                    autocomplete="off" />
-                                <button type="button" id="ctholded-test-btn" class="button button-secondary">
-                                    <?php esc_html_e( 'Test connection', 'carttrigger-holded' ); ?>
-                                </button>
-                                <span id="ctholded-test-result"></span>
+                                <div class="ctholded-field-group">
+                                    <input type="password"
+                                        name="ctholded_api_key"
+                                        id="ctholded_api_key"
+                                        value="<?php echo esc_attr( get_option( 'ctholded_api_key' ) ); ?>"
+                                        class="regular-text"
+                                        autocomplete="off" />
+                                    <button type="button" id="ctholded-test-btn" class="button button-secondary">
+                                        <span class="dashicons dashicons-superhero" style="margin-top:3px;margin-right:3px;font-size:14px;width:14px;height:14px;"></span>
+                                        <?php esc_html_e( 'Test connection', 'carttrigger-holded' ); ?>
+                                    </button>
+                                    <span id="ctholded-test-result"></span>
+                                </div>
                             </td>
                         </tr>
                         <tr>
                             <th><?php esc_html_e( 'Warehouse', 'carttrigger-holded' ); ?></th>
                             <td>
-                                <select name="ctholded_warehouse_id" id="ctholded_warehouse_id">
-                                    <option value=""><?php esc_html_e( '— Load warehouses —', 'carttrigger-holded' ); ?></option>
+                                <div class="ctholded-field-group">
                                     <?php
                                     $saved_wh      = get_option( 'ctholded_warehouse_id', '' );
                                     $saved_wh_name = get_option( 'ctholded_warehouse_name', '' );
-                                    if ( $saved_wh ) :
-                                        $label = $saved_wh_name ?: $saved_wh;
-                                        echo '<option value="' . esc_attr( $saved_wh ) . '" selected>' . esc_html( $label ) . '</option>';
-                                    endif;
                                     ?>
-                                </select>
-                                <input type="hidden" name="ctholded_warehouse_name" id="ctholded_warehouse_name" value="<?php echo esc_attr( $saved_wh_name ); ?>" />
-                                <button type="button" id="ctholded-load-warehouses" class="button button-secondary">
-                                    <?php esc_html_e( 'Load warehouses', 'carttrigger-holded' ); ?>
-                                </button>
-                                <span id="ctholded-warehouses-result"></span>
+                                    <select name="ctholded_warehouse_id" id="ctholded_warehouse_id">
+                                        <option value=""><?php esc_html_e( '— Load warehouses —', 'carttrigger-holded' ); ?></option>
+                                        <?php if ( $saved_wh ) : ?>
+                                            <option value="<?php echo esc_attr( $saved_wh ); ?>" selected>
+                                                <?php echo esc_html( $saved_wh_name ?: $saved_wh ); ?>
+                                            </option>
+                                        <?php endif; ?>
+                                    </select>
+                                    <input type="hidden" name="ctholded_warehouse_name" id="ctholded_warehouse_name" value="<?php echo esc_attr( $saved_wh_name ); ?>" />
+                                    <button type="button" id="ctholded-load-warehouses" class="button button-secondary">
+                                        <span class="dashicons dashicons-update" style="margin-top:3px;margin-right:3px;font-size:14px;width:14px;height:14px;"></span>
+                                        <?php esc_html_e( 'Load warehouses', 'carttrigger-holded' ); ?>
+                                    </button>
+                                    <span id="ctholded-warehouses-result"></span>
+                                </div>
                             </td>
                         </tr>
                         <tr>
                             <th><?php esc_html_e( 'Default tax rate (%)', 'carttrigger-holded' ); ?></th>
                             <td>
-                                <input type="number" name="ctholded_default_tax_rate" value="<?php echo esc_attr( get_option( 'ctholded_default_tax_rate', 21 ) ); ?>" min="0" max="100" step="0.01" style="width:80px" />
-                                <p class="description"><?php esc_html_e( 'Fallback tax rate if WooCommerce cannot determine it automatically. Default: 21 (Spain standard VAT).', 'carttrigger-holded' ); ?></p>
+                                <input type="number" name="ctholded_default_tax_rate"
+                                    value="<?php echo esc_attr( get_option( 'ctholded_default_tax_rate', 21 ) ); ?>"
+                                    min="0" max="100" step="0.01" style="width:80px" />
+                                <p class="description"><?php esc_html_e( 'Fallback tax rate if WooCommerce cannot determine it automatically. Default: 21 (Spain — standard VAT).', 'carttrigger-holded' ); ?></p>
                             </td>
                         </tr>
                     </table>
                 </div>
 
-                <!-- ── Sync options ── -->
+                <!-- ── Sync settings ── -->
                 <div class="ctholded-card">
-                    <h2><?php esc_html_e( 'Sync settings', 'carttrigger-holded' ); ?></h2>
+                    <h2>
+                        <span class="dashicons dashicons-controls-repeat"></span>
+                        <?php esc_html_e( 'Sync settings', 'carttrigger-holded' ); ?>
+                    </h2>
 
                     <table class="form-table">
                         <tr>
@@ -216,17 +238,29 @@ class CTHOLDED_Admin {
                                 <label>
                                     <input type="checkbox" name="ctholded_sync_enabled" value="1"
                                         <?php checked( get_option( 'ctholded_sync_enabled' ) ); ?> />
-                                    <?php esc_html_e( 'Activate bidirectional sync', 'carttrigger-holded' ); ?>
+                                    <?php esc_html_e( 'Activate bidirectional sync (WooCommerce ↔ Holded)', 'carttrigger-holded' ); ?>
                                 </label>
                             </td>
                         </tr>
                         <tr>
-                            <th><?php esc_html_e( 'WooCommerce prices include tax', 'carttrigger-holded' ); ?></th>
+                            <th><?php esc_html_e( 'Pull interval', 'carttrigger-holded' ); ?></th>
+                            <td>
+                                <div class="ctholded-field-group">
+                                    <input type="number" name="ctholded_pull_interval"
+                                        value="<?php echo esc_attr( get_option( 'ctholded_pull_interval', 15 ) ); ?>"
+                                        min="5" max="1440" step="1" style="width:80px" />
+                                    <span style="font-size:13px;color:#50575e;"><?php esc_html_e( 'minutes', 'carttrigger-holded' ); ?></span>
+                                </div>
+                                <p class="description"><?php esc_html_e( 'How often to pull changes from Holded into WooCommerce. Minimum: 5 min. Default: 15.', 'carttrigger-holded' ); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e( 'Prices include tax', 'carttrigger-holded' ); ?></th>
                             <td>
                                 <label>
                                     <input type="checkbox" name="ctholded_prices_include_tax" value="yes"
                                         <?php checked( get_option( 'ctholded_prices_include_tax', get_option( 'woocommerce_prices_include_tax', 'no' ) ), 'yes' ); ?> />
-                                    <?php esc_html_e( 'Prices entered in WooCommerce are tax-inclusive — strip tax before sending to Holded', 'carttrigger-holded' ); ?>
+                                    <?php esc_html_e( 'Prices in WooCommerce are tax-inclusive — strip tax before sending to Holded', 'carttrigger-holded' ); ?>
                                 </label>
                             </td>
                         </tr>
@@ -261,48 +295,70 @@ class CTHOLDED_Admin {
                             </td>
                         </tr>
                         <tr>
-                            <th><?php esc_html_e( 'Debug log', 'carttrigger-holded' ); ?></th>
+                            <th><?php esc_html_e( 'Append brand to name', 'carttrigger-holded' ); ?></th>
+                            <td>
+                                <label>
+                                    <input type="checkbox" name="ctholded_append_brand" value="1"
+                                        <?php checked( get_option( 'ctholded_append_brand', false ) ); ?> />
+                                    <?php esc_html_e( 'Append the product brand (product_brand taxonomy) to the product name when syncing to Holded', 'carttrigger-holded' ); ?>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e( 'Enable log', 'carttrigger-holded' ); ?></th>
                             <td>
                                 <label>
                                     <input type="checkbox" name="ctholded_debug_log" value="1"
                                         <?php checked( get_option( 'ctholded_debug_log' ) ); ?> />
-                                    <?php esc_html_e( 'Log sync errors (last 100)', 'carttrigger-holded' ); ?>
+                                    <?php esc_html_e( 'Enable log (last 100 messages)', 'carttrigger-holded' ); ?>
                                 </label>
                             </td>
                         </tr>
                     </table>
                 </div>
 
-                <?php submit_button(); ?>
+                <?php submit_button( __( 'Save settings', 'carttrigger-holded' ) ); ?>
             </form>
 
             <!-- ── Manual pull ── -->
             <div class="ctholded-card">
-                <h2><?php esc_html_e( 'Manual sync', 'carttrigger-holded' ); ?></h2>
-                <p class="description">
-                    <?php
-                    printf(
-                        /* translators: %s: last pull datetime */
-                        esc_html__( 'Pull all products from Holded and update WooCommerce. Last pull: %s', 'carttrigger-holded' ),
-                        $last_pull ? esc_html( $last_pull ) : esc_html__( 'never', 'carttrigger-holded' )
-                    );
-                    ?>
-                </p>
-                <button type="button" id="ctholded-pull-btn" class="button button-secondary">
-                    <?php esc_html_e( 'Pull from Holded now', 'carttrigger-holded' ); ?>
-                </button>
-                <span id="ctholded-pull-result"></span>
+                <h2>
+                    <span class="dashicons dashicons-download"></span>
+                    <?php esc_html_e( 'Manual sync', 'carttrigger-holded' ); ?>
+                </h2>
+                <div class="ctholded-sync-row">
+                    <p class="description">
+                        <?php
+                        printf(
+                            /* translators: %s: last pull datetime */
+                            esc_html__( 'Pull all products from Holded and update WooCommerce. Last pull: %s', 'carttrigger-holded' ),
+                            $last_pull ? esc_html( $last_pull ) : esc_html__( 'never', 'carttrigger-holded' )
+                        );
+                        ?>
+                    </p>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <button type="button" id="ctholded-pull-btn" class="button button-primary">
+                            <span class="dashicons dashicons-download" style="margin-top:3px;margin-right:4px;font-size:14px;width:14px;height:14px;"></span>
+                            <?php esc_html_e( 'Pull from Holded now', 'carttrigger-holded' ); ?>
+                        </button>
+                        <span id="ctholded-pull-result"></span>
+                    </div>
+                </div>
             </div>
 
-            <!-- ── Log ── -->
+            <!-- ── System log ── -->
             <?php if ( get_option( 'ctholded_debug_log' ) && ! empty( $log ) ) : ?>
             <div class="ctholded-card">
-                <h2>
-                    <?php esc_html_e( 'Error log', 'carttrigger-holded' ); ?>
-                    <button type="button" id="ctholded-clear-log" class="button button-link ctholded-clear-log">
-                        <?php esc_html_e( 'Clear', 'carttrigger-holded' ); ?>
+                <div class="ctholded-log-header">
+                    <h2>
+                        <span class="dashicons dashicons-list-view"></span>
+                        <?php esc_html_e( 'System log', 'carttrigger-holded' ); ?>
+                    </h2>
+                    <button type="button" id="ctholded-clear-log" class="ctholded-btn-danger">
+                        <span class="dashicons dashicons-trash"></span>
+                        <?php esc_html_e( 'Clear log', 'carttrigger-holded' ); ?>
                     </button>
-                </h2>
+                </div>
                 <table class="widefat striped ctholded-log-table">
                     <thead>
                         <tr>

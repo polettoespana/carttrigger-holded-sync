@@ -1,69 +1,273 @@
+/* ──────────────────────────────────────────────
+   CartTrigger – Holded Sync  |  Admin styles
+   ────────────────────────────────────────────── */
+
+/* Wrap */
 .ctholded-wrap {
-    max-width: 860px;
+    max-width: 900px;
 }
 
+/* ── Header ── */
 .ctholded-header {
     display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 24px;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e8eaed;
 }
 
 .ctholded-header h1 {
     margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1d2327;
 }
 
 .ctholded-version {
-    font-size: 12px;
-    color: #999;
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    background: #f0f4ff;
+    color: #2271b1;
+    border: 1px solid #c5d4f5;
+    border-radius: 20px;
+    font-size: 11px;
     font-family: monospace;
+    font-weight: 600;
+    letter-spacing: .5px;
 }
 
+/* ── Cards ── */
 .ctholded-card {
     background: #fff;
-    border: 1px solid #e0e0e0;
-    padding: 20px 24px;
-    margin-bottom: 16px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07), 0 0 0 1px rgba(0,0,0,.06);
+    padding: 24px 28px;
+    margin-bottom: 20px;
 }
 
 .ctholded-card h2 {
-    margin-top: 0;
-    font-size: 14px;
-    font-weight: 600;
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f0f0f1;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: #50575e;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+}
+
+.ctholded-card h2 .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #2271b1;
+}
+
+/* ── Form table ── */
+.ctholded-card .form-table {
+    margin-top: 0;
 }
 
 .ctholded-card .form-table th {
-    width: 200px;
-    padding-left: 0;
+    width: 220px;
+    padding: 14px 16px 14px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+    vertical-align: middle;
 }
 
+.ctholded-card .form-table td {
+    padding: 12px 0;
+    vertical-align: middle;
+}
+
+.ctholded-card .form-table tr {
+    border-bottom: 1px solid #f6f7f7;
+}
+
+.ctholded-card .form-table tr:last-child {
+    border-bottom: none;
+}
+
+.ctholded-card .form-table .description {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #8c8f94;
+    line-height: 1.5;
+}
+
+/* ── Checkbox rows ── */
+.ctholded-card .form-table label {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: #1d2327;
+    cursor: pointer;
+}
+
+.ctholded-card .form-table label input[type="checkbox"] {
+    margin: 2px 0 0;
+    flex-shrink: 0;
+}
+
+/* ── Inputs ── */
+.ctholded-card input[type="text"],
+.ctholded-card input[type="password"],
+.ctholded-card input[type="number"] {
+    border-radius: 4px;
+    border-color: #c3c4c7;
+    height: 36px;
+    line-height: 36px;
+}
+
+.ctholded-card input[type="text"]:focus,
+.ctholded-card input[type="password"]:focus,
+.ctholded-card input[type="number"]:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+.ctholded-card select {
+    border-radius: 4px;
+    height: 36px;
+    border-color: #c3c4c7;
+}
+
+/* ── Inline button + result groups ── */
+.ctholded-field-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ── Feedback spans ── */
 #ctholded-test-result,
-#ctholded-pull-result {
-    margin-left: 10px;
+#ctholded-pull-result,
+#ctholded-warehouses-result {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     font-size: 13px;
     font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 4px;
+    min-height: 28px;
 }
 
 #ctholded-test-result.success,
-#ctholded-pull-result.success {
+#ctholded-pull-result.success,
+#ctholded-warehouses-result.success {
     color: #00a32a;
+    background: #edfaef;
 }
 
 #ctholded-test-result.error,
-#ctholded-pull-result.error {
+#ctholded-pull-result.error,
+#ctholded-warehouses-result.error {
     color: #d63638;
+    background: #fcf0f1;
 }
 
+/* ── Submit button area ── */
+.ctholded-wrap .submit {
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.ctholded-wrap .submit .button-primary {
+    height: 38px;
+    line-height: 36px;
+    padding: 0 20px;
+    font-size: 13px;
+}
+
+/* ── Log table ── */
 .ctholded-log-table {
-    margin-top: 12px;
+    margin-top: 4px;
     font-size: 12px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: none !important;
 }
 
-.ctholded-clear-log {
+.ctholded-log-table th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: #50575e;
+    background: #f6f7f7 !important;
+}
+
+.ctholded-log-table td {
+    font-size: 12px;
+    vertical-align: top;
+}
+
+/* ── Clear log button ── */
+.ctholded-btn-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 12px 3px 10px;
+    height: 28px;
+    font-size: 12px;
+    font-weight: 500;
     color: #d63638 !important;
-    font-size: 12px !important;
-    font-weight: normal !important;
+    background: #fff !important;
+    border: 1px solid #d63638 !important;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none !important;
+    line-height: 1;
+    transition: background .15s, color .15s;
+}
+
+.ctholded-btn-danger:hover {
+    background: #d63638 !important;
+    color: #fff !important;
+}
+
+.ctholded-btn-danger .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    line-height: 1;
+}
+
+/* ── Manual sync card ── */
+.ctholded-sync-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.ctholded-sync-row .description {
+    flex: 1;
+    font-size: 13px;
+    color: #50575e;
+    margin: 0;
+}
+
+/* ── Log card header ── */
+.ctholded-log-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ctholded-log-header h2 {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    flex: 1;
 }

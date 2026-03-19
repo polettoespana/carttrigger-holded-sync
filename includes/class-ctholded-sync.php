@@ -151,7 +151,7 @@ class CTHOLDED_Sync {
     private static function wc_product_to_holded( WC_Product $product ) {
         $data = [
             'kind'     => $product->is_type( 'variable' ) ? 'variants' : 'simple',
-            'name'     => $product->get_name(),
+            'name'     => self::product_name_with_brand( $product ),
             'desc'     => $product->get_meta( '_ctholded_description' ),
             'sku'      => $product->get_sku(),
             'price'    => self::price_ex_tax( $product ),
@@ -307,6 +307,23 @@ class CTHOLDED_Sync {
      * Return the price excluding tax for a product.
      * Respects tax_status: if not taxable, returns price as-is.
      */
+    /**
+     * Return the product name with the brand appended, if available.
+     * e.g. "Groppello D.O.C. Notorius Averoldi"
+     */
+    private static function product_name_with_brand( WC_Product $product ) {
+        $name = $product->get_name();
+        if ( ! get_option( 'ctholded_append_brand', false ) ) {
+            return $name;
+        }
+        $terms = get_the_terms( $product->get_id(), 'product_brand' );
+        if ( $terms && ! is_wp_error( $terms ) ) {
+            $brand = reset( $terms );
+            $name  = $name . ' ' . $brand->name;
+        }
+        return $name;
+    }
+
     private static function price_ex_tax( WC_Product $product ) {
         $price = $product->get_regular_price();
         if ( '' === $price ) {
