@@ -58,9 +58,16 @@ Go to **WooCommerce → Holded Sync** to configure:
 
 ## Product tab
 
-Each WooCommerce product has a **Holded** tab in the product data panel where you can:
-- Write a short description sent to Holded instead of the full product description
-- See the linked Holded product ID (read-only)
+Each WooCommerce product has a **Holded Sync** tab inside the native **Product data** meta box (the same panel that contains General, Inventory, Shipping, etc.).
+
+The following fields are available:
+
+| Field | Meta key | Description |
+|---|---|---|
+| Description for Holded | `_ctholded_description` | Short description sent to Holded instead of the full product description. Leave empty to skip. |
+| Cost price | `_cost_price` | Net cost price sent to Holded (excluding tax). |
+| Barcode | `_barcode` | EAN, UPC or any barcode format sent to Holded. |
+| Holded product ID | `_ctholded_product_id` | Read-only. Populated automatically on first sync — identifies the linked product in Holded. |
 
 ## Requirements
 

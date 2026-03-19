@@ -21,7 +21,7 @@ class CTHOLDED_Product_Meta {
 
     public static function add_tab( $tabs ) {
         $tabs['ctholded'] = [
-            'label'  => esc_html__( 'Holded', 'carttrigger-holded' ),
+            'label'  => esc_html__( 'Holded Sync', 'carttrigger-holded' ),
             'target' => 'ctholded_product_data',
             'class'  => [],
         ];
