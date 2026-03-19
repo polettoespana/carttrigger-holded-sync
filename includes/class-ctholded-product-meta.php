@@ -7,6 +7,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * Adds a "Holded" tab in the WC product data panel with:
  *   - _ctholded_description : short description sent to Holded instead of the full product description
+ *   - _cost_price           : cost price sent to Holded
+ *   - _barcode              : barcode sent to Holded
  *   - _ctholded_product_id  : (read-only) linked Holded product ID
  */
 class CTHOLDED_Product_Meta {
@@ -29,9 +31,12 @@ class CTHOLDED_Product_Meta {
     public static function render_panel() {
         global $post;
         $description = get_post_meta( $post->ID, '_ctholded_description', true );
+        $cost_price  = get_post_meta( $post->ID, '_cost_price', true );
+        $barcode     = get_post_meta( $post->ID, '_barcode', true );
         $holded_id   = get_post_meta( $post->ID, '_ctholded_product_id', true );
         ?>
         <div id="ctholded_product_data" class="panel woocommerce_options_panel">
+
             <div class="options_group">
                 <p class="form-field">
                     <label for="_ctholded_description">
@@ -49,6 +54,42 @@ class CTHOLDED_Product_Meta {
                     </span>
                 </p>
             </div>
+
+            <div class="options_group">
+                <p class="form-field">
+                    <label for="_cost_price">
+                        <?php esc_html_e( 'Cost price', 'carttrigger-holded' ); ?>
+                    </label>
+                    <input
+                        type="number"
+                        id="_cost_price"
+                        name="_cost_price"
+                        value="<?php echo esc_attr( $cost_price ); ?>"
+                        step="0.01"
+                        min="0"
+                        style="width:120px"
+                        placeholder="0.00" />
+                    <span class="description">
+                        <?php esc_html_e( 'Cost price sent to Holded (net, excluding tax).', 'carttrigger-holded' ); ?>
+                    </span>
+                </p>
+                <p class="form-field">
+                    <label for="_barcode">
+                        <?php esc_html_e( 'Barcode', 'carttrigger-holded' ); ?>
+                    </label>
+                    <input
+                        type="text"
+                        id="_barcode"
+                        name="_barcode"
+                        value="<?php echo esc_attr( $barcode ); ?>"
+                        class="short"
+                        placeholder="EAN / UPC" />
+                    <span class="description">
+                        <?php esc_html_e( 'Barcode (EAN, UPC…) sent to Holded.', 'carttrigger-holded' ); ?>
+                    </span>
+                </p>
+            </div>
+
             <?php if ( $holded_id ) : ?>
             <div class="options_group">
                 <p class="form-field">
@@ -57,6 +98,7 @@ class CTHOLDED_Product_Meta {
                 </p>
             </div>
             <?php endif; ?>
+
         </div>
         <?php
     }
@@ -74,6 +116,22 @@ class CTHOLDED_Product_Meta {
                 $product_id,
                 '_ctholded_description',
                 wp_strip_all_tags( wp_unslash( $_POST['_ctholded_description'] ) )
+            );
+        }
+
+        if ( isset( $_POST['_cost_price'] ) ) {
+            update_post_meta(
+                $product_id,
+                '_cost_price',
+                wc_format_decimal( wp_unslash( $_POST['_cost_price'] ) )
+            );
+        }
+
+        if ( isset( $_POST['_barcode'] ) ) {
+            update_post_meta(
+                $product_id,
+                '_barcode',
+                sanitize_text_field( wp_unslash( $_POST['_barcode'] ) )
             );
         }
     }
