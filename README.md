@@ -94,4 +94,8 @@ Tested with WordPress **6.9** and WooCommerce **10.6.1**.
 
 ---
 
+**Disclaimer:** this plugin is an independent open source project. We are not affiliated with, sponsored by, or paid by [Holded Technologies S.L.](https://www.holded.com) in any way. All product names and trademarks are the property of their respective owners.
+
+---
+
 [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html) — developed by [Poletto 1976 S.L.U.](https://poletto.es)
