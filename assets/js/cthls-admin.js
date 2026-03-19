@@ -3,17 +3,17 @@
     'use strict';
 
     // ── Test connection ──────────────────────────────────────────────────────
-    $('#ctholded-test-btn').on('click', function () {
+    $('#cthls-test-btn').on('click', function () {
         var $btn    = $(this);
-        var $result = $('#ctholded-test-result');
+        var $result = $('#cthls-test-result');
 
-        $btn.prop('disabled', true).text(ctholded.i18n_testing);
+        $btn.prop('disabled', true).text(cthls.i18n_testing);
         $result.removeClass('success error').text('');
 
         $.post(ajaxurl, {
-            action:   'ctholded_test_connection',
-            nonce:    ctholded.nonce,
-            api_key:  $('#ctholded_api_key').val(),
+            action:   'cthls_test_connection',
+            nonce:    cthls.nonce,
+            api_key:  $('#cthls_api_key').val(),
         })
         .done(function (res) {
             if (res.success) {
@@ -23,7 +23,7 @@
             }
         })
         .fail(function () {
-            $result.addClass('error').text('✗ ' + ctholded.i18n_error);
+            $result.addClass('error').text('✗ ' + cthls.i18n_error);
         })
         .always(function () {
             $btn.prop('disabled', false).text('Test connection');
@@ -31,16 +31,16 @@
     });
 
     // ── Manual pull ──────────────────────────────────────────────────────────
-    $('#ctholded-pull-btn').on('click', function () {
+    $('#cthls-pull-btn').on('click', function () {
         var $btn    = $(this);
-        var $result = $('#ctholded-pull-result');
+        var $result = $('#cthls-pull-result');
 
-        $btn.prop('disabled', true).text(ctholded.i18n_pulling);
+        $btn.prop('disabled', true).text(cthls.i18n_pulling);
         $result.removeClass('success error').text('');
 
         $.post(ajaxurl, {
-            action: 'ctholded_manual_pull',
-            nonce:  ctholded.nonce,
+            action: 'cthls_manual_pull',
+            nonce:  cthls.nonce,
         })
         .done(function (res) {
             if (res.success) {
@@ -50,7 +50,7 @@
             }
         })
         .fail(function () {
-            $result.addClass('error').text('✗ ' + ctholded.i18n_error);
+            $result.addClass('error').text('✗ ' + cthls.i18n_error);
         })
         .always(function () {
             $btn.prop('disabled', false).text('Pull from Holded now');
@@ -58,23 +58,23 @@
     });
 
     // ── Sync warehouse name on change ────────────────────────────────────────
-    $(document).on('change', '#ctholded_warehouse_id', function () {
-        $('#ctholded_warehouse_name').val($(this).find('option:selected').text());
+    $(document).on('change', '#cthls_warehouse_id', function () {
+        $('#cthls_warehouse_name').val($(this).find('option:selected').text());
     });
 
     // ── Load warehouses ──────────────────────────────────────────────────────
-    $('#ctholded-load-warehouses').on('click', function () {
+    $('#cthls-load-warehouses').on('click', function () {
         var $btn    = $(this);
-        var $select = $('#ctholded_warehouse_id');
-        var $result = $('#ctholded-warehouses-result');
+        var $select = $('#cthls_warehouse_id');
+        var $result = $('#cthls-warehouses-result');
         var saved   = $select.val();
 
         $btn.prop('disabled', true).text('Loading…');
         $result.removeClass('success error').text('');
 
         $.post(ajaxurl, {
-            action: 'ctholded_get_warehouses',
-            nonce:  ctholded.nonce,
+            action: 'cthls_get_warehouses',
+            nonce:  cthls.nonce,
         })
         .done(function (res) {
             if (res.success && Array.isArray(res.data) && res.data.length) {
@@ -87,7 +87,7 @@
                     $select.append($('<option>', { value: id, selected: (id === saved), text: name }));
                 });
                 // Sync hidden name field with current selection.
-                $('#ctholded_warehouse_name').val($select.find('option:selected').text());
+                $('#cthls_warehouse_name').val($select.find('option:selected').text());
                 $result.addClass('success').text('✓');
             } else if ( res.success ) {
                 $result.addClass('error').text('✗ No warehouses found. Response: ' + JSON.stringify(res.data).substring(0, 120));
@@ -96,7 +96,7 @@
             }
         })
         .fail(function () {
-            $result.addClass('error').text('✗ ' + ctholded.i18n_error);
+            $result.addClass('error').text('✗ ' + cthls.i18n_error);
         })
         .always(function () {
             $btn.prop('disabled', false).text('Load warehouses');
@@ -104,10 +104,10 @@
     });
 
     // ── Clear log ────────────────────────────────────────────────────────────
-    $('#ctholded-clear-log').on('click', function () {
+    $('#cthls-clear-log').on('click', function () {
         $.post(ajaxurl, {
-            action: 'ctholded_clear_log',
-            nonce:  ctholded.nonce,
+            action: 'cthls_clear_log',
+            nonce:  cthls.nonce,
         }).done(function (res) {
             if (res.success) {
                 location.reload();

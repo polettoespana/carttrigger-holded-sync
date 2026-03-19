@@ -8,15 +8,15 @@ defined( 'ABSPATH' ) || exit;
  * Action Scheduler (bundled with WooCommerce) is more reliable than WP-Cron
  * because it has its own queue and does not depend on site traffic.
  *
- * Interval is configurable via ctholded_pull_interval (minutes, default: 15).
+ * Interval is configurable via cthls_pull_interval (minutes, default: 15).
  */
-class CTHOLDED_Cron {
+class CTHLS_Cron {
 
-    const HOOK  = 'ctholded_pull_from_holded';
+    const HOOK  = 'cthls_pull_from_holded';
     const GROUP = 'ctholded';
 
     public static function init() {
-        add_action( self::HOOK, [ 'CTHOLDED_Sync', 'pull_from_holded' ] );
+        add_action( self::HOOK, [ 'CTHLS_Sync', 'pull_from_holded' ] );
     }
 
     /**
@@ -26,7 +26,7 @@ class CTHOLDED_Cron {
      */
     public static function schedule( $interval_minutes = null ) {
         if ( null === $interval_minutes ) {
-            $interval_minutes = (int) get_option( 'ctholded_pull_interval', 15 );
+            $interval_minutes = (int) get_option( 'cthls_pull_interval', 15 );
         }
 
         $interval_seconds = max( 5, $interval_minutes ) * MINUTE_IN_SECONDS;

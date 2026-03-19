@@ -6,22 +6,22 @@ defined( 'ABSPATH' ) || exit;
  * Bidirectional sync logic WooCommerce ↔ Holded.
  *
  * WC → Holded: real-time via WC hooks.
- * Holded → WC: scheduled cron (see CTHOLDED_Cron).
+ * Holded → WC: scheduled cron (see CTHLS_Cron).
  *
  * Mapping is stored in WC product meta:
- *   _ctholded_product_id  → Holded product ID
- *   _ctholded_variant_map → JSON {wc_variation_id: holded_variant_id}
+ *   _cthls_product_id  → Holded product ID
+ *   _cthls_variant_map → JSON {wc_variation_id: holded_variant_id}
  */
-class CTHOLDED_Sync {
+class CTHLS_Sync {
 
-    /** @var CTHOLDED_API */
+    /** @var CTHLS_API */
     private static $api;
 
     /** @var int[] Products already synced in this request (prevent double fire). */
     private static $synced = [];
 
     public static function init() {
-        self::$api = new CTHOLDED_API();
+        self::$api = new CTHLS_API();
 
         // WC → Holded: product saved (create or update).
         add_action( 'woocommerce_update_product', [ __CLASS__, 'on_product_saved' ], 20 );
@@ -53,7 +53,7 @@ class CTHOLDED_Sync {
             return; // Skip variations (handled as variants inside the parent).
         }
 
-        $holded_id = get_post_meta( $product_id, '_ctholded_product_id', true );
+        $holded_id = get_post_meta( $product_id, '_cthls_product_id', true );
         $data      = self::wc_product_to_holded( $product );
 
         self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
@@ -63,7 +63,7 @@ class CTHOLDED_Sync {
         } else {
             $result = self::$api->create_product( $data );
             if ( ! is_wp_error( $result ) && isset( $result['id'] ) ) {
-                update_post_meta( $product_id, '_ctholded_product_id', sanitize_text_field( $result['id'] ) );
+                update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $result['id'] ) );
                 $holded_id = $result['id'];
             }
         }
@@ -89,11 +89,11 @@ class CTHOLDED_Sync {
         if ( $product->get_parent_id() ) {
             // Variation.
             $parent_id  = $product->get_parent_id();
-            $holded_id  = get_post_meta( $parent_id, '_ctholded_product_id', true );
-            $variant_map = json_decode( get_post_meta( $parent_id, '_ctholded_variant_map', true ), true );
+            $holded_id  = get_post_meta( $parent_id, '_cthls_product_id', true );
+            $variant_map = json_decode( get_post_meta( $parent_id, '_cthls_variant_map', true ), true );
             $variant_id  = isset( $variant_map[ $product_id ] ) ? $variant_map[ $product_id ] : '';
         } else {
-            $holded_id  = get_post_meta( $product_id, '_ctholded_product_id', true );
+            $holded_id  = get_post_meta( $product_id, '_cthls_product_id', true );
             $variant_id = '';
         }
 
@@ -137,7 +137,7 @@ class CTHOLDED_Sync {
             // Safety limit: max 50 pages per run.
         } while ( count( $products ) >= 50 && $page <= 50 );
 
-        update_option( 'ctholded_last_pull', current_time( 'mysql' ) );
+        update_option( 'cthls_last_pull', current_time( 'mysql' ) );
     }
 
     // ── Data mapping ─────────────────────────────────────────────────────────
@@ -152,7 +152,7 @@ class CTHOLDED_Sync {
         $data = [
             'kind'     => $product->is_type( 'variable' ) ? 'variants' : 'simple',
             'name'     => self::product_name_with_brand( $product ),
-            'desc'     => $product->get_meta( '_ctholded_description' ),
+            'desc'     => $product->get_meta( '_cthls_description' ),
             'sku'      => $product->get_sku(),
             'price'    => self::price_ex_tax( $product ),
             'tax'      => self::get_tax_rate( $product ),
@@ -178,7 +178,7 @@ class CTHOLDED_Sync {
                     continue;
                 }
 
-                $holded_variant_id = get_post_meta( $variation_id, '_ctholded_variant_id', true );
+                $holded_variant_id = get_post_meta( $variation_id, '_cthls_variant_id', true );
 
                 $variant_entry = [
                     'sku'   => $variation->get_sku(),
@@ -205,7 +205,7 @@ class CTHOLDED_Sync {
     /**
      * Update or create a WC product from Holded data.
      *
-     * Matching: SKU first, then _ctholded_product_id meta.
+     * Matching: SKU first, then _cthls_product_id meta.
      *
      * @param array $holded_product
      */
@@ -269,16 +269,16 @@ class CTHOLDED_Sync {
 
         if ( $fields_changed || ! $wc_product_id ) {
             // Temporarily remove our own hook to avoid loop.
-            remove_action( 'woocommerce_update_product', [ 'CTHOLDED_Sync', 'on_product_saved' ], 20 );
-            remove_action( 'woocommerce_new_product',    [ 'CTHOLDED_Sync', 'on_product_saved' ], 20 );
+            remove_action( 'woocommerce_update_product', [ 'CTHLS_Sync', 'on_product_saved' ], 20 );
+            remove_action( 'woocommerce_new_product',    [ 'CTHLS_Sync', 'on_product_saved' ], 20 );
 
             $saved_id = $wc_product->save();
 
-            add_action( 'woocommerce_update_product', [ 'CTHOLDED_Sync', 'on_product_saved' ], 20 );
-            add_action( 'woocommerce_new_product',    [ 'CTHOLDED_Sync', 'on_product_saved' ], 20 );
+            add_action( 'woocommerce_update_product', [ 'CTHLS_Sync', 'on_product_saved' ], 20 );
+            add_action( 'woocommerce_new_product',    [ 'CTHLS_Sync', 'on_product_saved' ], 20 );
 
             if ( $saved_id && $holded_id ) {
-                update_post_meta( $saved_id, '_ctholded_product_id', sanitize_text_field( $holded_id ) );
+                update_post_meta( $saved_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
             }
         }
     }
@@ -289,14 +289,14 @@ class CTHOLDED_Sync {
         global $wpdb;
         return (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
-                "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_ctholded_product_id' AND meta_value = %s LIMIT 1",
+                "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_cthls_product_id' AND meta_value = %s LIMIT 1",
                 $holded_id
             )
         );
     }
 
     public static function sync_enabled() {
-        return (bool) get_option( 'ctholded_sync_enabled', false );
+        return (bool) get_option( 'cthls_sync_enabled', false );
     }
 
     /**
@@ -313,7 +313,7 @@ class CTHOLDED_Sync {
      */
     private static function product_name_with_brand( WC_Product $product ) {
         $name = $product->get_name();
-        if ( ! get_option( 'ctholded_append_brand', false ) ) {
+        if ( ! get_option( 'cthls_append_brand', false ) ) {
             return $name;
         }
         $terms = get_the_terms( $product->get_id(), 'product_brand' );
@@ -329,7 +329,7 @@ class CTHOLDED_Sync {
         if ( '' === $price ) {
             return 0.0;
         }
-        $prices_include_tax = 'yes' === get_option( 'ctholded_prices_include_tax', get_option( 'woocommerce_prices_include_tax', 'no' ) );
+        $prices_include_tax = 'yes' === get_option( 'cthls_prices_include_tax', get_option( 'woocommerce_prices_include_tax', 'no' ) );
 
         if ( 'taxable' === $product->get_tax_status()
             && wc_tax_enabled()
@@ -366,14 +366,14 @@ class CTHOLDED_Sync {
         }
 
         // Last resort: use the default rate configured in plugin settings.
-        return (float) get_option( 'ctholded_default_tax_rate', 21 );
+        return (float) get_option( 'cthls_default_tax_rate', 21 );
     }
 
     private static function log( $event, $product_id, $message ) {
-        if ( ! get_option( 'ctholded_debug_log', false ) ) {
+        if ( ! get_option( 'cthls_debug_log', false ) ) {
             return;
         }
-        $log = get_option( 'ctholded_log', [] );
+        $log = get_option( 'cthls_log', [] );
         array_unshift( $log, [
             'time'       => current_time( 'mysql' ),
             'event'      => $event,
@@ -381,6 +381,6 @@ class CTHOLDED_Sync {
             'message'    => $message,
         ] );
         // Keep last 100 entries.
-        update_option( 'ctholded_log', array_slice( $log, 0, 100 ) );
+        update_option( 'cthls_log', array_slice( $log, 0, 100 ) );
     }
 }

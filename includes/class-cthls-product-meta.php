@@ -6,12 +6,12 @@ defined( 'ABSPATH' ) || exit;
  * Product metabox — Holded-specific fields.
  *
  * Adds a "Holded" tab in the WC product data panel with:
- *   - _ctholded_description : short description sent to Holded instead of the full product description
+ *   - _cthls_description : short description sent to Holded instead of the full product description
  *   - _cost_price           : cost price sent to Holded
  *   - _barcode              : barcode sent to Holded
- *   - _ctholded_product_id  : (read-only) linked Holded product ID
+ *   - _cthls_product_id  : (read-only) linked Holded product ID
  */
-class CTHOLDED_Product_Meta {
+class CTHLS_Product_Meta {
 
     public static function init() {
         add_filter( 'woocommerce_product_data_tabs',   [ __CLASS__, 'add_tab' ] );
@@ -20,9 +20,9 @@ class CTHOLDED_Product_Meta {
     }
 
     public static function add_tab( $tabs ) {
-        $tabs['ctholded'] = [
-            'label'  => esc_html__( 'Holded Sync', 'carttrigger-holded' ),
-            'target' => 'ctholded_product_data',
+        $tabs['cthls'] = [
+            'label'  => esc_html__( 'Holded Sync', 'carttrigger-holded-sync' ),
+            'target' => 'cthls_product_data',
             'class'  => [],
         ];
         return $tabs;
@@ -30,27 +30,27 @@ class CTHOLDED_Product_Meta {
 
     public static function render_panel() {
         global $post;
-        $description = get_post_meta( $post->ID, '_ctholded_description', true );
+        $description = get_post_meta( $post->ID, '_cthls_description', true );
         $cost_price  = get_post_meta( $post->ID, '_cost_price', true );
         $barcode     = get_post_meta( $post->ID, '_barcode', true );
-        $holded_id   = get_post_meta( $post->ID, '_ctholded_product_id', true );
+        $holded_id   = get_post_meta( $post->ID, '_cthls_product_id', true );
         ?>
-        <div id="ctholded_product_data" class="panel woocommerce_options_panel">
+        <div id="cthls_product_data" class="panel woocommerce_options_panel">
 
             <div class="options_group">
                 <p class="form-field">
-                    <label for="_ctholded_description">
-                        <?php esc_html_e( 'Description for Holded', 'carttrigger-holded' ); ?>
+                    <label for="_cthls_description">
+                        <?php esc_html_e( 'Description for Holded', 'carttrigger-holded-sync' ); ?>
                     </label>
                     <textarea
-                        id="_ctholded_description"
-                        name="_ctholded_description"
+                        id="_cthls_description"
+                        name="_cthls_description"
                         rows="4"
                         style="width:100%"
-                        placeholder="<?php esc_attr_e( 'Short description sent to Holded. Leave empty to skip.', 'carttrigger-holded' ); ?>"
+                        placeholder="<?php esc_attr_e( 'Short description sent to Holded. Leave empty to skip.', 'carttrigger-holded-sync' ); ?>"
                     ><?php echo esc_textarea( $description ); ?></textarea>
                     <span class="description">
-                        <?php esc_html_e( 'Replaces the full product description when syncing to Holded.', 'carttrigger-holded' ); ?>
+                        <?php esc_html_e( 'Replaces the full product description when syncing to Holded.', 'carttrigger-holded-sync' ); ?>
                     </span>
                 </p>
             </div>
@@ -58,7 +58,7 @@ class CTHOLDED_Product_Meta {
             <div class="options_group">
                 <p class="form-field">
                     <label for="_cost_price">
-                        <?php esc_html_e( 'Cost price', 'carttrigger-holded' ); ?>
+                        <?php esc_html_e( 'Cost price', 'carttrigger-holded-sync' ); ?>
                     </label>
                     <input
                         type="number"
@@ -70,12 +70,12 @@ class CTHOLDED_Product_Meta {
                         style="width:120px"
                         placeholder="0.00" />
                     <span class="description">
-                        <?php esc_html_e( 'Cost price sent to Holded (net, excluding tax).', 'carttrigger-holded' ); ?>
+                        <?php esc_html_e( 'Cost price sent to Holded (net, excluding tax).', 'carttrigger-holded-sync' ); ?>
                     </span>
                 </p>
                 <p class="form-field">
                     <label for="_barcode">
-                        <?php esc_html_e( 'Barcode', 'carttrigger-holded' ); ?>
+                        <?php esc_html_e( 'Barcode', 'carttrigger-holded-sync' ); ?>
                     </label>
                     <input
                         type="text"
@@ -85,7 +85,7 @@ class CTHOLDED_Product_Meta {
                         class="short"
                         placeholder="EAN / UPC" />
                     <span class="description">
-                        <?php esc_html_e( 'Barcode (EAN, UPC…) sent to Holded.', 'carttrigger-holded' ); ?>
+                        <?php esc_html_e( 'Barcode (EAN, UPC…) sent to Holded.', 'carttrigger-holded-sync' ); ?>
                     </span>
                 </p>
             </div>
@@ -93,7 +93,7 @@ class CTHOLDED_Product_Meta {
             <?php if ( $holded_id ) : ?>
             <div class="options_group">
                 <p class="form-field">
-                    <label><?php esc_html_e( 'Holded product ID', 'carttrigger-holded' ); ?></label>
+                    <label><?php esc_html_e( 'Holded product ID', 'carttrigger-holded-sync' ); ?></label>
                     <code><?php echo esc_html( $holded_id ); ?></code>
                 </p>
             </div>
@@ -111,11 +111,11 @@ class CTHOLDED_Product_Meta {
             return;
         }
 
-        if ( isset( $_POST['_ctholded_description'] ) ) {
+        if ( isset( $_POST['_cthls_description'] ) ) {
             update_post_meta(
                 $product_id,
-                '_ctholded_description',
-                wp_strip_all_tags( wp_unslash( $_POST['_ctholded_description'] ) )
+                '_cthls_description',
+                wp_strip_all_tags( wp_unslash( $_POST['_cthls_description'] ) )
             );
         }
 

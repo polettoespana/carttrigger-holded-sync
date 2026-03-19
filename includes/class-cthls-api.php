@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
  * Base URL: https://api.holded.com/api/invoicing/v1/
  * Auth:     header  key: <api_key>
  */
-class CTHOLDED_API {
+class CTHLS_API {
 
     const BASE_URL = 'https://api.holded.com/api/invoicing/v1/';
 
@@ -16,7 +16,7 @@ class CTHOLDED_API {
     private $api_key;
 
     public function __construct() {
-        $this->api_key = get_option( 'ctholded_api_key', '' );
+        $this->api_key = get_option( 'cthls_api_key', '' );
     }
 
     // ── Products ────────────────────────────────────────────────────────────
@@ -88,7 +88,7 @@ class CTHOLDED_API {
      */
     private function request( $method, $endpoint, array $query = [], array $body = [], $base_url = '' ) {
         if ( empty( $this->api_key ) ) {
-            return new WP_Error( 'ctholded_no_api_key', __( 'Holded API key is not configured.', 'carttrigger-holded' ) );
+            return new WP_Error( 'cthls_no_api_key', __( 'Holded API key is not configured.', 'carttrigger-holded-sync' ) );
         }
 
         $url = ( $base_url ?: self::BASE_URL ) . ltrim( $endpoint, '/' );
@@ -122,7 +122,7 @@ class CTHOLDED_API {
 
         if ( $code >= 400 ) {
             $message = isset( $decoded['info'] ) ? $decoded['info'] : $response_body;
-            return new WP_Error( 'ctholded_api_error_' . $code, $message );
+            return new WP_Error( 'cthls_api_error_' . $code, $message );
         }
 
         return is_array( $decoded ) ? $decoded : [];

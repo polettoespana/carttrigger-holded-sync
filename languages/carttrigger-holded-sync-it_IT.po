@@ -1,15 +1,15 @@
-# CartTrigger – Holded Sync — Spanish translation
+# CartTrigger – Holded Sync — Italian translation
 # Copyright (C) 2026 Poletto 1976 S.L.U.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: CartTrigger – Holded Sync 1.0.2\n"
+"Project-Id-Version: CartTrigger – Holded Sync 1.0.3\n"
 "Report-Msgid-Bugs-To: https://poletto.es\n"
 "POT-Creation-Date: 2026-03-19 00:00+0000\n"
 "PO-Revision-Date: 2026-03-19 00:00+0000\n"
 "Last-Translator: Poletto 1976 S.L.U. <info@poletto.es>\n"
-"Language-Team: Spanish\n"
-"Language: es_ES\n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Domain: carttrigger-holded\n"
 
 msgid "CartTrigger – Holded requires WooCommerce to be active."
-msgstr "CartTrigger – Holded Sync requiere que WooCommerce esté activo."
+msgstr "CartTrigger – Holded Sync richiede che WooCommerce sia attivo."
 
 msgid "CartTrigger – Holded Sync"
 msgstr "CartTrigger – Holded Sync"
@@ -26,161 +26,161 @@ msgid "Holded Sync"
 msgstr "Holded Sync"
 
 msgid "Connection"
-msgstr "Conexión"
+msgstr "Connessione"
 
 msgid "Holded API Key"
-msgstr "Clave API de Holded"
+msgstr "Chiave API Holded"
 
 msgid "Test connection"
-msgstr "Probar conexión"
+msgstr "Testa connessione"
 
 msgid "Warehouse"
-msgstr "Almacén"
+msgstr "Magazzino"
 
 msgid "— Load warehouses —"
-msgstr "— Cargar almacenes —"
+msgstr "— Carica magazzini —"
 
 msgid "Load warehouses"
-msgstr "Cargar almacenes"
+msgstr "Carica magazzini"
 
 msgid "Default tax rate (%)"
-msgstr "Tipo impositivo predeterminado (%)"
+msgstr "Aliquota IVA predefinita (%)"
 
 msgid "Fallback tax rate if WooCommerce cannot determine it automatically. Default: 21 (Spain — standard VAT)."
-msgstr "Tipo impositivo de respaldo si WooCommerce no puede determinarlo automáticamente. Por defecto: 21 (España — IVA estándar)."
+msgstr "Aliquota IVA di fallback se WooCommerce non riesce a determinarla automaticamente. Default: 21 (Spagna — IVA standard)."
 
 msgid "Sync settings"
-msgstr "Ajustes de sincronización"
+msgstr "Impostazioni sincronizzazione"
 
 msgid "Enable sync"
-msgstr "Activar sincronización"
+msgstr "Abilita sincronizzazione"
 
 msgid "Activate bidirectional sync (WooCommerce ↔ Holded)"
-msgstr "Activar sincronización bidireccional (WooCommerce ↔ Holded)"
+msgstr "Attiva sincronizzazione bidirezionale (WooCommerce ↔ Holded)"
 
 msgid "Pull interval"
-msgstr "Intervalo de importación"
+msgstr "Intervallo di aggiornamento"
 
 msgid "minutes"
-msgstr "minutos"
+msgstr "minuti"
 
 msgid "How often to pull changes from Holded into WooCommerce. Minimum: 5 min. Default: 15."
-msgstr "Con qué frecuencia importar cambios de Holded a WooCommerce. Mínimo: 5 min. Por defecto: 15."
+msgstr "Con quale frequenza recuperare le modifiche da Holded in WooCommerce. Minimo: 5 min. Default: 15."
 
 msgid "Prices include tax"
-msgstr "Precios con IVA incluido"
+msgstr "Prezzi IVA inclusa"
 
 msgid "Prices in WooCommerce are tax-inclusive — strip tax before sending to Holded"
-msgstr "Los precios en WooCommerce incluyen IVA — eliminar el IVA antes de enviar a Holded"
+msgstr "I prezzi in WooCommerce sono IVA inclusa — scorporare l'IVA prima di inviare a Holded"
 
 msgid "Sync stock"
-msgstr "Sincronizar stock"
+msgstr "Sincronizza stock"
 
 msgid "Sync stock quantity (both directions)"
-msgstr "Sincronizar cantidad de stock (ambas direcciones)"
+msgstr "Sincronizza quantità in stock (entrambe le direzioni)"
 
 msgid "Sync prices"
-msgstr "Sincronizar precios"
+msgstr "Sincronizza prezzi"
 
 msgid "Sync regular price (both directions)"
-msgstr "Sincronizar precio normal (ambas direcciones)"
+msgstr "Sincronizza prezzo regolare (entrambe le direzioni)"
 
 msgid "Sync description"
-msgstr "Sincronizar descripción"
+msgstr "Sincronizza descrizione"
 
 msgid "Sync product description (both directions)"
-msgstr "Sincronizar descripción del producto (ambas direcciones)"
+msgstr "Sincronizza descrizione prodotto (entrambe le direzioni)"
 
 msgid "Append brand to name"
-msgstr "Añadir marca al nombre"
+msgstr "Aggiungi brand al nome"
 
 msgid "Append the product brand (product_brand taxonomy) to the product name when syncing to Holded"
-msgstr "Añade la marca del producto (taxonomía product_brand) al nombre del producto al sincronizar con Holded"
+msgstr "Aggiunge il brand del prodotto (tassonomia product_brand) al nome del prodotto durante la sincronizzazione con Holded"
 
 msgid "Enable log"
-msgstr "Activar registro"
+msgstr "Abilita log"
 
 msgid "Enable log (last 100 messages)"
-msgstr "Activar registro (últimos 100 mensajes)"
+msgstr "Abilita log (ultimi 100 messaggi)"
 
 msgid "Save settings"
-msgstr "Guardar ajustes"
+msgstr "Salva impostazioni"
 
 msgid "Manual sync"
-msgstr "Sincronización manual"
+msgstr "Sincronizzazione manuale"
 
 #, php-format
 msgid "Pull all products from Holded and update WooCommerce. Last pull: %s"
-msgstr "Importar todos los productos de Holded y actualizar WooCommerce. Última importación: %s"
+msgstr "Recupera tutti i prodotti da Holded e aggiorna WooCommerce. Ultimo aggiornamento: %s"
 
 msgid "never"
-msgstr "nunca"
+msgstr "mai"
 
 msgid "Pull from Holded now"
-msgstr "Importar desde Holded ahora"
+msgstr "Aggiorna da Holded ora"
 
 msgid "System log"
-msgstr "Registro del sistema"
+msgstr "Log di sistema"
 
 msgid "Clear log"
-msgstr "Borrar registro"
+msgstr "Cancella log"
 
 msgid "Time"
-msgstr "Hora"
+msgstr "Ora"
 
 msgid "Event"
 msgstr "Evento"
 
 msgid "Product ID"
-msgstr "ID de producto"
+msgstr "ID prodotto"
 
 msgid "Message"
-msgstr "Mensaje"
+msgstr "Messaggio"
 
 msgid "Unauthorized"
-msgstr "No autorizado"
+msgstr "Non autorizzato"
 
 msgid "Connection successful."
-msgstr "Conexión correcta."
+msgstr "Connessione riuscita."
 
 msgid "Pull completed."
-msgstr "Importación completada."
+msgstr "Aggiornamento completato."
 
 msgid "Testing…"
-msgstr "Probando…"
+msgstr "Test in corso…"
 
 msgid "Pulling from Holded…"
-msgstr "Importando desde Holded…"
+msgstr "Aggiornamento da Holded in corso…"
 
 msgid "Success"
-msgstr "Correcto"
+msgstr "Operazione riuscita"
 
 msgid "Error"
-msgstr "Error"
+msgstr "Errore"
 
 msgid "Holded API key is not configured."
-msgstr "La clave API de Holded no está configurada."
+msgstr "La chiave API di Holded non è configurata."
 
 msgid "Description for Holded"
-msgstr "Descripción para Holded"
+msgstr "Descrizione per Holded"
 
 msgid "Short description sent to Holded. Leave empty to skip."
-msgstr "Descripción breve enviada a Holded. Dejar vacío para omitir."
+msgstr "Descrizione breve inviata a Holded. Lascia vuoto per saltare."
 
 msgid "Replaces the full product description when syncing to Holded."
-msgstr "Reemplaza la descripción completa del producto al sincronizar con Holded."
+msgstr "Sostituisce la descrizione completa del prodotto durante la sincronizzazione con Holded."
 
 msgid "Cost price"
-msgstr "Precio de coste"
+msgstr "Prezzo di costo"
 
 msgid "Cost price sent to Holded (net, excluding tax)."
-msgstr "Precio de coste enviado a Holded (neto, sin IVA)."
+msgstr "Prezzo di costo inviato a Holded (netto, IVA esclusa)."
 
 msgid "Barcode"
-msgstr "Código de barras"
+msgstr "Codice a barre"
 
 msgid "Barcode (EAN, UPC…) sent to Holded."
-msgstr "Código de barras (EAN, UPC…) enviado a Holded."
+msgstr "Codice a barre (EAN, UPC…) inviato a Holded."
 
 msgid "Holded product ID"
-msgstr "ID de producto en Holded"
+msgstr "ID prodotto Holded"

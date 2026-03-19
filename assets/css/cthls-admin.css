@@ -3,12 +3,12 @@
    ────────────────────────────────────────────── */
 
 /* Wrap */
-.ctholded-wrap {
+.cthls-wrap {
     max-width: 900px;
 }
 
 /* ── Header ── */
-.ctholded-header {
+.cthls-header {
     display: flex;
     align-items: center;
     gap: 14px;
@@ -17,14 +17,14 @@
     border-bottom: 2px solid #e8eaed;
 }
 
-.ctholded-header h1 {
+.cthls-header h1 {
     margin: 0;
     font-size: 22px;
     font-weight: 700;
     color: #1d2327;
 }
 
-.ctholded-version {
+.cthls-version {
     display: inline-flex;
     align-items: center;
     padding: 2px 8px;
@@ -39,7 +39,7 @@
 }
 
 /* ── Cards ── */
-.ctholded-card {
+.cthls-card {
     background: #fff;
     border-radius: 6px;
     box-shadow: 0 1px 4px rgba(0,0,0,.07), 0 0 0 1px rgba(0,0,0,.06);
@@ -47,7 +47,7 @@
     margin-bottom: 20px;
 }
 
-.ctholded-card h2 {
+.cthls-card h2 {
     margin: 0 0 20px;
     padding-bottom: 14px;
     border-bottom: 1px solid #f0f0f1;
@@ -61,7 +61,7 @@
     gap: 8px;
 }
 
-.ctholded-card h2 .dashicons {
+.cthls-card h2 .dashicons {
     font-size: 16px;
     width: 16px;
     height: 16px;
@@ -69,11 +69,11 @@
 }
 
 /* ── Form table ── */
-.ctholded-card .form-table {
+.cthls-card .form-table {
     margin-top: 0;
 }
 
-.ctholded-card .form-table th {
+.cthls-card .form-table th {
     width: 220px;
     padding: 14px 16px 14px 0;
     font-size: 13px;
@@ -82,20 +82,20 @@
     vertical-align: middle;
 }
 
-.ctholded-card .form-table td {
+.cthls-card .form-table td {
     padding: 12px 0;
     vertical-align: middle;
 }
 
-.ctholded-card .form-table tr {
+.cthls-card .form-table tr {
     border-bottom: 1px solid #f6f7f7;
 }
 
-.ctholded-card .form-table tr:last-child {
+.cthls-card .form-table tr:last-child {
     border-bottom: none;
 }
 
-.ctholded-card .form-table .description {
+.cthls-card .form-table .description {
     margin-top: 5px;
     font-size: 12px;
     color: #8c8f94;
@@ -103,7 +103,7 @@
 }
 
 /* ── Checkbox rows ── */
-.ctholded-card .form-table label {
+.cthls-card .form-table label {
     display: flex;
     align-items: flex-start;
     gap: 8px;
@@ -112,36 +112,36 @@
     cursor: pointer;
 }
 
-.ctholded-card .form-table label input[type="checkbox"] {
+.cthls-card .form-table label input[type="checkbox"] {
     margin: 2px 0 0;
     flex-shrink: 0;
 }
 
 /* ── Inputs ── */
-.ctholded-card input[type="text"],
-.ctholded-card input[type="password"],
-.ctholded-card input[type="number"] {
+.cthls-card input[type="text"],
+.cthls-card input[type="password"],
+.cthls-card input[type="number"] {
     border-radius: 4px;
     border-color: #c3c4c7;
     height: 36px;
     line-height: 36px;
 }
 
-.ctholded-card input[type="text"]:focus,
-.ctholded-card input[type="password"]:focus,
-.ctholded-card input[type="number"]:focus {
+.cthls-card input[type="text"]:focus,
+.cthls-card input[type="password"]:focus,
+.cthls-card input[type="number"]:focus {
     border-color: #2271b1;
     box-shadow: 0 0 0 1px #2271b1;
 }
 
-.ctholded-card select {
+.cthls-card select {
     border-radius: 4px;
     height: 36px;
     border-color: #c3c4c7;
 }
 
 /* ── Inline button + result groups ── */
-.ctholded-field-group {
+.cthls-field-group {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -149,9 +149,9 @@
 }
 
 /* ── Feedback spans ── */
-#ctholded-test-result,
-#ctholded-pull-result,
-#ctholded-warehouses-result {
+#cthls-test-result,
+#cthls-pull-result,
+#cthls-warehouses-result {
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -162,27 +162,27 @@
     min-height: 28px;
 }
 
-#ctholded-test-result.success,
-#ctholded-pull-result.success,
-#ctholded-warehouses-result.success {
+#cthls-test-result.success,
+#cthls-pull-result.success,
+#cthls-warehouses-result.success {
     color: #00a32a;
     background: #edfaef;
 }
 
-#ctholded-test-result.error,
-#ctholded-pull-result.error,
-#ctholded-warehouses-result.error {
+#cthls-test-result.error,
+#cthls-pull-result.error,
+#cthls-warehouses-result.error {
     color: #d63638;
     background: #fcf0f1;
 }
 
 /* ── Submit button area ── */
-.ctholded-wrap .submit {
+.cthls-wrap .submit {
     padding: 0;
     margin-bottom: 20px;
 }
 
-.ctholded-wrap .submit .button-primary {
+.cthls-wrap .submit .button-primary {
     height: 38px;
     line-height: 36px;
     padding: 0 20px;
@@ -190,7 +190,7 @@
 }
 
 /* ── Log table ── */
-.ctholded-log-table {
+.cthls-log-table {
     margin-top: 4px;
     font-size: 12px;
     border-radius: 4px;
@@ -199,7 +199,7 @@
     box-shadow: none !important;
 }
 
-.ctholded-log-table th {
+.cthls-log-table th {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: .4px;
@@ -207,13 +207,13 @@
     background: #f6f7f7 !important;
 }
 
-.ctholded-log-table td {
+.cthls-log-table td {
     font-size: 12px;
     vertical-align: top;
 }
 
 /* ── Clear log button ── */
-.ctholded-btn-danger {
+.cthls-btn-danger {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -231,12 +231,12 @@
     transition: background .15s, color .15s;
 }
 
-.ctholded-btn-danger:hover {
+.cthls-btn-danger:hover {
     background: #d63638 !important;
     color: #fff !important;
 }
 
-.ctholded-btn-danger .dashicons {
+.cthls-btn-danger .dashicons {
     font-size: 14px;
     width: 14px;
     height: 14px;
@@ -244,14 +244,14 @@
 }
 
 /* ── Manual sync card ── */
-.ctholded-sync-row {
+.cthls-sync-row {
     display: flex;
     align-items: center;
     gap: 16px;
     flex-wrap: wrap;
 }
 
-.ctholded-sync-row .description {
+.cthls-sync-row .description {
     flex: 1;
     font-size: 13px;
     color: #50575e;
@@ -259,13 +259,13 @@
 }
 
 /* ── Log card header ── */
-.ctholded-log-header {
+.cthls-log-header {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.ctholded-log-header h2 {
+.cthls-log-header h2 {
     margin-bottom: 0;
     padding-bottom: 0;
     border-bottom: none;
