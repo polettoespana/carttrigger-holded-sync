@@ -378,6 +378,23 @@ class CTHLS_Admin {
                         <?php esc_html_e( 'Clear log', 'carttrigger-holded-sync' ); ?>
                     </button>
                 </div>
+                <details class="cthls-log-legend">
+                    <summary><?php esc_html_e( 'Event reference', 'carttrigger-holded-sync' ); ?></summary>
+                    <table class="cthls-log-legend-table">
+                        <tbody>
+                            <tr><td><code>product_payload</code></td><td><?php esc_html_e( 'Full payload sent to Holded when a product is saved in WooCommerce (debug).', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>product_save</code></td><td><?php esc_html_e( 'Error returned by Holded when creating or updating a product.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>stock_change</code></td><td><?php esc_html_e( 'Error returned by Holded when updating stock quantity.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>pull_start</code></td><td><?php esc_html_e( 'Pull from Holded started. Message indicates whether triggered by the scheduler or manually.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>pull_error</code></td><td><?php esc_html_e( 'API error while fetching products from Holded.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>pull_complete</code></td><td><?php esc_html_e( 'Pull finished. Message shows how many products were processed.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>pull_create</code></td><td><?php esc_html_e( 'A new product was created in WooCommerce from Holded data.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>pull_update</code></td><td><?php esc_html_e( 'An existing WooCommerce product was updated with data from Holded.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>pull_save_error</code></td><td><?php esc_html_e( 'Error while saving a product in WooCommerce during the pull.', 'carttrigger-holded-sync' ); ?></td></tr>
+                        </tbody>
+                    </table>
+                </details>
+
                 <table class="widefat striped cthls-log-table">
                     <thead>
                         <tr>

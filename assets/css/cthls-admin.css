@@ -271,3 +271,61 @@
     border-bottom: none;
     flex: 1;
 }
+
+/* ── Log legend ── */
+.cthls-log-legend {
+    margin-bottom: 16px;
+    border: 1px solid #e8eaed;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.cthls-log-legend summary {
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #50575e;
+    cursor: pointer;
+    user-select: none;
+    background: #f6f7f7;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cthls-log-legend summary::before {
+    content: "▶";
+    font-size: 9px;
+    transition: transform .15s;
+}
+
+.cthls-log-legend[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.cthls-log-legend-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.cthls-log-legend-table td {
+    padding: 7px 12px;
+    vertical-align: top;
+    border-top: 1px solid #f0f0f1;
+    color: #3c434a;
+}
+
+.cthls-log-legend-table td:first-child {
+    white-space: nowrap;
+    width: 160px;
+}
+
+.cthls-log-legend-table code {
+    background: #f0f4ff;
+    color: #2271b1;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11px;
+}

@@ -205,3 +205,33 @@ msgstr "Descripción completa del producto (WooCommerce)"
 
 msgid "Choose which description to send to Holded when \"Sync description\" is enabled."
 msgstr "Elige qué descripción enviar a Holded cuando \"Sincronizar descripción\" está activada."
+
+msgid "Event reference"
+msgstr "Referencia de eventos"
+
+msgid "Full payload sent to Holded when a product is saved in WooCommerce (debug)."
+msgstr "Payload completo enviado a Holded cuando se guarda un producto en WooCommerce (depuración)."
+
+msgid "Error returned by Holded when creating or updating a product."
+msgstr "Error devuelto por Holded al crear o actualizar un producto."
+
+msgid "Error returned by Holded when updating stock quantity."
+msgstr "Error devuelto por Holded al actualizar la cantidad de stock."
+
+msgid "Pull from Holded started. Message indicates whether triggered by the scheduler or manually."
+msgstr "Importación desde Holded iniciada. El mensaje indica si fue activada por el programador o manualmente."
+
+msgid "API error while fetching products from Holded."
+msgstr "Error de API al obtener productos de Holded."
+
+msgid "Pull finished. Message shows how many products were processed."
+msgstr "Importación finalizada. El mensaje indica cuántos productos se han procesado."
+
+msgid "A new product was created in WooCommerce from Holded data."
+msgstr "Se ha creado un nuevo producto en WooCommerce con datos de Holded."
+
+msgid "An existing WooCommerce product was updated with data from Holded."
+msgstr "Se ha actualizado un producto existente en WooCommerce con datos de Holded."
+
+msgid "Error while saving a product in WooCommerce during the pull."
+msgstr "Error al guardar un producto en WooCommerce durante la importación."
