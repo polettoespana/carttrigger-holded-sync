@@ -8,139 +8,141 @@
   <img src="https://img.shields.io/badge/license-GPLv2-38a169?style=flat-square" alt="GPLv2">
 </p>
 
-> **Work in progress** — this plugin is under active development. Features may change and some functionality may not yet be complete. For questions, feedback or support, contact us at [info@poletto.es](mailto:info@poletto.es).
+> **Work in progress** — this plugin is under active development. For questions or support contact [info@poletto.es](mailto:info@poletto.es).
 
-Bidirectional sync between WooCommerce products/stock and Holded ERP. Changes in WooCommerce are pushed to Holded in real time; changes in Holded are pulled into WooCommerce on a configurable schedule via Action Scheduler.
+Bidirectional sync between WooCommerce products/stock and Holded ERP.
+
+---
 
 ## How it works
 
-### WooCommerce → Holded (real-time)
+| Direction | Trigger | Notes |
+|---|---|---|
+| **WC → Holded** | Real-time on product save or stock change | Can also be triggered manually (bulk push) |
+| **Holded → WC** | Scheduled pull via Action Scheduler | Default every 15 min — configurable. Manual pull available |
 
-Every time a product is saved or a stock change occurs in WooCommerce, the plugin pushes the update to Holded immediately — no manual work needed.
+Each direction can be enabled independently in settings.
 
-### Holded → WooCommerce (scheduled or manual pull)
-
-Since Holded does not provide outbound webhooks, the plugin pulls product and stock data from Holded on a scheduled basis (default: every 15 minutes) using Action Scheduler, bundled with WooCommerce. The interval is fully configurable. A manual pull can also be triggered at any time from the settings page.
+---
 
 ## What is synced
 
 | Field | WC → Holded | Holded → WC |
 |---|---|---|
 | Product name | ✓ | ✓ |
-| Regular price | ✓ (optional) | ✓ (optional) |
-| Description | ✓ (optional) | ✓ (optional) |
+| Regular price | ✓ optional | ✓ optional |
+| Sale price | ✓ optional ¹ | — |
+| Description | ✓ optional | ✓ optional |
 | SKU | ✓ | ✓ |
-| Stock quantity | ✓ (optional) | ✓ (optional) |
-| Product variants | ✓ ¹ | — |
-| Brand appended to name | ✓ (optional) | — |
+| Stock quantity | ✓ optional | ✓ optional |
+| Brand appended to name | ✓ optional | — |
 
-_¹ Variable products and variant sync require the **Gemma Inventario** add-on in your Holded subscription._
+<sub>¹ Sent only when the product is currently on sale (respects scheduled date range). If no sale price is active, the regular price is sent instead.</sub>
 
-## Product matching
-
-Products are matched between the two systems by SKU. On first sync the Holded product ID is stored in WooCommerce product meta (`_ctholded_product_id`) to speed up subsequent syncs.
-
-## Tax handling
-
-If WooCommerce prices are tax-inclusive (common in Spain at 21% VAT), the plugin can strip the tax before sending the net price to Holded. Enable the **"Prices include tax"** option in settings and set the fallback tax rate if WooCommerce cannot determine it automatically.
+---
 
 ## Settings
 
-Go to **WooCommerce → Holded Sync** to configure:
+**WooCommerce → Holded Sync** in the WordPress admin.
 
-- **Holded API Key** — generate one in Holded under Settings → Integrations → API
-- **Warehouse** — select the Holded warehouse to use for stock movements
-- **Default tax rate** — fallback VAT rate (default: 21)
-- **Enable sync** — master switch for bidirectional sync
-- **Pull interval** — how often to pull from Holded (minimum 5 minutes, default 15)
-- **Prices include tax** — strip VAT from WooCommerce prices before sending to Holded
-- **Sync stock / prices / description** — enable each field independently
-- **Append brand to name** — append the `product_brand` taxonomy term to the product name in Holded
-- **Enable log** — keep the last 100 sync messages for debugging
+| Option | Description |
+|---|---|
+| Holded API Key | Generate in Holded under Settings → Integrations → API |
+| Warehouse | Holded warehouse for stock movements |
+| Default tax rate | Fallback VAT rate (default: 21) |
+| Sync direction | Enable WC→Holded and/or Holded→WC independently |
+| Pull interval | How often to pull from Holded (min 5 min, default 15) |
+| Prices include tax | Strips VAT before sending to Holded; adds it back when pulling |
+| Sync stock | Enable stock sync (both directions) |
+| Sync regular price | Enable regular price sync (both directions) |
+| Sync sale price | Send sale price to Holded instead of regular price when on sale (WC→Holded only) |
+| Sync description | Enable description sync (both directions) |
+| Description source | Custom field (Holded Sync tab) or full WooCommerce description |
+| Append brand to name | Appends `product_brand` taxonomy term to product name in Holded |
+| Enable log | Stores last 50 sync events for debugging |
+
+---
 
 ## Product tab
 
-Each WooCommerce product has a **Holded Sync** tab inside the native **Product data** meta box (the same panel that contains General, Inventory, Shipping, etc.).
+Each product has a **Holded Sync** tab in the **Product data** meta box.
 
-The following fields are available:
-
-| Field | Meta key | Description |
+| Field | Meta key | Notes |
 |---|---|---|
-| Description for Holded | `_ctholded_description` | Short description sent to Holded instead of the full product description. Leave empty to skip. |
-| Cost price | `_cost_price` | Net cost price sent to Holded (excluding tax). |
-| Barcode | `_barcode` | EAN, UPC or any barcode format sent to Holded. |
-| Holded product ID | `_ctholded_product_id` | Read-only. Populated automatically on first sync — identifies the linked product in Holded. |
+| Description for Holded | `_cthls_description` | Used when Description source is set to "Custom field" |
+| Cost price | `_cost_price` | Net cost price sent to Holded (excl. tax) |
+| Barcode | `_barcode` | EAN, UPC or any barcode format |
+| Holded product ID | `_cthls_product_id` | Auto-populated on first sync. Read-only |
+
+---
+
+## Tax handling
+
+Holded stores prices as net (excl. tax). WooCommerce can store prices either way.
+
+- **WC → Holded**: if *Prices include tax* is enabled, the plugin strips VAT before sending the net price to Holded.
+- **Holded → WC**: if *Prices include tax* is enabled, the plugin adds VAT back before saving in WooCommerce.
+
+All prices are rounded to 2 decimal places.
+
+---
+
+## Product matching
+
+Products are matched by **SKU**. On first sync the Holded product ID is stored in `_cthls_product_id`. Before creating a new product in Holded, the plugin searches by SKU to avoid duplicates — if a match is found it links and updates instead of creating.
+
+---
 
 ## Requirements
 
-- WordPress **6.3** or later
-- WooCommerce _(required, 8.0+ recommended)_
-- PHP **7.4** or later
+- WordPress **6.3+**
+- WooCommerce _(required, 8.0+ recommended)_ — tested up to **10.6.1**
+- PHP **7.4+**
 
-Tested with WordPress **6.9** and WooCommerce **10.6.1**.
+---
 
 ## Installation
 
-1. Clone this repository or download the ZIP and upload to `/wp-content/plugins/`.
-2. Activate the plugin from **Plugins** in your WordPress admin.
-3. Go to **WooCommerce → Holded Sync** and enter your Holded API key.
-4. Test the connection, select a warehouse, enable sync and configure which fields to synchronise.
+1. Clone or download the ZIP → upload to `/wp-content/plugins/`.
+2. Activate from **Plugins** in WordPress admin.
+3. Go to **WooCommerce → Holded Sync**, enter your API key and configure.
+
+---
 
 ## Changelog
 
 ### 1.1.1
-
-- Fix: sale price sync (WC → Holded) now respects sale date range — sends sale price only when the product is currently on sale; falls back to regular price outside the scheduled period.
+- Fix: sale price sync (WC→Holded) now respects sale date range — falls back to regular price outside the scheduled period.
 
 ### 1.1.0
-
-- Fix: Holded → WC price now correctly adds tax back when WooCommerce is configured with tax-inclusive prices, and is always rounded to 2 decimal places.
-- Fix: WC → Holded price correctly rounded to 2 decimal places.
-- Fix: duplicate product creation in Holded — before creating, the plugin now searches by SKU and links/updates if a match is found.
-- Fix: GROUP constant in Action Scheduler corrected from `'ctholded'` to `'cthls'`.
-- Fix: Action Scheduler self-healing on init; `plugins_loaded` priority raised to 20.
-- Enhancement: sync direction is now independently configurable (WC → Holded and/or Holded → WC).
-- Enhancement: manual push button (WC → Holded bulk) added to the settings page.
-- Enhancement: sync sale price option (WC → Holded): sends sale price to Holded instead of regular price when set.
-- Enhancement: Description source setting now applies bidirectionally.
-- Enhancement: collapsible Event reference legend in System log.
-- Enhancement: next scheduled run displayed in the Manual sync card.
-- Enhancement: Reschedule button added to force Action Scheduler registration.
-- Enhancement: Known limitations card added with note on Holded price tiers API limitation.
-- Enhancement: log reduced to last 50 entries.
-- Enhancement: Italian and Spanish translations updated.
+- Fix: Holded→WC price now adds tax back when WC uses tax-inclusive prices, rounded to 2 decimals.
+- Fix: WC→Holded price rounded to 2 decimal places.
+- Fix: duplicate Holded product prevented via SKU lookup before create.
+- Fix: Action Scheduler GROUP constant, self-healing on init, `plugins_loaded` priority raised to 20.
+- Enhancement: sync direction independently configurable (push / pull).
+- Enhancement: manual bulk push (WC→Holded) from settings page.
+- Enhancement: sync sale price option (WC→Holded), respecting scheduled dates.
+- Enhancement: description source applies bidirectionally.
+- Enhancement: event reference legend, next scheduled run, reschedule button in admin.
+- Enhancement: known limitations card (Holded price tiers API not supported).
+- Enhancement: log limited to 50 entries. Translations updated (it_IT, es_ES).
 
 ### 1.0.4
-
-- Fix: admin buttons (Test connection, Pull from Holded, Load warehouses) now restore their original translated text after each action instead of resetting to hardcoded English strings.
-- Enhancement: added missing i18n strings (`Loading…`, `— Select warehouse —`, `No warehouses found.`) to Italian and Spanish translations.
+- Fix: admin buttons restore translated text after each action.
 
 ### 1.0.3
-
-- Renamed plugin directory to `carttrigger-holded-sync` and main file accordingly.
-- Renamed all PHP prefixes to `cthls_` / `CTHLS_` to comply with the WordPress 5-character unique prefix requirement.
-- Updated text domain to `carttrigger-holded-sync`.
-- Renamed all include files, asset files and language files accordingly.
-- Added Italian (it_IT) and Spanish (es_ES) translations.
-- Added cost price and barcode fields to the Holded Sync product tab.
+- Renamed to `carttrigger-holded-sync`, PHP prefix to `cthls_` / `CTHLS_`.
+- Added it_IT and es_ES translations.
+- Added cost price and barcode fields to product tab.
 
 ### 1.0.2
-
-- Fix: nonce verification added explicitly in product meta save callback.
-- Fix: plugin name aligned between plugin header and readme.txt.
-- Enhancement: redesigned settings page with card-based layout and icons.
-- Enhancement: added "Append brand to name" option.
-- Enhancement: replaced WP-Cron with Action Scheduler for Holded pull.
-- Enhancement: configurable pull interval (default 15 minutes).
+- Fix: nonce verification in product meta save.
+- Redesigned settings page (card layout, icons).
+- Added brand append option, Action Scheduler pull, configurable interval.
 
 ### 1.0.0
-
 - Initial release.
 
 ---
 
-**Disclaimer:** this plugin is an independent open source project. We are not affiliated with, sponsored by, or paid by [Holded Technologies S.L.](https://www.holded.com) in any way. All product names and trademarks are the property of their respective owners.
-
----
-
-[GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html) — developed by [Poletto 1976 S.L.U.](https://poletto.es)
+<sub>**Disclaimer:** independent open source project, not affiliated with <a href="https://www.holded.com">Holded Technologies S.L.</a> — <a href="https://www.gnu.org/licenses/gpl-2.0.html">GPLv2 or later</a> — developed by <a href="https://poletto.es">Poletto 1976 S.L.U.</a></sub>
