@@ -47,7 +47,7 @@ Each direction can be enabled independently in settings.
 
 | Option | Description |
 |---|---|
-| Holded API Key | Generate in Holded under Settings → Integrations → API |
+| Holded API Key | Generate in Holded under **Configuración → Más → Desarrolladores** |
 | Warehouse | Holded warehouse for stock movements |
 | Default tax rate | Fallback VAT rate (default: 21) |
 | Sync direction | Enable WC→Holded and/or Holded→WC independently |
