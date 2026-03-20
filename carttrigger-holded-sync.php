@@ -49,7 +49,7 @@ function cthls_init() {
         as_unschedule_all_actions( CTHLS_Cron::HOOK, [], 'ctholded' );
     }
 }
-add_action( 'plugins_loaded', 'cthls_init' );
+add_action( 'plugins_loaded', 'cthls_init', 20 );
 
 function cthls_woocommerce_missing_notice() {
     echo '<div class="notice notice-error"><p>';

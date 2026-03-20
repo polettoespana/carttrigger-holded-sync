@@ -355,7 +355,7 @@ class CTHLS_Admin {
                         );
 
                         $next_ts = function_exists( 'as_next_scheduled_action' )
-                            ? as_next_scheduled_action( CTHLS_Cron::HOOK, [], CTHLS_Cron::GROUP )
+                            ? as_next_scheduled_action( CTHLS_Cron::HOOK, null, CTHLS_Cron::GROUP )
                             : false;
 
                         if ( $next_ts ) {
