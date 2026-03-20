@@ -124,8 +124,9 @@ class CTHLS_Sync {
 
         self::log( 'pull_start', 0, $source );
 
-        $page      = 1;
-        $processed = 0;
+        self::$pulled = [];
+        $page         = 1;
+        $processed    = 0;
 
         do {
             $products = self::$api->get_products( $page );
@@ -222,6 +223,9 @@ class CTHLS_Sync {
      *
      * @param array $holded_product
      */
+    /** WC product IDs already processed in this pull run — prevents duplicate updates. */
+    private static $pulled = [];
+
     private static function holded_product_to_wc( array $holded_product ) {
         $holded_id = isset( $holded_product['id'] ) ? $holded_product['id'] : '';
         $sku       = isset( $holded_product['sku'] ) ? $holded_product['sku'] : '';
@@ -233,6 +237,11 @@ class CTHLS_Sync {
         }
         if ( ! $wc_product_id && $holded_id ) {
             $wc_product_id = self::find_wc_product_by_holded_id( $holded_id );
+        }
+
+        // Skip if this WC product was already processed in this pull run.
+        if ( $wc_product_id && in_array( $wc_product_id, self::$pulled, true ) ) {
+            return;
         }
 
         if ( ! $wc_product_id ) {
@@ -296,6 +305,7 @@ class CTHLS_Sync {
                 if ( $holded_id ) {
                     update_post_meta( $saved_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
                 }
+                self::$pulled[] = $saved_id;
                 $event = $is_new ? 'pull_create' : 'pull_update';
                 self::log( $event, $saved_id, $sku ?: $holded_id );
             } else {
