@@ -100,8 +100,8 @@ msgstr "Aggiunge il brand del prodotto (tassonomia product_brand) al nome del pr
 msgid "Enable log"
 msgstr "Abilita log"
 
-msgid "Enable log (last 100 messages)"
-msgstr "Abilita log (ultimi 100 messaggi)"
+msgid "Enable log (last 50 messages)"
+msgstr "Abilita log (ultimi 50 messaggi)"
 
 msgid "Save settings"
 msgstr "Salva impostazioni"
@@ -203,8 +203,11 @@ msgstr "Campo personalizzato (tab Holded Sync)"
 msgid "Full product description (WooCommerce)"
 msgstr "Descrizione completa del prodotto (WooCommerce)"
 
-msgid "Choose which description to send to Holded when \"Sync description\" is enabled."
-msgstr "Scegli quale descrizione inviare a Holded quando \"Sincronizza descrizione\" è abilitata."
+msgid "WC → Holded: which field to read the description from."
+msgstr "WC → Holded: da quale campo leggere la descrizione."
+
+msgid "Holded → WC: which field to write the description to."
+msgstr "Holded → WC: in quale campo scrivere la descrizione."
 
 msgid "Event reference"
 msgstr "Riferimento eventi"
@@ -242,3 +245,51 @@ msgstr "Prossima esecuzione pianificata: %s"
 
 msgid "No scheduled run found. Enable sync to activate the scheduler."
 msgstr "Nessuna esecuzione pianificata trovata. Abilita la sincronizzazione per attivare lo scheduler."
+
+msgid "Sync direction"
+msgstr "Direzione della sincronizzazione"
+
+msgid "WooCommerce → Holded (real-time on product save / stock change)"
+msgstr "WooCommerce → Holded (in tempo reale al salvataggio prodotto / variazione scorte)"
+
+msgid "Holded → WooCommerce (scheduled pull every X minutes)"
+msgstr "Holded → WooCommerce (pull pianificato ogni X minuti)"
+
+msgid "Sync sale price (WC → Holded): if a sale price is set in WooCommerce, send it to Holded instead of the regular price"
+msgstr "Sincronizza prezzo in offerta (WC → Holded): se in WooCommerce è impostato un prezzo in offerta, invialo a Holded al posto del prezzo normale"
+
+msgid "Push to Holded now"
+msgstr "Aggiorna da WooCommerce ora"
+
+msgid "Send all WooCommerce products to Holded now (create or update)."
+msgstr "Invia tutti i prodotti WooCommerce a Holded ora (creazione o aggiornamento)."
+
+msgid "Pushing to Holded…"
+msgstr "Invio a Holded in corso…"
+
+#, php-format
+msgid "Push completed: %d product sent."
+msgid_plural "Push completed: %d products sent."
+msgstr[0] "Push completato: %d prodotto inviato."
+msgstr[1] "Push completato: %d prodotti inviati."
+
+msgid "Known limitations"
+msgstr "Limitazioni note"
+
+msgid "Multiple price tiers"
+msgstr "Prezzi multipli (tariffe)"
+
+msgid "The Holded API does not currently expose product price rates (tariffe). Syncing secondary prices (e.g. Ho.re.ca) is not possible until Holded adds API support for this feature. This limitation will be addressed as soon as it becomes available."
+msgstr "L'API di Holded non espone attualmente le tariffe prodotto. La sincronizzazione delle tariffe oltre la Tariffa principale non è possibile finché Holded non aggiunge il supporto API per questa funzione. La limitazione verrà risolta non appena disponibile."
+
+msgid "Reschedule"
+msgstr "Ripianifica"
+
+msgid "Action Scheduler not available."
+msgstr "Action Scheduler non disponibile."
+
+msgid "Scheduled but could not read next run time."
+msgstr "Pianificato, ma impossibile leggere il prossimo orario di esecuzione."
+
+msgid "Existing Holded product found by SKU and linked to the WooCommerce product (avoids duplicate creation)."
+msgstr "Prodotto Holded esistente trovato tramite SKU e collegato al prodotto WooCommerce (evita la creazione di duplicati)."

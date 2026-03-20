@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.0.4
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,23 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.1.0 =
+* Fix: Holded → WC price now correctly adds tax back when WooCommerce is configured with tax-inclusive prices, and is always rounded to 2 decimal places.
+* Fix: WC → Holded price correctly rounded to 2 decimal places.
+* Fix: duplicate product creation in Holded — before creating, the plugin now searches by SKU and links/updates if a match is found.
+* Fix: GROUP constant in Action Scheduler corrected from 'ctholded' to 'cthls'.
+* Fix: Action Scheduler self-healing on init; plugins_loaded priority raised to 20.
+* Enhancement: sync direction is now independently configurable (WC → Holded and/or Holded → WC).
+* Enhancement: manual push button (WC → Holded bulk) added to the settings page.
+* Enhancement: sync sale price option (WC → Holded): sends sale price to Holded instead of regular price when set.
+* Enhancement: Description source setting now applies bidirectionally.
+* Enhancement: collapsible Event reference legend in System log.
+* Enhancement: next scheduled run displayed in the Manual sync card.
+* Enhancement: Reschedule button added to force Action Scheduler registration.
+* Enhancement: Known limitations card added with note on Holded price tiers API limitation.
+* Enhancement: log reduced to last 50 entries.
+* Enhancement: Italian and Spanish translations updated.
 
 = 1.0.4 =
 * Fix: admin buttons now restore their original translated text after each action instead of hardcoded English strings.

@@ -7,7 +7,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * Settings stored as WP options:
  *   cthls_api_key       string
- *   cthls_sync_enabled  bool
+ *   cthls_sync_push     bool  (WC → Holded)
+ *   cthls_sync_pull     bool  (Holded → WC)
  *   cthls_sync_prices   bool
  *   cthls_sync_stock    bool
  *   cthls_sync_desc     bool
@@ -23,6 +24,7 @@ class CTHLS_Admin {
         add_action( 'wp_ajax_cthls_manual_pull', [ __CLASS__, 'ajax_manual_pull' ] );
         add_action( 'wp_ajax_cthls_clear_log', [ __CLASS__, 'ajax_clear_log' ] );
         add_action( 'wp_ajax_cthls_get_warehouses', [ __CLASS__, 'ajax_get_warehouses' ] );
+        add_action( 'wp_ajax_cthls_manual_push', [ __CLASS__, 'ajax_manual_push' ] );
         add_action( 'wp_ajax_cthls_reschedule', [ __CLASS__, 'ajax_reschedule' ] );
     }
 
@@ -45,8 +47,10 @@ class CTHLS_Admin {
             'cthls_default_tax_rate',
             'cthls_prices_include_tax',
             'cthls_pull_interval',
-            'cthls_sync_enabled',
+            'cthls_sync_push',
+            'cthls_sync_pull',
             'cthls_sync_prices',
+            'cthls_sync_sale_price',
             'cthls_sync_stock',
             'cthls_sync_desc',
             'cthls_desc_source',
@@ -86,6 +90,7 @@ class CTHLS_Admin {
         wp_localize_script( 'cthls-admin', 'cthls', [
             'nonce'                 => wp_create_nonce( 'cthls_admin' ),
             'i18n_testing'         => esc_html__( 'Testing…', 'carttrigger-holded-sync' ),
+            'i18n_pushing'         => esc_html__( 'Pushing to Holded…', 'carttrigger-holded-sync' ),
             'i18n_pulling'         => esc_html__( 'Pulling from Holded…', 'carttrigger-holded-sync' ),
             'i18n_loading'         => esc_html__( 'Loading…', 'carttrigger-holded-sync' ),
             'i18n_success'         => esc_html__( 'Success', 'carttrigger-holded-sync' ),
@@ -115,6 +120,22 @@ class CTHLS_Admin {
             wp_send_json_error( [ 'message' => $result->get_error_message() ] );
         }
         wp_send_json_success( [ 'message' => __( 'Connection successful.', 'carttrigger-holded-sync' ) ] );
+    }
+
+    public static function ajax_manual_push() {
+        check_ajax_referer( 'cthls_admin', 'nonce' );
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Unauthorized', 'carttrigger-holded-sync' ) ] );
+        }
+
+        $count = CTHLS_Sync::push_to_holded();
+        wp_send_json_success( [
+            'message' => sprintf(
+                /* translators: %d: number of products pushed */
+                _n( 'Push completed: %d product sent.', 'Push completed: %d products sent.', $count, 'carttrigger-holded-sync' ),
+                $count
+            ),
+        ] );
     }
 
     public static function ajax_manual_pull() {
@@ -207,7 +228,7 @@ class CTHLS_Admin {
                                         class="regular-text"
                                         autocomplete="off" />
                                     <button type="button" id="cthls-test-btn" class="button button-secondary">
-                                        <span class="dashicons dashicons-superhero" style="margin-top:3px;margin-right:3px;font-size:14px;width:14px;height:14px;"></span>
+                                        <span class="dashicons dashicons-superhero"></span>
                                         <?php esc_html_e( 'Test connection', 'carttrigger-holded-sync' ); ?>
                                     </button>
                                     <span id="cthls-test-result"></span>
@@ -232,7 +253,7 @@ class CTHLS_Admin {
                                     </select>
                                     <input type="hidden" name="cthls_warehouse_name" id="cthls_warehouse_name" value="<?php echo esc_attr( $saved_wh_name ); ?>" />
                                     <button type="button" id="cthls-load-warehouses" class="button button-secondary">
-                                        <span class="dashicons dashicons-update" style="margin-top:3px;margin-right:3px;font-size:14px;width:14px;height:14px;"></span>
+                                        <span class="dashicons dashicons-update"></span>
                                         <?php esc_html_e( 'Load warehouses', 'carttrigger-holded-sync' ); ?>
                                     </button>
                                     <span id="cthls-warehouses-result"></span>
@@ -260,13 +281,20 @@ class CTHLS_Admin {
 
                     <table class="form-table">
                         <tr>
-                            <th><?php esc_html_e( 'Enable sync', 'carttrigger-holded-sync' ); ?></th>
+                            <th><?php esc_html_e( 'Sync direction', 'carttrigger-holded-sync' ); ?></th>
                             <td>
-                                <label>
-                                    <input type="checkbox" name="cthls_sync_enabled" value="1"
-                                        <?php checked( get_option( 'cthls_sync_enabled' ) ); ?> />
-                                    <?php esc_html_e( 'Activate bidirectional sync (WooCommerce ↔ Holded)', 'carttrigger-holded-sync' ); ?>
-                                </label>
+                                <fieldset>
+                                    <label style="display:block;margin-bottom:6px;">
+                                        <input type="checkbox" name="cthls_sync_push" value="1"
+                                            <?php checked( get_option( 'cthls_sync_push' ) ); ?> />
+                                        <?php esc_html_e( 'WooCommerce → Holded (real-time on product save / stock change)', 'carttrigger-holded-sync' ); ?>
+                                    </label>
+                                    <label style="display:block;">
+                                        <input type="checkbox" name="cthls_sync_pull" value="1"
+                                            <?php checked( get_option( 'cthls_sync_pull' ) ); ?> />
+                                        <?php esc_html_e( 'Holded → WooCommerce (scheduled pull every X minutes)', 'carttrigger-holded-sync' ); ?>
+                                    </label>
+                                </fieldset>
                             </td>
                         </tr>
                         <tr>
@@ -304,10 +332,15 @@ class CTHLS_Admin {
                         <tr>
                             <th><?php esc_html_e( 'Sync prices', 'carttrigger-holded-sync' ); ?></th>
                             <td>
-                                <label>
+                                <label style="display:block;margin-bottom:6px;">
                                     <input type="checkbox" name="cthls_sync_prices" value="1"
                                         <?php checked( get_option( 'cthls_sync_prices', true ) ); ?> />
                                     <?php esc_html_e( 'Sync regular price (both directions)', 'carttrigger-holded-sync' ); ?>
+                                </label>
+                                <label style="display:block;">
+                                    <input type="checkbox" name="cthls_sync_sale_price" value="1"
+                                        <?php checked( get_option( 'cthls_sync_sale_price', false ) ); ?> />
+                                    <?php esc_html_e( 'Sync sale price (WC → Holded): if a sale price is set in WooCommerce, send it to Holded instead of the regular price', 'carttrigger-holded-sync' ); ?>
                                 </label>
                             </td>
                         </tr>
@@ -333,7 +366,10 @@ class CTHLS_Admin {
                                         <?php esc_html_e( 'Full product description (WooCommerce)', 'carttrigger-holded-sync' ); ?>
                                     </option>
                                 </select>
-                                <p class="description"><?php esc_html_e( 'Choose which description to send to Holded when "Sync description" is enabled.', 'carttrigger-holded-sync' ); ?></p>
+                                <p class="description">
+                                    <?php esc_html_e( 'WC → Holded: which field to read the description from.', 'carttrigger-holded-sync' ); ?><br>
+                                    <?php esc_html_e( 'Holded → WC: which field to write the description to.', 'carttrigger-holded-sync' ); ?>
+                                </p>
                             </td>
                         </tr>
                         <tr>
@@ -352,7 +388,7 @@ class CTHLS_Admin {
                                 <label>
                                     <input type="checkbox" name="cthls_debug_log" value="1"
                                         <?php checked( get_option( 'cthls_debug_log' ) ); ?> />
-                                    <?php esc_html_e( 'Enable log (last 100 messages)', 'carttrigger-holded-sync' ); ?>
+                                    <?php esc_html_e( 'Enable log (last 50 messages)', 'carttrigger-holded-sync' ); ?>
                                 </label>
                             </td>
                         </tr>
@@ -362,12 +398,45 @@ class CTHLS_Admin {
                 <?php submit_button( __( 'Save settings', 'carttrigger-holded-sync' ) ); ?>
             </form>
 
-            <!-- ── Manual pull ── -->
+            <!-- ── Known limitations ── -->
+            <div class="cthls-card cthls-card-notice">
+                <h2>
+                    <span class="dashicons dashicons-info-outline"></span>
+                    <?php esc_html_e( 'Known limitations', 'carttrigger-holded-sync' ); ?>
+                </h2>
+                <ul class="cthls-limitations-list">
+                    <li>
+                        <strong><?php esc_html_e( 'Multiple price tiers', 'carttrigger-holded-sync' ); ?></strong>
+                        &mdash;
+                        <?php esc_html_e( 'The Holded API does not currently expose product price rates (tariffe). Syncing secondary prices (e.g. Ho.re.ca) is not possible until Holded adds API support for this feature. This limitation will be addressed as soon as it becomes available.', 'carttrigger-holded-sync' ); ?>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ── Manual sync ── -->
             <div class="cthls-card">
                 <h2>
-                    <span class="dashicons dashicons-download"></span>
+                    <span class="dashicons dashicons-randomize"></span>
                     <?php esc_html_e( 'Manual sync', 'carttrigger-holded-sync' ); ?>
                 </h2>
+
+                <!-- WC → Holded push -->
+                <div class="cthls-sync-row">
+                    <p class="description">
+                        <?php esc_html_e( 'Send all WooCommerce products to Holded now (create or update).', 'carttrigger-holded-sync' ); ?>
+                    </p>
+                    <div class="cthls-sync-actions">
+                        <button type="button" id="cthls-push-btn" class="button button-primary">
+                            <span class="dashicons dashicons-upload"></span>
+                            <?php esc_html_e( 'Push to Holded now', 'carttrigger-holded-sync' ); ?>
+                        </button>
+                        <span id="cthls-push-result"></span>
+                    </div>
+                </div>
+
+                <hr style="margin:16px 0;border:none;border-top:1px solid #e8eaed;">
+
+                <!-- Holded → WC pull -->
                 <div class="cthls-sync-row">
                     <p class="description">
                         <?php
@@ -395,14 +464,14 @@ class CTHLS_Admin {
 
                         ?>
                     </p>
-                    <div style="display:flex;align-items:center;gap:8px;">
+                    <div class="cthls-sync-actions">
                         <button type="button" id="cthls-reschedule-btn" class="button button-secondary">
-                            <span class="dashicons dashicons-clock" style="margin-top:3px;margin-right:4px;font-size:14px;width:14px;height:14px;"></span>
+                            <span class="dashicons dashicons-clock"></span>
                             <?php esc_html_e( 'Reschedule', 'carttrigger-holded-sync' ); ?>
                         </button>
                         <span id="cthls-reschedule-result"></span>
                         <button type="button" id="cthls-pull-btn" class="button button-primary">
-                            <span class="dashicons dashicons-download" style="margin-top:3px;margin-right:4px;font-size:14px;width:14px;height:14px;"></span>
+                            <span class="dashicons dashicons-download"></span>
                             <?php esc_html_e( 'Pull from Holded now', 'carttrigger-holded-sync' ); ?>
                         </button>
                         <span id="cthls-pull-result"></span>
@@ -427,7 +496,10 @@ class CTHLS_Admin {
                     <summary><?php esc_html_e( 'Event reference', 'carttrigger-holded-sync' ); ?></summary>
                     <table class="cthls-log-legend-table">
                         <tbody>
+                            <tr><td><code>push_start</code></td><td><?php esc_html_e( 'Manual push to Holded started.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>push_complete</code></td><td><?php esc_html_e( 'Manual push finished. Message shows how many products were sent.', 'carttrigger-holded-sync' ); ?></td></tr>
                             <tr><td><code>product_payload</code></td><td><?php esc_html_e( 'Full payload sent to Holded when a product is saved in WooCommerce (debug).', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>product_linked</code></td><td><?php esc_html_e( 'Existing Holded product found by SKU and linked to the WooCommerce product (avoids duplicate creation).', 'carttrigger-holded-sync' ); ?></td></tr>
                             <tr><td><code>product_save</code></td><td><?php esc_html_e( 'Error returned by Holded when creating or updating a product.', 'carttrigger-holded-sync' ); ?></td></tr>
                             <tr><td><code>stock_change</code></td><td><?php esc_html_e( 'Error returned by Holded when updating stock quantity.', 'carttrigger-holded-sync' ); ?></td></tr>
                             <tr><td><code>pull_start</code></td><td><?php esc_html_e( 'Pull from Holded started. Message indicates whether triggered by the scheduler or manually.', 'carttrigger-holded-sync' ); ?></td></tr>

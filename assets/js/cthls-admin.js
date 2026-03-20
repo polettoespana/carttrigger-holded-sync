@@ -31,6 +31,34 @@
         });
     });
 
+    // ── Manual push ──────────────────────────────────────────────────────────
+    $('#cthls-push-btn').on('click', function () {
+        var $btn         = $(this);
+        var $result      = $('#cthls-push-result');
+        var originalText = $btn.text();
+
+        $btn.prop('disabled', true).text(cthls.i18n_pushing);
+        $result.removeClass('success error').text('');
+
+        $.post(ajaxurl, {
+            action: 'cthls_manual_push',
+            nonce:  cthls.nonce,
+        })
+        .done(function (res) {
+            if (res.success) {
+                $result.addClass('success').text('✓ ' + res.data.message);
+            } else {
+                $result.addClass('error').text('✗ ' + res.data.message);
+            }
+        })
+        .fail(function () {
+            $result.addClass('error').text('✗ ' + cthls.i18n_error);
+        })
+        .always(function () {
+            $btn.prop('disabled', false).text(originalText);
+        });
+    });
+
     // ── Manual pull ──────────────────────────────────────────────────────────
     $('#cthls-pull-btn').on('click', function () {
         var $btn         = $(this);

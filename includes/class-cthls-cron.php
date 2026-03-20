@@ -19,7 +19,7 @@ class CTHLS_Cron {
         add_action( self::HOOK, [ 'CTHLS_Sync', 'pull_from_holded' ] );
 
         // Self-heal: if sync is enabled but no action is scheduled, reschedule.
-        if ( get_option( 'cthls_sync_enabled' ) &&
+        if ( CTHLS_Sync::pull_enabled() &&
              function_exists( 'as_next_scheduled_action' ) &&
              ! as_next_scheduled_action( self::HOOK ) ) {
             self::schedule();

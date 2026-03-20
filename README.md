@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.0.4-0a0a23?style=flat-square" alt="Version 1.0.4">
+  <img src="https://img.shields.io/badge/version-1.1.0-0a0a23?style=flat-square" alt="Version 1.1.0">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-required-96588a?style=flat-square&logo=woocommerce&logoColor=white" alt="WooCommerce required">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -87,6 +87,24 @@ Tested with WordPress **6.9** and WooCommerce **10.6.1**.
 4. Test the connection, select a warehouse, enable sync and configure which fields to synchronise.
 
 ## Changelog
+
+### 1.1.0
+
+- Fix: Holded → WC price now correctly adds tax back when WooCommerce is configured with tax-inclusive prices, and is always rounded to 2 decimal places.
+- Fix: WC → Holded price correctly rounded to 2 decimal places.
+- Fix: duplicate product creation in Holded — before creating, the plugin now searches by SKU and links/updates if a match is found.
+- Fix: GROUP constant in Action Scheduler corrected from `'ctholded'` to `'cthls'`.
+- Fix: Action Scheduler self-healing on init; `plugins_loaded` priority raised to 20.
+- Enhancement: sync direction is now independently configurable (WC → Holded and/or Holded → WC).
+- Enhancement: manual push button (WC → Holded bulk) added to the settings page.
+- Enhancement: sync sale price option (WC → Holded): sends sale price to Holded instead of regular price when set.
+- Enhancement: Description source setting now applies bidirectionally.
+- Enhancement: collapsible Event reference legend in System log.
+- Enhancement: next scheduled run displayed in the Manual sync card.
+- Enhancement: Reschedule button added to force Action Scheduler registration.
+- Enhancement: Known limitations card added with note on Holded price tiers API limitation.
+- Enhancement: log reduced to last 50 entries.
+- Enhancement: Italian and Spanish translations updated.
 
 ### 1.0.4
 

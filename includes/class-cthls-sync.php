@@ -39,7 +39,7 @@ class CTHLS_Sync {
      * Sync a WC product (simple or variable) to Holded.
      */
     public static function on_product_saved( $product_id ) {
-        if ( ! self::sync_enabled() ) {
+        if ( ! self::push_enabled() ) {
             return;
         }
 
@@ -61,10 +61,26 @@ class CTHLS_Sync {
         if ( $holded_id ) {
             $result = self::$api->update_product( $holded_id, $data );
         } else {
-            $result = self::$api->create_product( $data );
-            if ( ! is_wp_error( $result ) && isset( $result['id'] ) ) {
-                update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $result['id'] ) );
-                $holded_id = $result['id'];
+            $result = null;
+
+            // Before creating, check if a product with the same SKU already exists in Holded.
+            $sku = $product->get_sku();
+            if ( $sku ) {
+                $existing = self::$api->find_product_by_sku( $sku );
+                if ( $existing && isset( $existing['id'] ) ) {
+                    $holded_id = $existing['id'];
+                    update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
+                    $result = self::$api->update_product( $holded_id, $data );
+                    self::log( 'product_linked', $product_id, $holded_id );
+                }
+            }
+
+            if ( null === $result ) {
+                $result = self::$api->create_product( $data );
+                if ( ! is_wp_error( $result ) && isset( $result['id'] ) ) {
+                    update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $result['id'] ) );
+                    $holded_id = $result['id'];
+                }
             }
         }
 
@@ -79,7 +95,7 @@ class CTHLS_Sync {
      * @param WC_Product $product
      */
     public static function on_stock_changed( $product ) {
-        if ( ! self::sync_enabled() ) {
+        if ( ! self::push_enabled() ) {
             return;
         }
 
@@ -111,6 +127,39 @@ class CTHLS_Sync {
         // Optionally handle out-of-stock transitions.
     }
 
+    // ── WC → Holded (bulk) ──────────────────────────────────────────────────
+
+    /**
+     * Push all WC products to Holded.
+     * Called manually from admin.
+     *
+     * @return int Number of products processed.
+     */
+    public static function push_to_holded() {
+        if ( ! self::push_enabled() ) {
+            return 0;
+        }
+
+        self::log( 'push_start', 0, 'manual' );
+        self::$synced = [];
+
+        $product_ids = wc_get_products( [
+            'status'  => 'publish',
+            'limit'   => -1,
+            'return'  => 'ids',
+            'type'    => [ 'simple', 'variable' ],
+        ] );
+
+        $processed = 0;
+        foreach ( $product_ids as $product_id ) {
+            self::on_product_saved( $product_id );
+            $processed++;
+        }
+
+        self::log( 'push_complete', 0, sprintf( '%d products processed', $processed ) );
+        return $processed;
+    }
+
     // ── Holded → WC ─────────────────────────────────────────────────────────
 
     /**
@@ -118,7 +167,7 @@ class CTHLS_Sync {
      * Called by cron.
      */
     public static function pull_from_holded( $source = 'scheduled' ) {
-        if ( ! self::sync_enabled() ) {
+        if ( ! self::pull_enabled() ) {
             return;
         }
 
@@ -168,7 +217,7 @@ class CTHLS_Sync {
                             ? $product->get_description()
                             : $product->get_meta( '_cthls_description' ),
             'sku'      => $product->get_sku(),
-            'price'    => self::price_ex_tax( $product ),
+            'price'    => self::resolve_price_for_holded( $product ),
             'tax'      => self::get_tax_rate( $product ),
             'cost'     => (float) $product->get_meta( '_cost_price' ),
             'barcode'  => $product->get_meta( '_barcode' ),
@@ -196,7 +245,7 @@ class CTHLS_Sync {
 
                 $variant_entry = [
                     'sku'   => $variation->get_sku(),
-                    'price' => self::price_ex_tax( $variation ),
+                    'price' => self::resolve_price_for_holded( $variation ),
                     'cost'  => (float) $variation->get_meta( '_cost_price' ),
                     'stock' => (int) $variation->get_stock_quantity(),
                 ];
@@ -265,16 +314,28 @@ class CTHLS_Sync {
         }
 
         if ( isset( $holded_product['price'] ) ) {
-            $new_price = (string) $holded_product['price'];
+            $new_price = self::holded_price_to_wc( $holded_product['price'], $wc_product );
             if ( $wc_product->get_regular_price() !== $new_price ) {
                 $wc_product->set_regular_price( $new_price );
                 $fields_changed = true;
             }
         }
 
-        if ( isset( $holded_product['desc'] ) && $wc_product->get_description() !== $holded_product['desc'] ) {
-            $wc_product->set_description( wp_kses_post( $holded_product['desc'] ) );
-            $fields_changed = true;
+        if ( isset( $holded_product['desc'] ) ) {
+            $desc = wp_kses_post( $holded_product['desc'] );
+            if ( 'full' === get_option( 'cthls_desc_source', 'custom' ) ) {
+                if ( $wc_product->get_description() !== $desc ) {
+                    $wc_product->set_description( $desc );
+                    $fields_changed = true;
+                }
+            } else {
+                // Custom field: saved after $wc_product->save() via update_post_meta.
+                $existing = $wc_product->get_meta( '_cthls_description' );
+                if ( $existing !== $desc ) {
+                    $wc_product->update_meta_data( '_cthls_description', $desc );
+                    $fields_changed = true;
+                }
+            }
         }
 
         if ( $sku && $wc_product->get_sku() !== $sku ) {
@@ -326,8 +387,12 @@ class CTHLS_Sync {
         );
     }
 
-    public static function sync_enabled() {
-        return (bool) get_option( 'cthls_sync_enabled', false );
+    public static function push_enabled() {
+        return (bool) get_option( 'cthls_sync_push', false );
+    }
+
+    public static function pull_enabled() {
+        return (bool) get_option( 'cthls_sync_pull', false );
     }
 
     /**
@@ -355,9 +420,36 @@ class CTHLS_Sync {
         return $name;
     }
 
-    private static function price_ex_tax( WC_Product $product ) {
-        $price = $product->get_regular_price();
-        if ( '' === $price ) {
+    /**
+     * Determine which price to send to Holded for a product.
+     * Uses sale price if "Sync sale price" is enabled and a sale price is set.
+     *
+     * @param WC_Product $product
+     * @return float
+     */
+    private static function resolve_price_for_holded( WC_Product $product ) {
+        if ( get_option( 'cthls_sync_sale_price', false ) ) {
+            $sale = $product->get_sale_price();
+            if ( '' !== $sale && null !== $sale ) {
+                return self::price_ex_tax( $product, $sale );
+            }
+        }
+        return self::price_ex_tax( $product );
+    }
+
+    /**
+     * Return the price excluding tax to send to Holded.
+     * Accepts an explicit price value (e.g. sale price); falls back to regular price.
+     *
+     * @param WC_Product  $product
+     * @param string|null $price  Raw price string; null = use regular price.
+     * @return float
+     */
+    private static function price_ex_tax( WC_Product $product, $price = null ) {
+        if ( null === $price ) {
+            $price = $product->get_regular_price();
+        }
+        if ( '' === $price || null === $price ) {
             return 0.0;
         }
         $prices_include_tax = 'yes' === get_option( 'cthls_prices_include_tax', get_option( 'woocommerce_prices_include_tax', 'no' ) );
@@ -370,7 +462,29 @@ class CTHLS_Sync {
                 return round( (float) $price / ( 1 + $tax_rate / 100 ), 2 );
             }
         }
-        return (float) $price;
+        return round( (float) $price, 2 );
+    }
+
+    /**
+     * Convert a Holded net price to the WC price format (adds tax if needed, rounds to 2 decimals).
+     *
+     * @param float|string $holded_price  Net price from Holded.
+     * @param WC_Product   $product
+     * @return string  Price string to pass to set_regular_price() / set_sale_price().
+     */
+    private static function holded_price_to_wc( $holded_price, WC_Product $product ) {
+        $price              = (float) $holded_price;
+        $prices_include_tax = 'yes' === get_option( 'cthls_prices_include_tax', get_option( 'woocommerce_prices_include_tax', 'no' ) );
+
+        if ( $prices_include_tax
+            && 'taxable' === $product->get_tax_status()
+            && wc_tax_enabled() ) {
+            $tax_rate = self::get_tax_rate( $product );
+            if ( $tax_rate > 0 ) {
+                $price = $price * ( 1 + $tax_rate / 100 );
+            }
+        }
+        return (string) round( $price, 2 );
     }
 
     /**
@@ -411,7 +525,7 @@ class CTHLS_Sync {
             'product_id' => $product_id,
             'message'    => $message,
         ] );
-        // Keep last 100 entries.
-        update_option( 'cthls_log', array_slice( $log, 0, 100 ) );
+        // Keep last 50 entries.
+        update_option( 'cthls_log', array_slice( $log, 0, 50 ) );
     }
 }

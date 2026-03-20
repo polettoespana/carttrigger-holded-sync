@@ -243,6 +243,23 @@
     line-height: 1;
 }
 
+/* ── Button icon alignment ── */
+.cthls-wrap .button,
+.cthls-wrap .cthls-btn-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cthls-wrap .button .dashicons,
+.cthls-wrap .cthls-btn-danger .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
 /* ── Manual sync card ── */
 .cthls-sync-row {
     display: flex;
@@ -256,6 +273,14 @@
     font-size: 13px;
     color: #50575e;
     margin: 0;
+}
+
+.cthls-sync-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+    min-width: 320px;
 }
 
 /* ── Log card header ── */
@@ -272,8 +297,31 @@
     flex: 1;
 }
 
+/* ── Known limitations card ── */
+.cthls-card-notice {
+    border-left: 4px solid #72aee6;
+    background: #f0f6fc;
+}
+
+.cthls-card-notice h2 {
+    color: #2271b1;
+}
+
+.cthls-limitations-list {
+    margin: 8px 0 0 20px;
+    list-style: disc;
+}
+
+.cthls-limitations-list li {
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #3c434a;
+    line-height: 1.6;
+}
+
 /* ── Log legend ── */
 .cthls-log-legend {
+    margin-top: 16px;
     margin-bottom: 16px;
     border: 1px solid #e8eaed;
     border-radius: 4px;

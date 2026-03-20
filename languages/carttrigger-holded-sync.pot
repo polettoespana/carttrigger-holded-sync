@@ -246,3 +246,114 @@ msgstr ""
 #: includes/class-ctholded-product-meta.php
 msgid "Holded product ID"
 msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Loading…"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "— Select warehouse —"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "No warehouses found."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Description source"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Custom field (Holded Sync tab)"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Full product description (WooCommerce)"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "WC → Holded: which field to read the description from."
+msgstr ""
+
+msgid "Holded → WC: which field to write the description to."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Push to Holded now"
+msgstr ""
+
+msgid "Send all WooCommerce products to Holded now (create or update)."
+msgstr ""
+
+msgid "Pushing to Holded…"
+msgstr ""
+
+#, php-format
+msgid "Push completed: %d product sent."
+msgid_plural "Push completed: %d products sent."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Reschedule"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Action Scheduler not available."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Scheduled but could not read next run time."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+#, php-format
+msgid "Next scheduled run: %s"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "No scheduled run found. Enable sync to activate the scheduler."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Event reference"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Full payload sent to Holded when a product is saved in WooCommerce (debug)."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Existing Holded product found by SKU and linked to the WooCommerce product (avoids duplicate creation)."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Error returned by Holded when creating or updating a product."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Error returned by Holded when updating stock quantity."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Pull from Holded started. Message indicates whether triggered by the scheduler or manually."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "API error while fetching products from Holded."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Pull finished. Message shows how many products were processed."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "A new product was created in WooCommerce from Holded data."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "An existing WooCommerce product was updated with data from Holded."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Error while saving a product in WooCommerce during the pull."
+msgstr ""

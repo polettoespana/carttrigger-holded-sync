@@ -25,6 +25,31 @@ class CTHLS_API {
         return $this->request( 'GET', 'products', [ 'page' => $page ] );
     }
 
+    /**
+     * Find a Holded product by SKU.
+     * Returns the first matching product array, or null if not found.
+     *
+     * @param string $sku
+     * @return array|null
+     */
+    public function find_product_by_sku( $sku ) {
+        $page = 1;
+        do {
+            $products = $this->request( 'GET', 'products', [ 'page' => $page ] );
+            if ( is_wp_error( $products ) || empty( $products ) ) {
+                break;
+            }
+            foreach ( $products as $p ) {
+                if ( isset( $p['sku'] ) && $p['sku'] === $sku ) {
+                    return $p;
+                }
+            }
+            $page++;
+        } while ( count( $products ) >= 50 && $page <= 50 );
+
+        return null;
+    }
+
     public function get_product( $holded_id ) {
         return $this->request( 'GET', 'products/' . $holded_id );
     }
