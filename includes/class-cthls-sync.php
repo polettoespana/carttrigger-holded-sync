@@ -422,17 +422,15 @@ class CTHLS_Sync {
 
     /**
      * Determine which price to send to Holded for a product.
-     * Uses sale price if "Sync sale price" is enabled and a sale price is set.
+     * Uses sale price if "Sync sale price" is enabled and the product is currently on sale
+     * (WC handles date range checks internally via is_on_sale()).
      *
      * @param WC_Product $product
      * @return float
      */
     private static function resolve_price_for_holded( WC_Product $product ) {
-        if ( get_option( 'cthls_sync_sale_price', false ) ) {
-            $sale = $product->get_sale_price();
-            if ( '' !== $sale && null !== $sale ) {
-                return self::price_ex_tax( $product, $sale );
-            }
+        if ( get_option( 'cthls_sync_sale_price', false ) && $product->is_on_sale() ) {
+            return self::price_ex_tax( $product, $product->get_sale_price() );
         }
         return self::price_ex_tax( $product );
     }
