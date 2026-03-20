@@ -18,11 +18,20 @@ class CTHLS_Cron {
     public static function init() {
         add_action( self::HOOK, [ 'CTHLS_Sync', 'pull_from_holded' ] );
 
-        // Self-heal: if sync is enabled but no action is scheduled, reschedule.
-        if ( CTHLS_Sync::pull_enabled() &&
-             function_exists( 'as_next_scheduled_action' ) &&
-             ! as_next_scheduled_action( self::HOOK ) ) {
-            self::schedule();
+        if ( ! function_exists( 'as_next_scheduled_action' ) ) {
+            return;
+        }
+
+        if ( CTHLS_Sync::pull_enabled() ) {
+            // Self-heal: if pull is enabled but no action is scheduled, reschedule.
+            if ( ! as_next_scheduled_action( self::HOOK ) ) {
+                self::schedule();
+            }
+        } else {
+            // Cleanup: if pull is disabled but an action is still scheduled, remove it.
+            if ( as_next_scheduled_action( self::HOOK ) ) {
+                self::unschedule();
+            }
         }
     }
 
