@@ -42,6 +42,15 @@ function cthls_init() {
     CTHLS_Sync::init();
     CTHLS_Cron::init();
     CTHLS_Product_Meta::init();
+
+    // One-time migration: remove Action Scheduler actions registered under
+    // the old group 'ctholded' (used before v1.0.4) and reschedule under 'cthls'.
+    if ( function_exists( 'as_next_scheduled_action' ) &&
+         ! get_option( 'cthls_group_migrated' ) ) {
+        as_unschedule_all_actions( CTHLS_Cron::HOOK, [], 'ctholded' );
+        CTHLS_Cron::schedule();
+        update_option( 'cthls_group_migrated', '1' );
+    }
 }
 add_action( 'plugins_loaded', 'cthls_init' );
 
