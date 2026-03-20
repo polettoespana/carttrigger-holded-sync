@@ -122,7 +122,7 @@ class CTHLS_Admin {
             wp_send_json_error( [ 'message' => __( 'Unauthorized', 'carttrigger-holded-sync' ) ] );
         }
 
-        CTHLS_Sync::pull_from_holded();
+        CTHLS_Sync::pull_from_holded( 'manual' );
         $last = get_option( 'cthls_last_pull', '' );
         wp_send_json_success( [ 'message' => __( 'Pull completed.', 'carttrigger-holded-sync' ), 'last_pull' => $last ] );
     }

@@ -117,27 +117,38 @@ class CTHLS_Sync {
      * Pull all products from Holded and update WooCommerce.
      * Called by cron.
      */
-    public static function pull_from_holded() {
+    public static function pull_from_holded( $source = 'scheduled' ) {
         if ( ! self::sync_enabled() ) {
             return;
         }
 
-        $page = 1;
+        self::log( 'pull_start', 0, $source );
+
+        $page      = 1;
+        $processed = 0;
+
         do {
             $products = self::$api->get_products( $page );
-            if ( is_wp_error( $products ) || empty( $products ) ) {
+
+            if ( is_wp_error( $products ) ) {
+                self::log( 'pull_error', 0, $products->get_error_message() );
+                break;
+            }
+
+            if ( empty( $products ) ) {
                 break;
             }
 
             foreach ( $products as $holded_product ) {
                 self::holded_product_to_wc( $holded_product );
+                $processed++;
             }
 
             $page++;
-            // Safety limit: max 50 pages per run.
         } while ( count( $products ) >= 50 && $page <= 50 );
 
         update_option( 'cthls_last_pull', current_time( 'mysql' ) );
+        self::log( 'pull_complete', 0, sprintf( '%d products processed', $processed ) );
     }
 
     // ── Data mapping ─────────────────────────────────────────────────────────
@@ -226,12 +237,14 @@ class CTHLS_Sync {
 
         if ( ! $wc_product_id ) {
             // Create new WC product.
-            $wc_product = new WC_Product_Simple();
+            $wc_product  = new WC_Product_Simple();
+            $is_new      = true;
         } else {
             $wc_product = wc_get_product( $wc_product_id );
             if ( ! $wc_product ) {
                 return;
             }
+            $is_new = false;
         }
 
         // Only update fields if they differ to avoid triggering update hooks.
@@ -279,8 +292,14 @@ class CTHLS_Sync {
             add_action( 'woocommerce_update_product', [ 'CTHLS_Sync', 'on_product_saved' ], 20 );
             add_action( 'woocommerce_new_product',    [ 'CTHLS_Sync', 'on_product_saved' ], 20 );
 
-            if ( $saved_id && $holded_id ) {
-                update_post_meta( $saved_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
+            if ( $saved_id ) {
+                if ( $holded_id ) {
+                    update_post_meta( $saved_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
+                }
+                $event = $is_new ? 'pull_create' : 'pull_update';
+                self::log( $event, $saved_id, $sku ?: $holded_id );
+            } else {
+                self::log( 'pull_save_error', $wc_product_id ?: 0, sprintf( 'Could not save product (sku: %s)', $sku ) );
             }
         }
     }
