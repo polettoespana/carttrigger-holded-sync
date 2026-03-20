@@ -393,23 +393,6 @@ class CTHLS_Admin {
                             echo ' &mdash; <em>' . esc_html__( 'No scheduled run found. Enable sync to activate the scheduler.', 'carttrigger-holded-sync' ) . '</em>';
                         }
 
-                        // Temporary debug (visible only with log enabled).
-                        if ( get_option( 'cthls_debug_log' ) && function_exists( 'as_get_scheduled_actions' ) ) {
-                            $actions = as_get_scheduled_actions( [
-                                'hook'     => CTHLS_Cron::HOOK,
-                                'per_page' => 5,
-                                'status'   => '',
-                            ], 'ARRAY_A' );
-                            if ( $actions ) {
-                                echo '<br><small style="color:#999">AS debug: ';
-                                foreach ( $actions as $a ) {
-                                    echo esc_html( sprintf( '[%s | group:%s | %s] ', $a['status'] ?? '?', $a['group'] ?? '?', $a['scheduled_date_gmt'] ?? '?' ) );
-                                }
-                                echo '</small>';
-                            } else {
-                                echo '<br><small style="color:#999">AS debug: no actions found for hook ' . esc_html( CTHLS_Cron::HOOK ) . '</small>';
-                            }
-                        }
                         ?>
                     </p>
                     <div style="display:flex;align-items:center;gap:8px;">
