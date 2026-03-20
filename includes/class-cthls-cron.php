@@ -28,10 +28,8 @@ class CTHLS_Cron {
                 self::schedule();
             }
         } else {
-            // Cleanup: if pull is disabled but an action is still scheduled, remove it.
-            if ( as_next_scheduled_action( self::HOOK ) ) {
-                self::unschedule();
-            }
+            // Cleanup: ensure no action remains scheduled when pull is disabled.
+            self::unschedule();
         }
     }
 
@@ -69,7 +67,13 @@ class CTHLS_Cron {
     }
 
     public static function unschedule() {
-        as_unschedule_all_actions( self::HOOK, [], self::GROUP );
+        if ( function_exists( 'as_unschedule_all_actions' ) ) {
+            as_unschedule_all_actions( self::HOOK, [], self::GROUP );
+            as_unschedule_all_actions( self::HOOK );
+        }
+        if ( class_exists( 'WooCommerce' ) && WC()->queue() ) {
+            WC()->queue()->cancel_all( self::HOOK );
+        }
     }
 
     /**
