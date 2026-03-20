@@ -23,6 +23,7 @@ class CTHLS_Admin {
         add_action( 'wp_ajax_cthls_manual_pull', [ __CLASS__, 'ajax_manual_pull' ] );
         add_action( 'wp_ajax_cthls_clear_log', [ __CLASS__, 'ajax_clear_log' ] );
         add_action( 'wp_ajax_cthls_get_warehouses', [ __CLASS__, 'ajax_get_warehouses' ] );
+        add_action( 'wp_ajax_cthls_reschedule', [ __CLASS__, 'ajax_reschedule' ] );
     }
 
     public static function add_menu() {
@@ -147,6 +148,28 @@ class CTHLS_Admin {
         }
         delete_option( 'cthls_log' );
         wp_send_json_success();
+    }
+
+    public static function ajax_reschedule() {
+        check_ajax_referer( 'cthls_admin', 'nonce' );
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Unauthorized', 'carttrigger-holded-sync' ) ] );
+        }
+
+        if ( ! function_exists( 'as_schedule_recurring_action' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Action Scheduler not available.', 'carttrigger-holded-sync' ) ] );
+        }
+
+        CTHLS_Cron::unschedule();
+        CTHLS_Cron::schedule();
+
+        $next = as_next_scheduled_action( CTHLS_Cron::HOOK );
+        if ( $next ) {
+            $next_local = date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $next + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) );
+            wp_send_json_success( [ 'message' => $next_local ] );
+        } else {
+            wp_send_json_error( [ 'message' => __( 'Scheduled but could not read next run time.', 'carttrigger-holded-sync' ) ] );
+        }
     }
 
     // ── Settings page ────────────────────────────────────────────────────────
@@ -390,6 +413,11 @@ class CTHLS_Admin {
                         ?>
                     </p>
                     <div style="display:flex;align-items:center;gap:8px;">
+                        <button type="button" id="cthls-reschedule-btn" class="button button-secondary">
+                            <span class="dashicons dashicons-clock" style="margin-top:3px;margin-right:4px;font-size:14px;width:14px;height:14px;"></span>
+                            <?php esc_html_e( 'Reschedule', 'carttrigger-holded-sync' ); ?>
+                        </button>
+                        <span id="cthls-reschedule-result"></span>
                         <button type="button" id="cthls-pull-btn" class="button button-primary">
                             <span class="dashicons dashicons-download" style="margin-top:3px;margin-right:4px;font-size:14px;width:14px;height:14px;"></span>
                             <?php esc_html_e( 'Pull from Holded now', 'carttrigger-holded-sync' ); ?>

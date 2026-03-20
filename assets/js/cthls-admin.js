@@ -104,6 +104,34 @@
         });
     });
 
+    // ── Reschedule ───────────────────────────────────────────────────────────
+    $('#cthls-reschedule-btn').on('click', function () {
+        var $btn         = $(this);
+        var $result      = $('#cthls-reschedule-result');
+        var originalText = $btn.text();
+
+        $btn.prop('disabled', true).text(cthls.i18n_loading);
+        $result.removeClass('success error').text('');
+
+        $.post(ajaxurl, {
+            action: 'cthls_reschedule',
+            nonce:  cthls.nonce,
+        })
+        .done(function (res) {
+            if (res.success) {
+                $result.addClass('success').text('✓ ' + res.data.message);
+            } else {
+                $result.addClass('error').text('✗ ' + res.data.message);
+            }
+        })
+        .fail(function () {
+            $result.addClass('error').text('✗ ' + cthls.i18n_error);
+        })
+        .always(function () {
+            $btn.prop('disabled', false).text(originalText);
+        });
+    });
+
     // ── Clear log ────────────────────────────────────────────────────────────
     $('#cthls-clear-log').on('click', function () {
         $.post(ajaxurl, {
