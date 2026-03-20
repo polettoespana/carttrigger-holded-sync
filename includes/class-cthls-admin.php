@@ -353,6 +353,22 @@ class CTHLS_Admin {
                             esc_html__( 'Pull all products from Holded and update WooCommerce. Last pull: %s', 'carttrigger-holded-sync' ),
                             $last_pull ? esc_html( $last_pull ) : esc_html__( 'never', 'carttrigger-holded-sync' )
                         );
+
+                        $next_ts = function_exists( 'as_next_scheduled_action' )
+                            ? as_next_scheduled_action( CTHLS_Cron::HOOK, [], CTHLS_Cron::GROUP )
+                            : false;
+
+                        if ( $next_ts ) {
+                            $next_local = date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $next_ts + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) );
+                            echo ' &mdash; ';
+                            printf(
+                                /* translators: %s: next scheduled run datetime */
+                                esc_html__( 'Next scheduled run: %s', 'carttrigger-holded-sync' ),
+                                '<strong>' . esc_html( $next_local ) . '</strong>'
+                            );
+                        } else {
+                            echo ' &mdash; <em>' . esc_html__( 'No scheduled run found. Enable sync to activate the scheduler.', 'carttrigger-holded-sync' ) . '</em>';
+                        }
                         ?>
                     </p>
                     <div style="display:flex;align-items:center;gap:8px;">

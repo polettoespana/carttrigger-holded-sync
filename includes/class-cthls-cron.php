@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 class CTHLS_Cron {
 
     const HOOK  = 'cthls_pull_from_holded';
-    const GROUP = 'ctholded';
+    const GROUP = 'cthls';
 
     public static function init() {
         add_action( self::HOOK, [ 'CTHLS_Sync', 'pull_from_holded' ] );

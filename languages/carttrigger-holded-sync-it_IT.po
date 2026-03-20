@@ -235,3 +235,10 @@ msgstr "Un prodotto esistente in WooCommerce è stato aggiornato con i dati di H
 
 msgid "Error while saving a product in WooCommerce during the pull."
 msgstr "Errore durante il salvataggio di un prodotto in WooCommerce nel corso del pull."
+
+#, php-format
+msgid "Next scheduled run: %s"
+msgstr "Prossima esecuzione pianificata: %s"
+
+msgid "No scheduled run found. Enable sync to activate the scheduler."
+msgstr "Nessuna esecuzione pianificata trovata. Abilita la sincronizzazione per attivare lo scheduler."
