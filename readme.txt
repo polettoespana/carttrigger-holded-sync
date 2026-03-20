@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,9 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.1.2 =
+* Fix: disabling Holded → WC sync now immediately unschedules the Action Scheduler job; re-enabling reschedules it. "Next scheduled run" is no longer displayed when pull sync is disabled.
 
 = 1.1.1 =
 * Fix: sale price sync (WC → Holded) now respects sale date range — sends sale price only when the product is currently on sale; falls back to regular price outside the scheduled period.

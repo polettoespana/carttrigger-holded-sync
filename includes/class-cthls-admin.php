@@ -63,6 +63,15 @@ class CTHLS_Admin {
         add_action( 'update_option_cthls_pull_interval', function( $old, $new ) {
             CTHLS_Cron::schedule( (int) $new );
         }, 10, 2 );
+
+        // Unschedule when pull sync is disabled; reschedule when re-enabled.
+        add_action( 'update_option_cthls_sync_pull', function( $old, $new ) {
+            if ( $new ) {
+                CTHLS_Cron::schedule();
+            } else {
+                CTHLS_Cron::unschedule();
+            }
+        }, 10, 2 );
         foreach ( $options as $option ) {
             register_setting( 'cthls_settings_group', $option, [
                 'sanitize_callback' => in_array( $option, $text_options, true ) ? 'sanitize_text_field' : 'rest_sanitize_boolean',
@@ -446,7 +455,7 @@ class CTHLS_Admin {
                             $last_pull ? esc_html( $last_pull ) : esc_html__( 'never', 'carttrigger-holded-sync' )
                         );
 
-                        $next_ts = function_exists( 'as_next_scheduled_action' )
+                        $next_ts = ( CTHLS_Sync::pull_enabled() && function_exists( 'as_next_scheduled_action' ) )
                             ? as_next_scheduled_action( CTHLS_Cron::HOOK )
                             : false;
 

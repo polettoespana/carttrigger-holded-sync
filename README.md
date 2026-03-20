@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.1.1-0a0a23?style=flat-square" alt="Version 1.1.1">
+  <img src="https://img.shields.io/badge/version-1.1.2-0a0a23?style=flat-square" alt="Version 1.1.2">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-required-96588a?style=flat-square&logo=woocommerce&logoColor=white" alt="WooCommerce required">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -110,6 +110,9 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ---
 
 ## Changelog
+
+### 1.1.2
+- Fix: disabling Holded → WC sync now immediately unschedules the Action Scheduler job; re-enabling reschedules it. "Next scheduled run" is no longer shown when pull is disabled.
 
 ### 1.1.1
 - Fix: sale price sync (WC→Holded) now respects sale date range — falls back to regular price outside the scheduled period.
