@@ -293,14 +293,19 @@ class CTHLS_Sync {
             'desc'     => 'full' === get_option( 'cthls_desc_source', 'custom' )
                             ? $product->get_description()
                             : $product->get_meta( '_cthls_description' ),
-            'sku'      => $product->get_sku(),
             'tax'      => self::get_tax_rate( $product ),
             'cost'     => (float) $product->get_meta( '_cost_price' ),
             'barcode'  => $product->get_meta( '_barcode' ),
             'weight'   => (float) $product->get_weight(),
-            'hasStock' => $product->managing_stock(),
             'forSale'  => $product->is_purchasable(),
         ];
+
+        // For simple products: include SKU and stock at the parent level.
+        // For variable products: SKU and stock live on each variant in Holded.
+        if ( ! $is_variable ) {
+            $data['sku']      = $product->get_sku();
+            $data['hasStock'] = $product->managing_stock();
+        }
 
         // For variable products the price lives on each variant, not the parent.
         if ( ! $is_variable ) {
@@ -327,10 +332,23 @@ class CTHLS_Sync {
 
                 $holded_variant_id = get_post_meta( $variation_id, '_cthls_variant_id', true );
 
+                // Build variant name from attribute values (e.g. "75cl / 6").
+                $attr_values  = array_filter( array_values( $variation->get_attributes() ) );
+                $variant_name = ! empty( $attr_values )
+                    ? implode( ' / ', $attr_values )
+                    : ( '#' . $variation_id );
+
+                // Cost: use variation-level cost; fall back to parent cost.
+                $variant_cost = (float) $variation->get_meta( '_cost_price' );
+                if ( 0.0 === $variant_cost ) {
+                    $variant_cost = (float) $product->get_meta( '_cost_price' );
+                }
+
                 $variant_entry = [
+                    'name'  => $variant_name,
                     'sku'   => $variation->get_sku(),
                     'price' => self::resolve_price_for_holded( $variation ),
-                    'cost'  => (float) $variation->get_meta( '_cost_price' ),
+                    'cost'  => $variant_cost,
                     'stock' => (int) $variation->get_stock_quantity(),
                 ];
 

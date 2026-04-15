@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.1.8
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,11 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.2.0 =
+* Fix: variable products no longer send `sku` and `hasStock` at the parent level — in Holded these fields belong to each variant, not the parent.
+* Fix: each variant now includes a `name` field (attribute value combination, e.g. "75cl / 6") required by the Holded API for variant updates.
+* Fix: variant cost falls back to the parent product cost if not set on the individual variation.
 
 = 1.1.9 =
 * Fix: variable products already linked to Holded (via SKU match) now correctly fetch variant IDs before the first update, preventing "Cannot update product variants" errors.
