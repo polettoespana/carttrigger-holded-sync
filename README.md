@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.2.0-0a0a23?style=flat-square" alt="Version 1.2.0">
+  <img src="https://img.shields.io/badge/version-1.2.1-0a0a23?style=flat-square" alt="Version 1.2.1">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-8.0%2B-96588a?style=flat-square" alt="WooCommerce 8.0+">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -119,6 +119,10 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ---
 
 ## Changelog
+
+### 1.2.1
+
+- (same as 1.2.0 — version bump only to allow overwrite on production)
 
 ### 1.2.0
 

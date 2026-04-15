@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,9 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.2.1 =
+* Version bump to allow overwrite on production.
 
 = 1.2.0 =
 * Fix: variant price field corrected from price to subtotal (Holded API input field name).
