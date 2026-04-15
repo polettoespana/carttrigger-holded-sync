@@ -36,8 +36,10 @@ Each direction can be enabled independently in settings.
 | SKU                    | ✓            | ✓           |
 | Stock quantity         | ✓ optional   | ✓ optional  |
 | Brand appended to name | ✓ optional   | —           |
+| Featured image         | ✓ optional ² | —           |
 
 <sub>¹ Sent only when the product is currently on sale (respects scheduled date range). If no sale price is active, the regular price is sent instead.</sub>
+<sub>² Image URL sent to Holded. By default sent only on first sync — enable "Overwrite existing image" to resend on every sync.</sub>
 
 ---
 
@@ -58,8 +60,10 @@ Each direction can be enabled independently in settings.
 | Sync sale price      | Send sale price to Holded instead of regular price when on sale (WC→Holded only) |
 | Sync description     | Enable description sync (both directions)                                        |
 | Description source   | Custom field (Holded Sync tab) or full WooCommerce description                   |
-| Append brand to name | Appends `product_brand` taxonomy term to product name in Holded                  |
-| Enable log           | Stores last 50 sync events for debugging                                         |
+| Append brand to name        | Appends `product_brand` taxonomy term to product name in Holded                  |
+| Sync image                  | Send the product featured image URL to Holded (WC → Holded only)                 |
+| Overwrite existing image    | If unchecked, image is sent only on first sync                                   |
+| Enable log                  | Stores last 50 sync events for debugging                                         |
 
 ---
 
@@ -96,7 +100,7 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ## Requirements
 
 - WordPress **6.3+**
-- WooCommerce _(required, 8.0+ recommended)_ — tested up to **10.6.1**
+- WooCommerce _(required, 8.0+ recommended)_ — tested up to **10.7.0**
 - PHP **7.4+**
 
 ---
@@ -109,7 +113,20 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 
 ---
 
+## Known limitations
+
+- **Secondary price tiers** — The Holded API does not expose secondary price rates. Only the main price (Tarifa principal) is synced. We are active Holded users and will add support for additional price tiers as soon as the API makes them available.
+
+---
+
 ## Changelog
+
+### 1.1.5
+
+- Fix: removed deprecated `load_plugin_textdomain()` call.
+- Fix: sanitize `_cost_price` POST input before `wc_format_decimal()`.
+- Enhancement: image sync option (WC → Holded) — sends the product featured image URL to Holded.
+- Enhancement: image overwrite control — by default the image is sent only on first sync; enable "Overwrite existing image" to force resend on every sync.
 
 ### 1.1.4
 
