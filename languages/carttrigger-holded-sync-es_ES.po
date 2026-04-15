@@ -3,7 +3,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: CartTrigger – Holded Sync 1.1.5\n"
+"Project-Id-Version: CartTrigger – Holded Sync 1.1.7\n"
 "Report-Msgid-Bugs-To: https://poletto.es\n"
 "POT-Creation-Date: 2026-03-19 00:00+0000\n"
 "PO-Revision-Date: 2026-03-19 00:00+0000\n"
@@ -287,6 +287,12 @@ msgstr "Limitaciones conocidas"
 
 msgid "Multiple price tiers"
 msgstr "Precios múltiples (tarifas)"
+
+msgid "Product images"
+msgstr "Imágenes de producto"
+
+msgid "The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface."
+msgstr "La API de Holded no permite establecer imágenes de producto vía REST API. Las imágenes deben subirse manualmente desde la interfaz de Holded."
 
 msgid "The Holded API does not currently expose product price rates (tariffe). Syncing secondary prices (e.g. Ho.re.ca) is not possible until Holded adds API support for this feature. This limitation will be addressed as soon as it becomes available."
 msgstr "La API de Holded no expone actualmente las tarifas de producto. La sincronización de tarifas adicionales a la Tarifa principal no es posible hasta que Holded añada soporte API para esta función. La limitación se resolverá en cuanto esté disponible."

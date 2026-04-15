@@ -55,8 +55,6 @@ class CTHLS_Admin {
             'cthls_sync_desc',
             'cthls_desc_source',
             'cthls_append_brand',
-            'cthls_sync_image',
-            'cthls_sync_image_overwrite',
             'cthls_debug_log',
         ];
         $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source' ];
@@ -394,21 +392,6 @@ class CTHLS_Admin {
                             </td>
                         </tr>
                         <tr>
-                            <th><?php esc_html_e( 'Sync image', 'carttrigger-holded-sync' ); ?></th>
-                            <td>
-                                <label style="display:block;margin-bottom:6px;">
-                                    <input type="checkbox" name="cthls_sync_image" value="1"
-                                        <?php checked( get_option( 'cthls_sync_image', false ) ); ?> />
-                                    <?php esc_html_e( 'Send the product featured image URL to Holded (WC → Holded only)', 'carttrigger-holded-sync' ); ?>
-                                </label>
-                                <label style="display:block;">
-                                    <input type="checkbox" name="cthls_sync_image_overwrite" value="1"
-                                        <?php checked( get_option( 'cthls_sync_image_overwrite', false ) ); ?> />
-                                    <?php esc_html_e( 'Overwrite existing image in Holded (if unchecked, image is sent only on first sync)', 'carttrigger-holded-sync' ); ?>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
                             <th><?php esc_html_e( 'Enable log', 'carttrigger-holded-sync' ); ?></th>
                             <td>
                                 <label>
@@ -435,6 +418,11 @@ class CTHLS_Admin {
                         <strong><?php esc_html_e( 'Multiple price tiers', 'carttrigger-holded-sync' ); ?></strong>
                         &mdash;
                         <?php esc_html_e( 'The Holded API does not currently expose product price rates (tariffe). Syncing secondary prices (e.g. Ho.re.ca) is not possible until Holded adds API support for this feature. This limitation will be addressed as soon as it becomes available.', 'carttrigger-holded-sync' ); ?>
+                    </li>
+                    <li>
+                        <strong><?php esc_html_e( 'Product images', 'carttrigger-holded-sync' ); ?></strong>
+                        &mdash;
+                        <?php esc_html_e( 'The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface.', 'carttrigger-holded-sync' ); ?>
                     </li>
                 </ul>
             </div>

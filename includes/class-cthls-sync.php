@@ -86,8 +86,6 @@ class CTHLS_Sync {
 
         if ( is_wp_error( $result ) ) {
             self::log( 'product_save', $product_id, $result->get_error_message() );
-        } elseif ( isset( $data['image'] ) ) {
-            update_post_meta( $product_id, '_cthls_image_synced', 1 );
         }
     }
 
@@ -237,17 +235,8 @@ class CTHLS_Sync {
             $data['price'] = self::resolve_price_for_holded( $product );
         }
 
-        if ( get_option( 'cthls_sync_image', false ) ) {
-            $already_synced = get_post_meta( $product_id, '_cthls_image_synced', true );
-            $overwrite      = get_option( 'cthls_sync_image_overwrite', false );
-
-            if ( ! $already_synced || $overwrite ) {
-                $image_id = $product->get_image_id();
-                if ( $image_id ) {
-                    $data['image'] = wp_get_attachment_url( $image_id );
-                }
-            }
-        }
+        // NOTE: Holded API silently ignores the `image` field — product images
+        // cannot be set via REST API and must be uploaded through the Holded UI.
 
         if ( $product->managing_stock() && ! $product->is_type( 'variable' ) ) {
             $data['stock'] = (int) $product->get_stock_quantity();

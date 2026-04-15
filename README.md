@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.1.6-0a0a23?style=flat-square" alt="Version 1.1.6">
+  <img src="https://img.shields.io/badge/version-1.1.7-0a0a23?style=flat-square" alt="Version 1.1.7">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-8.0%2B-96588a?style=flat-square" alt="WooCommerce 8.0+">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -36,10 +36,8 @@ Each direction can be enabled independently in settings.
 | SKU                    | ✓            | ✓           |
 | Stock quantity         | ✓ optional   | ✓ optional  |
 | Brand appended to name | ✓ optional   | —           |
-| Featured image         | ✓ optional ² | —           |
 
 <sub>¹ Sent only when the product is currently on sale (respects scheduled date range). If no sale price is active, the regular price is sent instead.</sub>
-<sub>² Image URL sent to Holded. By default sent only on first sync — enable "Overwrite existing image" to resend on every sync.</sub>
 
 ---
 
@@ -116,10 +114,17 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ## Known limitations
 
 - **Secondary price tiers** — The Holded API does not expose secondary price rates. Only the main price (Tarifa principal) is synced. We are active Holded users and will add support for additional price tiers as soon as the API makes them available.
+- **Product images** — The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface.
 
 ---
 
 ## Changelog
+
+### 1.1.7
+
+- Fix: variable products no longer send `price: 0` to Holded — price is managed at variant level.
+- Fix: removed image sync — Holded API silently ignores the `image` field; images must be set via the Holded UI.
+- Enhancement: added "Product images" to Known limitations.
 
 ### 1.1.6
 
