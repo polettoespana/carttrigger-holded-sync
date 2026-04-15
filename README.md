@@ -122,7 +122,6 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 
 ### 1.2.0
 
-- Fix: variable products no longer send `sku` and `hasStock` at the parent level — in Holded these fields belong to each variant, not the parent.
 - Fix: each variant now includes a `name` field (attribute value combination, e.g. "75cl / 6") required by the Holded API for variant updates.
 - Fix: variant cost falls back to the parent product cost if not set on the individual variation.
 

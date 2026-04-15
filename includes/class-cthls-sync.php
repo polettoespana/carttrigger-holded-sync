@@ -293,19 +293,14 @@ class CTHLS_Sync {
             'desc'     => 'full' === get_option( 'cthls_desc_source', 'custom' )
                             ? $product->get_description()
                             : $product->get_meta( '_cthls_description' ),
+            'sku'      => $product->get_sku(),
             'tax'      => self::get_tax_rate( $product ),
             'cost'     => (float) $product->get_meta( '_cost_price' ),
             'barcode'  => $product->get_meta( '_barcode' ),
             'weight'   => (float) $product->get_weight(),
+            'hasStock' => $product->managing_stock(),
             'forSale'  => $product->is_purchasable(),
         ];
-
-        // For simple products: include SKU and stock at the parent level.
-        // For variable products: SKU and stock live on each variant in Holded.
-        if ( ! $is_variable ) {
-            $data['sku']      = $product->get_sku();
-            $data['hasStock'] = $product->managing_stock();
-        }
 
         // For variable products the price lives on each variant, not the parent.
         if ( ! $is_variable ) {
