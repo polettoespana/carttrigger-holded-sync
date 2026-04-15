@@ -122,8 +122,10 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 
 ### 1.2.0
 
-- Fix: each variant now includes a `name` field (attribute value combination, e.g. "75cl / 6") required by the Holded API for variant updates.
-- Fix: variant cost falls back to the parent product cost if not set on the individual variation.
+- Fix: variant price field corrected from `price` to `subtotal` (Holded API input field name).
+- Fix: each variant now includes a `name` field (attribute values, e.g. "75cl / 6").
+- Fix: variant cost falls back to parent product cost when not set on the individual variation.
+- Fix: when a product is linked by SKU match, variant IDs are fetched before the update payload is built.
 
 ### 1.1.9
 
