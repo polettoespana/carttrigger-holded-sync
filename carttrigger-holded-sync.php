@@ -31,8 +31,6 @@ require_once CTHLS_DIR . 'includes/class-cthls-product-meta.php';
  * Bootstrap the plugin after all plugins are loaded.
  */
 function cthls_init() {
-    load_plugin_textdomain( 'carttrigger-holded-sync', false, dirname( plugin_basename( CTHLS_FILE ) ) . '/languages' );
-
     if ( ! class_exists( 'WooCommerce' ) ) {
         add_action( 'admin_notices', 'cthls_woocommerce_missing_notice' );
         return;
