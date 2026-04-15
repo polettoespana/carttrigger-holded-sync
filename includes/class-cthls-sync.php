@@ -215,14 +215,15 @@ class CTHLS_Sync {
         if ( null === $product_id ) {
             $product_id = $product->get_id();
         }
+        $is_variable = $product->is_type( 'variable' );
+
         $data = [
-            'kind'     => $product->is_type( 'variable' ) ? 'variants' : 'simple',
+            'kind'     => $is_variable ? 'variants' : 'simple',
             'name'     => self::product_name_with_brand( $product ),
             'desc'     => 'full' === get_option( 'cthls_desc_source', 'custom' )
                             ? $product->get_description()
                             : $product->get_meta( '_cthls_description' ),
             'sku'      => $product->get_sku(),
-            'price'    => self::resolve_price_for_holded( $product ),
             'tax'      => self::get_tax_rate( $product ),
             'cost'     => (float) $product->get_meta( '_cost_price' ),
             'barcode'  => $product->get_meta( '_barcode' ),
@@ -230,6 +231,11 @@ class CTHLS_Sync {
             'hasStock' => $product->managing_stock(),
             'forSale'  => $product->is_purchasable(),
         ];
+
+        // For variable products the price lives on each variant, not the parent.
+        if ( ! $is_variable ) {
+            $data['price'] = self::resolve_price_for_holded( $product );
+        }
 
         if ( get_option( 'cthls_sync_image', false ) ) {
             $already_synced = get_post_meta( $product_id, '_cthls_image_synced', true );
