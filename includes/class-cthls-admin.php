@@ -522,6 +522,7 @@ class CTHLS_Admin {
                             <tr><td><code>pull_create</code></td><td><?php esc_html_e( 'A new product was created in WooCommerce from Holded data.', 'carttrigger-holded-sync' ); ?></td></tr>
                             <tr><td><code>pull_update</code></td><td><?php esc_html_e( 'An existing WooCommerce product was updated with data from Holded.', 'carttrigger-holded-sync' ); ?></td></tr>
                             <tr><td><code>pull_save_error</code></td><td><?php esc_html_e( 'Error while saving a product in WooCommerce during the pull.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>variant_ids_synced</code></td><td><?php esc_html_e( 'Holded variant IDs fetched and stored on WC variations after a successful push.', 'carttrigger-holded-sync' ); ?></td></tr>
                         </tbody>
                     </table>
                 </details>

@@ -308,3 +308,6 @@ msgstr "Programado, pero no se pudo leer la próxima hora de ejecución."
 
 msgid "Existing Holded product found by SKU and linked to the WooCommerce product (avoids duplicate creation)."
 msgstr "Producto de Holded existente encontrado por SKU y vinculado al producto de WooCommerce (evita la creación de duplicados)."
+
+msgid "Holded variant IDs fetched and stored on WC variations after a successful push."
+msgstr "IDs de variantes de Holded obtenidos y guardados en las variaciones de WC tras un push exitoso."

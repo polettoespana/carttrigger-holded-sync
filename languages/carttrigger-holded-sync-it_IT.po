@@ -308,3 +308,6 @@ msgstr "Pianificato, ma impossibile leggere il prossimo orario di esecuzione."
 
 msgid "Existing Holded product found by SKU and linked to the WooCommerce product (avoids duplicate creation)."
 msgstr "Prodotto Holded esistente trovato tramite SKU e collegato al prodotto WooCommerce (evita la creazione di duplicati)."
+
+msgid "Holded variant IDs fetched and stored on WC variations after a successful push."
+msgstr "ID varianti Holded recuperati e salvati sulle variazioni WC dopo un push riuscito."

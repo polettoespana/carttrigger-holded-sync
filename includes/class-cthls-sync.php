@@ -86,6 +86,57 @@ class CTHLS_Sync {
 
         if ( is_wp_error( $result ) ) {
             self::log( 'product_save', $product_id, $result->get_error_message() );
+            return;
+        }
+
+        // For variable products: fetch the Holded product to retrieve variant IDs
+        // and store them in WC meta so subsequent updates can target specific variants.
+        if ( $product->is_type( 'variable' ) && $holded_id ) {
+            self::sync_variant_ids( $product, $holded_id );
+        }
+    }
+
+    /**
+     * Fetch the Holded product and store variant IDs on each WC variation by SKU match.
+     *
+     * @param WC_Product_Variable $product
+     * @param string              $holded_id
+     */
+    private static function sync_variant_ids( WC_Product $product, $holded_id ) {
+        $holded_product = self::$api->get_product( $holded_id );
+        if ( is_wp_error( $holded_product ) || empty( $holded_product['variants'] ) ) {
+            return;
+        }
+
+        // Build a SKU → Holded variant ID map from the Holded response.
+        $holded_by_sku = [];
+        foreach ( $holded_product['variants'] as $hv ) {
+            if ( ! empty( $hv['sku'] ) && ! empty( $hv['id'] ) ) {
+                $holded_by_sku[ $hv['sku'] ] = $hv['id'];
+            }
+        }
+
+        if ( empty( $holded_by_sku ) ) {
+            return;
+        }
+
+        $variant_map = [];
+        foreach ( $product->get_children() as $variation_id ) {
+            $variation = wc_get_product( $variation_id );
+            if ( ! $variation ) {
+                continue;
+            }
+            $sku = $variation->get_sku();
+            if ( $sku && isset( $holded_by_sku[ $sku ] ) ) {
+                $hv_id = sanitize_text_field( $holded_by_sku[ $sku ] );
+                update_post_meta( $variation_id, '_cthls_variant_id', $hv_id );
+                $variant_map[ $variation_id ] = $hv_id;
+            }
+        }
+
+        if ( $variant_map ) {
+            update_post_meta( $product->get_id(), '_cthls_variant_map', wp_json_encode( $variant_map ) );
+            self::log( 'variant_ids_synced', $product->get_id(), sprintf( '%d variants mapped', count( $variant_map ) ) );
         }
     }
 
