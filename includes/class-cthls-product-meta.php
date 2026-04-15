@@ -123,7 +123,7 @@ class CTHLS_Product_Meta {
             update_post_meta(
                 $product_id,
                 '_cost_price',
-                wc_format_decimal( wp_unslash( $_POST['_cost_price'] ) )
+                wc_format_decimal( sanitize_text_field( wp_unslash( $_POST['_cost_price'] ) ) )
             );
         }
 
