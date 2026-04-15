@@ -47,14 +47,14 @@
         .done(function (res) {
             if (res.success) {
                 $result.addClass('success').text('✓ ' + res.data.message);
+                setTimeout(function () { location.reload(); }, 1500);
             } else {
                 $result.addClass('error').text('✗ ' + res.data.message);
+                $btn.prop('disabled', false).text(originalText);
             }
         })
         .fail(function () {
             $result.addClass('error').text('✗ ' + cthls.i18n_error);
-        })
-        .always(function () {
             $btn.prop('disabled', false).text(originalText);
         });
     });
@@ -75,14 +75,14 @@
         .done(function (res) {
             if (res.success) {
                 $result.addClass('success').text('✓ ' + res.data.message);
+                setTimeout(function () { location.reload(); }, 1500);
             } else {
                 $result.addClass('error').text('✗ ' + res.data.message);
+                $btn.prop('disabled', false).text(originalText);
             }
         })
         .fail(function () {
             $result.addClass('error').text('✗ ' + cthls.i18n_error);
-        })
-        .always(function () {
             $btn.prop('disabled', false).text(originalText);
         });
     });
