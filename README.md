@@ -1,9 +1,9 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.1.4-0a0a23?style=flat-square" alt="Version 1.1.4">
+  <img src="https://img.shields.io/badge/version-1.1.5-0a0a23?style=flat-square" alt="Version 1.1.5">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
-  <img src="https://img.shields.io/badge/WooCommerce-required-96588a?style=flat-square&logo=woocommerce&logoColor=white" alt="WooCommerce required">
+  <img src="https://img.shields.io/badge/WooCommerce-8.0%2B-96588a?style=flat-square" alt="WooCommerce 8.0+">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
   <img src="https://img.shields.io/badge/license-GPLv2-38a169?style=flat-square" alt="GPLv2">
 </p>
@@ -16,10 +16,10 @@ Bidirectional sync between WooCommerce products/stock and Holded ERP.
 
 ## How it works
 
-| Direction | Trigger | Notes |
-|---|---|---|
-| **WC → Holded** | Real-time on product save or stock change | Can also be triggered manually (bulk push) |
-| **Holded → WC** | Scheduled pull via Action Scheduler | Default every 15 min — configurable. Manual pull available |
+| Direction       | Trigger                                   | Notes                                                      |
+| --------------- | ----------------------------------------- | ---------------------------------------------------------- |
+| **WC → Holded** | Real-time on product save or stock change | Can also be triggered manually (bulk push)                 |
+| **Holded → WC** | Scheduled pull via Action Scheduler       | Default every 15 min — configurable. Manual pull available |
 
 Each direction can be enabled independently in settings.
 
@@ -27,15 +27,15 @@ Each direction can be enabled independently in settings.
 
 ## What is synced
 
-| Field | WC → Holded | Holded → WC |
-|---|---|---|
-| Product name | ✓ | ✓ |
-| Regular price | ✓ optional | ✓ optional |
-| Sale price | ✓ optional ¹ | — |
-| Description | ✓ optional | ✓ optional |
-| SKU | ✓ | ✓ |
-| Stock quantity | ✓ optional | ✓ optional |
-| Brand appended to name | ✓ optional | — |
+| Field                  | WC → Holded  | Holded → WC |
+| ---------------------- | ------------ | ----------- |
+| Product name           | ✓            | ✓           |
+| Regular price          | ✓ optional   | ✓ optional  |
+| Sale price             | ✓ optional ¹ | —           |
+| Description            | ✓ optional   | ✓ optional  |
+| SKU                    | ✓            | ✓           |
+| Stock quantity         | ✓ optional   | ✓ optional  |
+| Brand appended to name | ✓ optional   | —           |
 
 <sub>¹ Sent only when the product is currently on sale (respects scheduled date range). If no sale price is active, the regular price is sent instead.</sub>
 
@@ -45,21 +45,21 @@ Each direction can be enabled independently in settings.
 
 **WooCommerce → Holded Sync** in the WordPress admin.
 
-| Option | Description |
-|---|---|
-| Holded API Key | Generate in Holded under **Configuración → Más → Desarrolladores** |
-| Warehouse | Holded warehouse for stock movements |
-| Default tax rate | Fallback VAT rate (default: 21) |
-| Sync direction | Enable WC→Holded and/or Holded→WC independently |
-| Pull interval | How often to pull from Holded (min 5 min, default 15) |
-| Prices include tax | Strips VAT before sending to Holded; adds it back when pulling |
-| Sync stock | Enable stock sync (both directions) |
-| Sync regular price | Enable regular price sync (both directions) |
-| Sync sale price | Send sale price to Holded instead of regular price when on sale (WC→Holded only) |
-| Sync description | Enable description sync (both directions) |
-| Description source | Custom field (Holded Sync tab) or full WooCommerce description |
-| Append brand to name | Appends `product_brand` taxonomy term to product name in Holded |
-| Enable log | Stores last 50 sync events for debugging |
+| Option               | Description                                                                      |
+| -------------------- | -------------------------------------------------------------------------------- |
+| Holded API Key       | Generate in Holded under **Configuración → Más → Desarrolladores**               |
+| Warehouse            | Holded warehouse for stock movements                                             |
+| Default tax rate     | Fallback VAT rate (default: 21)                                                  |
+| Sync direction       | Enable WC→Holded and/or Holded→WC independently                                  |
+| Pull interval        | How often to pull from Holded (min 5 min, default 15)                            |
+| Prices include tax   | Strips VAT before sending to Holded; adds it back when pulling                   |
+| Sync stock           | Enable stock sync (both directions)                                              |
+| Sync regular price   | Enable regular price sync (both directions)                                      |
+| Sync sale price      | Send sale price to Holded instead of regular price when on sale (WC→Holded only) |
+| Sync description     | Enable description sync (both directions)                                        |
+| Description source   | Custom field (Holded Sync tab) or full WooCommerce description                   |
+| Append brand to name | Appends `product_brand` taxonomy term to product name in Holded                  |
+| Enable log           | Stores last 50 sync events for debugging                                         |
 
 ---
 
@@ -67,12 +67,12 @@ Each direction can be enabled independently in settings.
 
 Each product has a **Holded Sync** tab in the **Product data** meta box.
 
-| Field | Meta key | Notes |
-|---|---|---|
+| Field                  | Meta key             | Notes                                                 |
+| ---------------------- | -------------------- | ----------------------------------------------------- |
 | Description for Holded | `_cthls_description` | Used when Description source is set to "Custom field" |
-| Cost price | `_cost_price` | Net cost price sent to Holded (excl. tax) |
-| Barcode | `_barcode` | EAN, UPC or any barcode format |
-| Holded product ID | `_cthls_product_id` | Auto-populated on first sync. Read-only |
+| Cost price             | `_cost_price`        | Net cost price sent to Holded (excl. tax)             |
+| Barcode                | `_barcode`           | EAN, UPC or any barcode format                        |
+| Holded product ID      | `_cthls_product_id`  | Auto-populated on first sync. Read-only               |
 
 ---
 
@@ -80,8 +80,8 @@ Each product has a **Holded Sync** tab in the **Product data** meta box.
 
 Holded stores prices as net (excl. tax). WooCommerce can store prices either way.
 
-- **WC → Holded**: if *Prices include tax* is enabled, the plugin strips VAT before sending the net price to Holded.
-- **Holded → WC**: if *Prices include tax* is enabled, the plugin adds VAT back before saving in WooCommerce.
+- **WC → Holded**: if _Prices include tax_ is enabled, the plugin strips VAT before sending the net price to Holded.
+- **Holded → WC**: if _Prices include tax_ is enabled, the plugin adds VAT back before saving in WooCommerce.
 
 All prices are rounded to 2 decimal places.
 
@@ -112,18 +112,23 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ## Changelog
 
 ### 1.1.4
+
 - Fix: unschedule now uses both Action Scheduler and WooCommerce queue API to ensure stale jobs are reliably removed when pull sync is disabled.
 
 ### 1.1.3
+
 - Fix: on init, if pull sync is disabled and an Action Scheduler job is still queued, it is now automatically removed.
 
 ### 1.1.2
+
 - Fix: disabling Holded → WC sync now immediately unschedules the Action Scheduler job; re-enabling reschedules it. "Next scheduled run" is no longer shown when pull is disabled.
 
 ### 1.1.1
+
 - Fix: sale price sync (WC→Holded) now respects sale date range — falls back to regular price outside the scheduled period.
 
 ### 1.1.0
+
 - Fix: Holded→WC price now adds tax back when WC uses tax-inclusive prices, rounded to 2 decimals.
 - Fix: WC→Holded price rounded to 2 decimal places.
 - Fix: duplicate Holded product prevented via SKU lookup before create.
@@ -137,19 +142,23 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 - Enhancement: log limited to 50 entries. Translations updated (it_IT, es_ES).
 
 ### 1.0.4
+
 - Fix: admin buttons restore translated text after each action.
 
 ### 1.0.3
+
 - Renamed to `carttrigger-holded-sync`, PHP prefix to `cthls_` / `CTHLS_`.
 - Added it_IT and es_ES translations.
 - Added cost price and barcode fields to product tab.
 
 ### 1.0.2
+
 - Fix: nonce verification in product meta save.
 - Redesigned settings page (card layout, icons).
 - Added brand append option, Action Scheduler pull, configurable interval.
 
 ### 1.0.0
+
 - Initial release.
 
 ---
