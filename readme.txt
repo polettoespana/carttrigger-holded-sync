@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.1.4
+Stable tag: 1.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,12 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.1.5 =
+* Fix: removed deprecated load_plugin_textdomain() call (translations loaded automatically by WordPress).
+* Fix: sanitize _cost_price POST input via sanitize_text_field() before wc_format_decimal().
+* Enhancement: image sync option (WC → Holded) — sends the product featured image URL to Holded.
+* Enhancement: image overwrite control — by default the image is sent only on first sync; an "Overwrite existing image" option forces resend on every sync.
 
 = 1.1.4 =
 * Fix: unschedule now uses both Action Scheduler and WooCommerce queue API to ensure stale jobs are reliably removed when pull sync is disabled.
