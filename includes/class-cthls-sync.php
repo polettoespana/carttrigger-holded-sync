@@ -56,7 +56,8 @@ class CTHLS_Sync {
         $holded_id = get_post_meta( $product_id, '_cthls_product_id', true );
 
         if ( $holded_id ) {
-            $data   = self::wc_product_to_holded( $product, $product_id );
+            // UPDATE: Holded does not accept variants in PUT — send parent fields only.
+            $data   = self::wc_product_to_holded( $product, $product_id, false );
             self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
             $result = self::$api->update_product( $holded_id, $data );
         } else {
@@ -69,11 +70,8 @@ class CTHLS_Sync {
                 if ( $existing && isset( $existing['id'] ) ) {
                     $holded_id = $existing['id'];
                     update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
-                    // Link found — update with full variant payload so Holded syncs all data.
-                    if ( $product->is_type( 'variable' ) ) {
-                        self::sync_variant_ids( $product, $holded_id );
-                    }
-                    $data   = self::wc_product_to_holded( $product, $product_id );
+                    // Link found — treat as update (no variants in PUT).
+                    $data   = self::wc_product_to_holded( $product, $product_id, false );
                     self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
                     $result = self::$api->update_product( $holded_id, $data );
                     self::log( 'product_linked', $product_id, $holded_id );
@@ -81,7 +79,8 @@ class CTHLS_Sync {
             }
 
             if ( null === $result ) {
-                $data   = self::wc_product_to_holded( $product, $product_id );
+                // CREATE: include full variant list so Holded creates variants on first sync.
+                $data   = self::wc_product_to_holded( $product, $product_id, true );
                 self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
                 $result = self::$api->create_product( $data );
                 if ( ! is_wp_error( $result ) && isset( $result['id'] ) ) {
@@ -267,7 +266,7 @@ class CTHLS_Sync {
      * @param WC_Product $product
      * @return array
      */
-    private static function wc_product_to_holded( WC_Product $product, $product_id = null ) {
+    private static function wc_product_to_holded( WC_Product $product, $product_id = null, $include_variants = true ) {
         if ( null === $product_id ) {
             $product_id = $product->get_id();
         }
@@ -300,8 +299,10 @@ class CTHLS_Sync {
             $data['stock'] = (int) $product->get_stock_quantity();
         }
 
-        // Variable product → variants.
-        if ( $product->is_type( 'variable' ) ) {
+        // Variable product → variants (CREATE only).
+        // Holded does not accept a variants array in PUT — only in POST.
+        // Stock is kept in sync via the dedicated /stock endpoint.
+        if ( $product->is_type( 'variable' ) && $include_variants ) {
             $variants = [];
 
             foreach ( $product->get_children() as $variation_id ) {

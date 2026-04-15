@@ -59,8 +59,11 @@ WooCommerce takes priority for real-time changes. Holded changes are applied eve
 
 == Changelog ==
 
+= 1.2.2 =
+* Fix: variable products no longer send the variants array in PUT requests — the Holded API only accepts variants on POST (create). Subsequent saves update parent-level fields only. Stock continues to sync via the /stock endpoint.
+
 = 1.2.1 =
-* Version bump to allow overwrite on production.
+* (internal — superseded by 1.2.2)
 
 = 1.2.0 =
 * Fix: variant price field corrected from price to subtotal (Holded API input field name).

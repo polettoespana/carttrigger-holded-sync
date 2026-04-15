@@ -120,9 +120,13 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 
 ## Changelog
 
+### 1.2.2
+
+- Fix: variable products no longer send the `variants` array in PUT requests — the Holded API only accepts variants on POST (create). Subsequent saves update parent-level fields only. Stock continues to sync via the dedicated `/stock` endpoint.
+
 ### 1.2.1
 
-- (same as 1.2.0 — version bump only to allow overwrite on production)
+- (internal — superseded by 1.2.2)
 
 ### 1.2.0
 
