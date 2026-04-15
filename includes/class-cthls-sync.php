@@ -54,7 +54,7 @@ class CTHLS_Sync {
         }
 
         $holded_id = get_post_meta( $product_id, '_cthls_product_id', true );
-        $data      = self::wc_product_to_holded( $product );
+        $data      = self::wc_product_to_holded( $product, $product_id );
 
         self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
 
@@ -86,6 +86,8 @@ class CTHLS_Sync {
 
         if ( is_wp_error( $result ) ) {
             self::log( 'product_save', $product_id, $result->get_error_message() );
+        } elseif ( isset( $data['image'] ) ) {
+            update_post_meta( $product_id, '_cthls_image_synced', 1 );
         }
     }
 
@@ -209,7 +211,10 @@ class CTHLS_Sync {
      * @param WC_Product $product
      * @return array
      */
-    private static function wc_product_to_holded( WC_Product $product ) {
+    private static function wc_product_to_holded( WC_Product $product, $product_id = null ) {
+        if ( null === $product_id ) {
+            $product_id = $product->get_id();
+        }
         $data = [
             'kind'     => $product->is_type( 'variable' ) ? 'variants' : 'simple',
             'name'     => self::product_name_with_brand( $product ),
@@ -227,9 +232,14 @@ class CTHLS_Sync {
         ];
 
         if ( get_option( 'cthls_sync_image', false ) ) {
-            $image_id = $product->get_image_id();
-            if ( $image_id ) {
-                $data['image'] = wp_get_attachment_url( $image_id );
+            $already_synced = get_post_meta( $product_id, '_cthls_image_synced', true );
+            $overwrite      = get_option( 'cthls_sync_image_overwrite', false );
+
+            if ( ! $already_synced || $overwrite ) {
+                $image_id = $product->get_image_id();
+                if ( $image_id ) {
+                    $data['image'] = wp_get_attachment_url( $image_id );
+                }
             }
         }
 

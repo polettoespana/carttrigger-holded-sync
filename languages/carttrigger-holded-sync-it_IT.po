@@ -103,6 +103,9 @@ msgstr "Sincronizza immagine"
 msgid "Send the product featured image URL to Holded (WC → Holded only)"
 msgstr "Invia l'URL dell'immagine in evidenza del prodotto a Holded (solo WC → Holded)"
 
+msgid "Overwrite existing image in Holded (if unchecked, image is sent only on first sync)"
+msgstr "Sovrascrivi l'immagine esistente in Holded (se deselezionato, l'immagine viene inviata solo al primo sync)"
+
 msgid "Enable log"
 msgstr "Abilita log"
 

@@ -133,6 +133,9 @@ msgstr ""
 msgid "Send the product featured image URL to Holded (WC → Holded only)"
 msgstr ""
 
+msgid "Overwrite existing image in Holded (if unchecked, image is sent only on first sync)"
+msgstr ""
+
 msgid "Enable log"
 msgstr ""
 
