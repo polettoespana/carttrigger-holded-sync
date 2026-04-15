@@ -226,6 +226,13 @@ class CTHLS_Sync {
             'forSale'  => $product->is_purchasable(),
         ];
 
+        if ( get_option( 'cthls_sync_image', false ) ) {
+            $image_id = $product->get_image_id();
+            if ( $image_id ) {
+                $data['image'] = wp_get_attachment_url( $image_id );
+            }
+        }
+
         if ( $product->managing_stock() && ! $product->is_type( 'variable' ) ) {
             $data['stock'] = (int) $product->get_stock_quantity();
         }

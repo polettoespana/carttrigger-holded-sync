@@ -127,6 +127,12 @@ msgid "Append the product brand (product_brand taxonomy) to the product name whe
 msgstr ""
 
 #: includes/class-ctholded-admin.php
+msgid "Sync image"
+msgstr ""
+
+msgid "Send the product featured image URL to Holded (WC → Holded only)"
+msgstr ""
+
 msgid "Enable log"
 msgstr ""
 

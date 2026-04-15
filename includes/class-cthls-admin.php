@@ -55,6 +55,7 @@ class CTHLS_Admin {
             'cthls_sync_desc',
             'cthls_desc_source',
             'cthls_append_brand',
+            'cthls_sync_image',
             'cthls_debug_log',
         ];
         $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source' ];
@@ -388,6 +389,16 @@ class CTHLS_Admin {
                                     <input type="checkbox" name="cthls_append_brand" value="1"
                                         <?php checked( get_option( 'cthls_append_brand', false ) ); ?> />
                                     <?php esc_html_e( 'Append the product brand (product_brand taxonomy) to the product name when syncing to Holded', 'carttrigger-holded-sync' ); ?>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e( 'Sync image', 'carttrigger-holded-sync' ); ?></th>
+                            <td>
+                                <label>
+                                    <input type="checkbox" name="cthls_sync_image" value="1"
+                                        <?php checked( get_option( 'cthls_sync_image', false ) ); ?> />
+                                    <?php esc_html_e( 'Send the product featured image URL to Holded (WC → Holded only)', 'carttrigger-holded-sync' ); ?>
                                 </label>
                             </td>
                         </tr>

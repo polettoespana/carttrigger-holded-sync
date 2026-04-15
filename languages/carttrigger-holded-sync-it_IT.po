@@ -97,6 +97,12 @@ msgstr "Aggiungi brand al nome"
 msgid "Append the product brand (product_brand taxonomy) to the product name when syncing to Holded"
 msgstr "Aggiunge il brand del prodotto (tassonomia product_brand) al nome del prodotto durante la sincronizzazione con Holded"
 
+msgid "Sync image"
+msgstr "Sincronizza immagine"
+
+msgid "Send the product featured image URL to Holded (WC → Holded only)"
+msgstr "Invia l'URL dell'immagine in evidenza del prodotto a Holded (solo WC → Holded)"
+
 msgid "Enable log"
 msgstr "Abilita log"
 
