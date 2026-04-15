@@ -311,3 +311,9 @@ msgstr "Prodotto Holded esistente trovato tramite SKU e collegato al prodotto Wo
 
 msgid "Holded variant IDs fetched and stored on WC variations after a successful push."
 msgstr "ID varianti Holded recuperati e salvati sulle variazioni WC dopo un push riuscito."
+
+msgid "Variable product updates"
+msgstr "Aggiornamento prodotti variabili"
+
+msgid "The Holded API does not support updating variable products (kind: variants) via PUT. After the initial creation, only stock is kept in sync. Name, price and description changes on variable products must be made manually in Holded."
+msgstr "L'API di Holded non supporta l'aggiornamento dei prodotti variabili (kind: variants) tramite PUT. Dopo la creazione iniziale, viene sincronizzato solo lo stock. Le modifiche a nome, prezzo e descrizione dei prodotti variabili devono essere effettuate manualmente in Holded."

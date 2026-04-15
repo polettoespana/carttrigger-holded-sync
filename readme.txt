@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.2.1
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,11 +59,15 @@ WooCommerce takes priority for real-time changes. Holded changes are applied eve
 
 == Changelog ==
 
+= 1.2.3 =
+* Fix: variable products no longer attempt PUT update — the Holded API rejects PUT on kind=variants products regardless of payload. After initial creation, only stock is kept in sync via the /stock endpoint.
+* Known limitation added: variable product updates (name, price, description) not supported by Holded REST API.
+
 = 1.2.2 =
-* Fix: variable products no longer send the variants array in PUT requests — the Holded API only accepts variants on POST (create). Subsequent saves update parent-level fields only. Stock continues to sync via the /stock endpoint.
+* (internal — superseded by 1.2.3)
 
 = 1.2.1 =
-* (internal — superseded by 1.2.2)
+* (internal — superseded by 1.2.3)
 
 = 1.2.0 =
 * Fix: variant price field corrected from price to subtotal (Holded API input field name).

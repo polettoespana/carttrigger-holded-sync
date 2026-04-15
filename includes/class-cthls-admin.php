@@ -424,6 +424,11 @@ class CTHLS_Admin {
                         &mdash;
                         <?php esc_html_e( 'The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface.', 'carttrigger-holded-sync' ); ?>
                     </li>
+                    <li>
+                        <strong><?php esc_html_e( 'Variable product updates', 'carttrigger-holded-sync' ); ?></strong>
+                        &mdash;
+                        <?php esc_html_e( 'The Holded API does not support updating variable products (kind: variants) via PUT. After the initial creation, only stock is kept in sync. Name, price and description changes on variable products must be made manually in Holded.', 'carttrigger-holded-sync' ); ?>
+                    </li>
                 </ul>
             </div>
 

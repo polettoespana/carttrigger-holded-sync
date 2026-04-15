@@ -56,7 +56,13 @@ class CTHLS_Sync {
         $holded_id = get_post_meta( $product_id, '_cthls_product_id', true );
 
         if ( $holded_id ) {
-            // UPDATE: Holded does not accept variants in PUT — send parent fields only.
+            if ( $product->is_type( 'variable' ) ) {
+                // Holded's PUT /products/{id} always fails for kind=variants products.
+                // Only stock can be synced (via the /stock endpoint in on_stock_changed).
+                self::sync_variant_ids( $product, $holded_id );
+                return;
+            }
+            // Simple product update.
             $data   = self::wc_product_to_holded( $product, $product_id, false );
             self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
             $result = self::$api->update_product( $holded_id, $data );
