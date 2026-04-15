@@ -59,6 +59,9 @@ WooCommerce takes priority for real-time changes. Holded changes are applied eve
 
 == Changelog ==
 
+= 1.1.9 =
+* Fix: variable products already linked to Holded (via SKU match) now correctly fetch variant IDs before the first update, preventing "Cannot update product variants" errors.
+
 = 1.1.8 =
 * Fix: variable product variants now sync correctly — after each push the plugin fetches Holded variant IDs and stores them on WC variations, so subsequent updates target the correct variant instead of failing with "Cannot update product variants".
 

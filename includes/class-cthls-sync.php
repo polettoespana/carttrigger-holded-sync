@@ -54,7 +54,23 @@ class CTHLS_Sync {
         }
 
         $holded_id = get_post_meta( $product_id, '_cthls_product_id', true );
-        $data      = self::wc_product_to_holded( $product, $product_id );
+
+        // For variable products already linked to Holded: if variant IDs are not yet stored
+        // locally, fetch them before building the payload so the update can target each variant.
+        if ( $holded_id && $product->is_type( 'variable' ) ) {
+            $missing = false;
+            foreach ( $product->get_children() as $vid ) {
+                if ( ! get_post_meta( $vid, '_cthls_variant_id', true ) ) {
+                    $missing = true;
+                    break;
+                }
+            }
+            if ( $missing ) {
+                self::sync_variant_ids( $product, $holded_id );
+            }
+        }
+
+        $data = self::wc_product_to_holded( $product, $product_id );
 
         self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
 
@@ -70,6 +86,11 @@ class CTHLS_Sync {
                 if ( $existing && isset( $existing['id'] ) ) {
                     $holded_id = $existing['id'];
                     update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
+                    // Fetch variant IDs from the existing Holded product before updating.
+                    if ( $product->is_type( 'variable' ) ) {
+                        self::sync_variant_ids( $product, $holded_id );
+                        $data = self::wc_product_to_holded( $product, $product_id );
+                    }
                     $result = self::$api->update_product( $holded_id, $data );
                     self::log( 'product_linked', $product_id, $holded_id );
                 }
