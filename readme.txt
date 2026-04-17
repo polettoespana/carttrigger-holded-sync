@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.2.3
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,7 +28,7 @@ Since Holded does not provide outbound webhooks, the plugin pulls product and st
 * Description (optional)
 * SKU
 * Stock quantity
-* Product variants (variable products)
+* Variable products: each variation is pushed as a separate simple product in Holded
 
 = Matching logic =
 Products are matched between the two systems by SKU. On first sync, the Holded product ID is stored in WooCommerce product meta (`_ctholded_product_id`) to speed up subsequent syncs.
@@ -58,6 +58,15 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.3.1 =
+* Fix: when "Append brand to name" is enabled, the product name is no longer overwritten in WooCommerce during pull — prevents the brand from being appended repeatedly on each push/pull cycle ("Averoldi Averoldi Averoldi…").
+
+= 1.3.0 =
+* Change: variable products in WooCommerce are now pushed to Holded as separate simple products — one per variation — instead of a single product with variants. Holded does not handle variant-type products correctly via API.
+* Change: Holded → WC pull now matches Holded products to WC variations by SKU and updates only stock and price; the WooCommerce product structure is never modified.
+* Change: _cthls_product_id is now stored on each WC variation directly. Stock sync uses the variation's own Holded product ID.
+* Known limitation updated: variable product handling and price tiers.
 
 = 1.2.3 =
 * Fix: variable products no longer attempt PUT update — the Holded API rejects PUT on kind=variants products regardless of payload. After initial creation, only stock is kept in sync via the /stock endpoint.

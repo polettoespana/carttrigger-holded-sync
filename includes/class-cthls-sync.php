@@ -9,8 +9,10 @@ defined( 'ABSPATH' ) || exit;
  * Holded → WC: scheduled cron (see CTHLS_Cron).
  *
  * Mapping is stored in WC product meta:
- *   _cthls_product_id  → Holded product ID
- *   _cthls_variant_map → JSON {wc_variation_id: holded_variant_id}
+ *   _cthls_product_id  → Holded product ID (on simple products and on each variation)
+ *
+ * Variable products: each WC variation is pushed as a separate simple product in Holded.
+ * Holded does not handle variants correctly, so variant products are never created.
  */
 class CTHLS_Sync {
 
@@ -53,17 +55,17 @@ class CTHLS_Sync {
             return; // Skip variations (handled as variants inside the parent).
         }
 
+        // Variable products: sync each variation as a separate simple product in Holded.
+        if ( $product->is_type( 'variable' ) ) {
+            self::sync_variable_product( $product );
+            return;
+        }
+
+        // Simple product.
         $holded_id = get_post_meta( $product_id, '_cthls_product_id', true );
 
         if ( $holded_id ) {
-            if ( $product->is_type( 'variable' ) ) {
-                // Holded's PUT /products/{id} always fails for kind=variants products.
-                // Only stock can be synced (via the /stock endpoint in on_stock_changed).
-                self::sync_variant_ids( $product, $holded_id );
-                return;
-            }
-            // Simple product update.
-            $data   = self::wc_product_to_holded( $product, $product_id, false );
+            $data   = self::wc_product_to_holded( $product, $product_id );
             self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
             $result = self::$api->update_product( $holded_id, $data );
         } else {
@@ -76,8 +78,7 @@ class CTHLS_Sync {
                 if ( $existing && isset( $existing['id'] ) ) {
                     $holded_id = $existing['id'];
                     update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
-                    // Link found — treat as update (no variants in PUT).
-                    $data   = self::wc_product_to_holded( $product, $product_id, false );
+                    $data   = self::wc_product_to_holded( $product, $product_id );
                     self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
                     $result = self::$api->update_product( $holded_id, $data );
                     self::log( 'product_linked', $product_id, $holded_id );
@@ -85,70 +86,66 @@ class CTHLS_Sync {
             }
 
             if ( null === $result ) {
-                // CREATE: include full variant list so Holded creates variants on first sync.
-                $data   = self::wc_product_to_holded( $product, $product_id, true );
+                $data   = self::wc_product_to_holded( $product, $product_id );
                 self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
                 $result = self::$api->create_product( $data );
                 if ( ! is_wp_error( $result ) && isset( $result['id'] ) ) {
                     update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $result['id'] ) );
-                    $holded_id = $result['id'];
                 }
             }
         }
 
         if ( is_wp_error( $result ) ) {
             self::log( 'product_save', $product_id, $result->get_error_message() );
-            return;
-        }
-
-        // Store Holded variant IDs after a successful operation so the stock endpoint
-        // can reference individual variants.
-        if ( $product->is_type( 'variable' ) && $holded_id ) {
-            self::sync_variant_ids( $product, $holded_id );
         }
     }
 
     /**
-     * Fetch the Holded product and store variant IDs on each WC variation by SKU match.
+     * Sync each variation of a variable WC product as a separate simple product in Holded.
+     * Holded does not support variant-type products reliably, so we flatten to simples.
      *
      * @param WC_Product_Variable $product
-     * @param string              $holded_id
      */
-    private static function sync_variant_ids( WC_Product $product, $holded_id ) {
-        $holded_product = self::$api->get_product( $holded_id );
-        if ( is_wp_error( $holded_product ) || empty( $holded_product['variants'] ) ) {
-            return;
-        }
-
-        // Build a SKU → Holded variant ID map from the Holded response.
-        $holded_by_sku = [];
-        foreach ( $holded_product['variants'] as $hv ) {
-            if ( ! empty( $hv['sku'] ) && ! empty( $hv['id'] ) ) {
-                $holded_by_sku[ $hv['sku'] ] = $hv['id'];
-            }
-        }
-
-        if ( empty( $holded_by_sku ) ) {
-            return;
-        }
-
-        $variant_map = [];
+    private static function sync_variable_product( WC_Product $product ) {
         foreach ( $product->get_children() as $variation_id ) {
             $variation = wc_get_product( $variation_id );
             if ( ! $variation ) {
                 continue;
             }
-            $sku = $variation->get_sku();
-            if ( $sku && isset( $holded_by_sku[ $sku ] ) ) {
-                $hv_id = sanitize_text_field( $holded_by_sku[ $sku ] );
-                update_post_meta( $variation_id, '_cthls_variant_id', $hv_id );
-                $variant_map[ $variation_id ] = $hv_id;
-            }
-        }
 
-        if ( $variant_map ) {
-            update_post_meta( $product->get_id(), '_cthls_variant_map', wp_json_encode( $variant_map ) );
-            self::log( 'variant_ids_synced', $product->get_id(), sprintf( '%d variants mapped', count( $variant_map ) ) );
+            $holded_id = get_post_meta( $variation_id, '_cthls_product_id', true );
+            $data      = self::variation_to_holded( $variation, $product );
+
+            if ( $holded_id ) {
+                self::log( 'product_payload', $variation_id, wp_json_encode( $data ) );
+                $result = self::$api->update_product( $holded_id, $data );
+            } else {
+                $result = null;
+
+                $sku = $variation->get_sku();
+                if ( $sku ) {
+                    $existing = self::$api->find_product_by_sku( $sku );
+                    if ( $existing && isset( $existing['id'] ) ) {
+                        $holded_id = $existing['id'];
+                        update_post_meta( $variation_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
+                        self::log( 'product_payload', $variation_id, wp_json_encode( $data ) );
+                        $result = self::$api->update_product( $holded_id, $data );
+                        self::log( 'product_linked', $variation_id, $holded_id );
+                    }
+                }
+
+                if ( null === $result ) {
+                    self::log( 'product_payload', $variation_id, wp_json_encode( $data ) );
+                    $result = self::$api->create_product( $data );
+                    if ( ! is_wp_error( $result ) && isset( $result['id'] ) ) {
+                        update_post_meta( $variation_id, '_cthls_product_id', sanitize_text_field( $result['id'] ) );
+                    }
+                }
+            }
+
+            if ( is_wp_error( $result ) ) {
+                self::log( 'product_save', $variation_id, $result->get_error_message() );
+            }
         }
     }
 
@@ -165,22 +162,14 @@ class CTHLS_Sync {
         $product_id = $product->get_id();
         $stock      = $product->get_stock_quantity();
 
-        if ( $product->get_parent_id() ) {
-            // Variation.
-            $parent_id  = $product->get_parent_id();
-            $holded_id  = get_post_meta( $parent_id, '_cthls_product_id', true );
-            $variant_map = json_decode( get_post_meta( $parent_id, '_cthls_variant_map', true ), true );
-            $variant_id  = isset( $variant_map[ $product_id ] ) ? $variant_map[ $product_id ] : '';
-        } else {
-            $holded_id  = get_post_meta( $product_id, '_cthls_product_id', true );
-            $variant_id = '';
-        }
+        // Each variation is its own simple product in Holded — use its own _cthls_product_id.
+        $holded_id = get_post_meta( $product_id, '_cthls_product_id', true );
 
         if ( ! $holded_id || null === $stock ) {
             return;
         }
 
-        $result = self::$api->update_stock( $holded_id, $stock, $variant_id );
+        $result = self::$api->update_stock( $holded_id, $stock, '' );
         if ( is_wp_error( $result ) ) {
             self::log( 'stock_change', $product_id, $result->get_error_message() );
         }
@@ -267,24 +256,25 @@ class CTHLS_Sync {
     // ── Data mapping ─────────────────────────────────────────────────────────
 
     /**
-     * Build Holded product payload from a WC product.
+     * Build Holded product payload from a WC simple product.
      *
-     * @param WC_Product $product
+     * @param WC_Product  $product
+     * @param int|null    $product_id
      * @return array
      */
-    private static function wc_product_to_holded( WC_Product $product, $product_id = null, $include_variants = true ) {
+    private static function wc_product_to_holded( WC_Product $product, $product_id = null ) {
         if ( null === $product_id ) {
             $product_id = $product->get_id();
         }
-        $is_variable = $product->is_type( 'variable' );
 
         $data = [
-            'kind'     => $is_variable ? 'variants' : 'simple',
+            'kind'     => 'simple',
             'name'     => self::product_name_with_brand( $product ),
             'desc'     => 'full' === get_option( 'cthls_desc_source', 'custom' )
                             ? $product->get_description()
                             : $product->get_meta( '_cthls_description' ),
             'sku'      => $product->get_sku(),
+            'price'    => self::resolve_price_for_holded( $product ),
             'tax'      => self::get_tax_rate( $product ),
             'cost'     => (float) $product->get_meta( '_cost_price' ),
             'barcode'  => $product->get_meta( '_barcode' ),
@@ -293,62 +283,9 @@ class CTHLS_Sync {
             'forSale'  => $product->is_purchasable(),
         ];
 
-        // For variable products the price lives on each variant, not the parent.
-        if ( ! $is_variable ) {
-            $data['price'] = self::resolve_price_for_holded( $product );
-        }
-
-        // NOTE: Holded API silently ignores the `image` field — product images
-        // cannot be set via REST API and must be uploaded through the Holded UI.
-
-        if ( $product->managing_stock() && ! $product->is_type( 'variable' ) ) {
+        // NOTE: Holded API silently ignores the `image` field.
+        if ( $product->managing_stock() ) {
             $data['stock'] = (int) $product->get_stock_quantity();
-        }
-
-        // Variable product → variants (CREATE only).
-        // Holded does not accept a variants array in PUT — only in POST.
-        // Stock is kept in sync via the dedicated /stock endpoint.
-        if ( $product->is_type( 'variable' ) && $include_variants ) {
-            $variants = [];
-
-            foreach ( $product->get_children() as $variation_id ) {
-                $variation = wc_get_product( $variation_id );
-                if ( ! $variation ) {
-                    continue;
-                }
-
-                $holded_variant_id = get_post_meta( $variation_id, '_cthls_variant_id', true );
-
-                // Build variant name from attribute values (e.g. "75cl / 6").
-                $attr_values  = array_filter( array_values( $variation->get_attributes() ) );
-                $variant_name = ! empty( $attr_values )
-                    ? implode( ' / ', $attr_values )
-                    : ( '#' . $variation_id );
-
-                // Cost: use variation-level cost; fall back to parent cost.
-                $variant_cost = (float) $variation->get_meta( '_cost_price' );
-                if ( 0.0 === $variant_cost ) {
-                    $variant_cost = (float) $product->get_meta( '_cost_price' );
-                }
-
-                // Holded uses 'subtotal' as the price input field (not 'price').
-                // Use 'id' to identify existing variants so Holded updates them in place.
-                $variant_entry = [
-                    'name'     => $variant_name,
-                    'sku'      => $variation->get_sku(),
-                    'subtotal' => self::resolve_price_for_holded( $variation ),
-                    'cost'     => $variant_cost,
-                    'stock'    => (int) $variation->get_stock_quantity(),
-                ];
-
-                if ( $holded_variant_id ) {
-                    $variant_entry['id'] = $holded_variant_id;
-                }
-
-                $variants[] = $variant_entry;
-            }
-
-            $data['variants'] = $variants;
         }
 
         return array_filter( $data, function( $v ) {
@@ -357,9 +294,75 @@ class CTHLS_Sync {
     }
 
     /**
-     * Update or create a WC product from Holded data.
+     * Build Holded product payload for a WC variation (pushed as a simple product).
+     * The variation name is composed of the parent name + attribute values.
+     * Prices in Holded (standard, horeca tiers) must be set manually — only the
+     * base price is sent via API.
      *
-     * Matching: SKU first, then _cthls_product_id meta.
+     * @param WC_Product_Variation $variation
+     * @param WC_Product_Variable  $parent
+     * @return array
+     */
+    private static function variation_to_holded( WC_Product $variation, WC_Product $parent ) {
+        // Build a descriptive name: parent name + attribute values (e.g. "Groppello 75cl / 6").
+        $attr_values    = array_filter( array_values( $variation->get_attributes() ) );
+        $variation_name = $parent->get_name();
+        if ( ! empty( $attr_values ) ) {
+            $variation_name .= ' ' . implode( ' / ', $attr_values );
+        }
+
+        if ( get_option( 'cthls_append_brand', false ) ) {
+            $terms = get_the_terms( $parent->get_id(), 'product_brand' );
+            if ( $terms && ! is_wp_error( $terms ) ) {
+                $brand          = reset( $terms );
+                $variation_name = $variation_name . ' ' . $brand->name;
+            }
+        }
+
+        // Cost: use variation-level cost; fall back to parent.
+        $cost = (float) $variation->get_meta( '_cost_price' );
+        if ( 0.0 === $cost ) {
+            $cost = (float) $parent->get_meta( '_cost_price' );
+        }
+
+        if ( 'full' === get_option( 'cthls_desc_source', 'custom' ) ) {
+            $desc = $variation->get_description() ?: $parent->get_description();
+        } else {
+            $desc = $variation->get_meta( '_cthls_description' ) ?: $parent->get_meta( '_cthls_description' );
+        }
+
+        $data = [
+            'kind'     => 'simple',
+            'name'     => $variation_name,
+            'desc'     => $desc,
+            'sku'      => $variation->get_sku(),
+            'price'    => self::resolve_price_for_holded( $variation ),
+            'tax'      => self::get_tax_rate( $variation ),
+            'cost'     => $cost,
+            'barcode'  => $variation->get_meta( '_barcode' ) ?: $parent->get_meta( '_barcode' ),
+            'weight'   => (float) ( $variation->get_weight() ?: $parent->get_weight() ),
+            'hasStock' => $variation->managing_stock(),
+            'forSale'  => $variation->is_purchasable(),
+        ];
+
+        if ( $variation->managing_stock() ) {
+            $data['stock'] = (int) $variation->get_stock_quantity();
+        }
+
+        return array_filter( $data, function( $v ) {
+            return $v !== '' && $v !== null;
+        } );
+    }
+
+    /**
+     * Update or create a WC product/variation from Holded data.
+     *
+     * Matching: SKU first (may resolve to a variation), then _cthls_product_id meta.
+     *
+     * Variable products in WC are never created from Holded — their variations are
+     * pushed to Holded as simple products and pulled back by SKU into the existing
+     * WC variation. Only stock and price are updated on variations; name/description
+     * are managed in WC and must not be overwritten.
      *
      * @param array $holded_product
      */
@@ -370,7 +373,7 @@ class CTHLS_Sync {
         $holded_id = isset( $holded_product['id'] ) ? $holded_product['id'] : '';
         $sku       = isset( $holded_product['sku'] ) ? $holded_product['sku'] : '';
 
-        // Find matching WC product.
+        // Find matching WC product or variation.
         $wc_product_id = null;
         if ( $sku ) {
             $wc_product_id = wc_get_product_id_by_sku( $sku );
@@ -379,27 +382,73 @@ class CTHLS_Sync {
             $wc_product_id = self::find_wc_product_by_holded_id( $holded_id );
         }
 
-        // Skip if this WC product was already processed in this pull run.
+        // Skip if already processed in this pull run.
         if ( $wc_product_id && in_array( $wc_product_id, self::$pulled, true ) ) {
             return;
         }
 
-        if ( ! $wc_product_id ) {
-            // Create new WC product.
-            $wc_product  = new WC_Product_Simple();
-            $is_new      = true;
-        } else {
+        if ( $wc_product_id ) {
             $wc_product = wc_get_product( $wc_product_id );
             if ( ! $wc_product ) {
                 return;
             }
-            $is_new = false;
+
+            // Holded product maps to a WC variation: update stock and price only.
+            // Name, description, and SKU are managed in WC — do not overwrite.
+            if ( $wc_product instanceof WC_Product_Variation ) {
+                $fields_changed = false;
+
+                if ( isset( $holded_product['price'] ) ) {
+                    $new_price = self::holded_price_to_wc( $holded_product['price'], $wc_product );
+                    if ( $wc_product->get_regular_price() !== $new_price ) {
+                        $wc_product->set_regular_price( $new_price );
+                        $fields_changed = true;
+                    }
+                }
+
+                if ( isset( $holded_product['stock'] ) && $wc_product->managing_stock() ) {
+                    $new_stock = (int) $holded_product['stock'];
+                    if ( (int) $wc_product->get_stock_quantity() !== $new_stock ) {
+                        $wc_product->set_stock_quantity( $new_stock );
+                        $fields_changed = true;
+                    }
+                }
+
+                if ( $fields_changed ) {
+                    // Variation save fires woocommerce_update_product_variation, not
+                    // woocommerce_update_product — no need to remove our hook.
+                    $saved_id = $wc_product->save();
+                    if ( $saved_id ) {
+                        if ( $holded_id ) {
+                            update_post_meta( $saved_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
+                        }
+                        self::$pulled[] = $saved_id;
+                        self::log( 'pull_update', $saved_id, $sku ?: $holded_id );
+                    } else {
+                        self::log( 'pull_save_error', $wc_product_id, sprintf( 'Could not save variation (sku: %s)', $sku ) );
+                    }
+                }
+                return;
+            }
+
+            // Simple product update.
+            $fields_changed = false;
+            $is_new         = false;
+        } else {
+            // No match — create a new simple WC product.
+            $wc_product     = new WC_Product_Simple();
+            $fields_changed = false;
+            $is_new         = true;
         }
 
-        // Only update fields if they differ to avoid triggering update hooks.
-        $fields_changed = false;
+        // ── Simple product: update all syncable fields ────────────────────────
 
-        if ( isset( $holded_product['name'] ) && $wc_product->get_name() !== $holded_product['name'] ) {
+        // When "append brand" is on, the name in Holded is "WC name + brand" — a derived
+        // value that must never be written back to WC, otherwise each push/pull cycle
+        // appends the brand again ("Averoldi Averoldi Averoldi…").
+        if ( ! get_option( 'cthls_append_brand', false )
+            && isset( $holded_product['name'] )
+            && $wc_product->get_name() !== $holded_product['name'] ) {
             $wc_product->set_name( sanitize_text_field( $holded_product['name'] ) );
             $fields_changed = true;
         }
@@ -420,7 +469,6 @@ class CTHLS_Sync {
                     $fields_changed = true;
                 }
             } else {
-                // Custom field: saved after $wc_product->save() via update_post_meta.
                 $existing = $wc_product->get_meta( '_cthls_description' );
                 if ( $existing !== $desc ) {
                     $wc_product->update_meta_data( '_cthls_description', $desc );
@@ -434,7 +482,6 @@ class CTHLS_Sync {
             $fields_changed = true;
         }
 
-        // Stock.
         if ( isset( $holded_product['stock'] ) && $wc_product->managing_stock() ) {
             $new_stock = (int) $holded_product['stock'];
             if ( (int) $wc_product->get_stock_quantity() !== $new_stock ) {
@@ -443,7 +490,7 @@ class CTHLS_Sync {
             }
         }
 
-        if ( $fields_changed || ! $wc_product_id ) {
+        if ( $fields_changed || $is_new ) {
             // Temporarily remove our own hook to avoid loop.
             remove_action( 'woocommerce_update_product', [ 'CTHLS_Sync', 'on_product_saved' ], 20 );
             remove_action( 'woocommerce_new_product',    [ 'CTHLS_Sync', 'on_product_saved' ], 20 );

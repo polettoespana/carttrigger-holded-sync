@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.2.3-0a0a23?style=flat-square" alt="Version 1.2.3">
+  <img src="https://img.shields.io/badge/version-1.3.1-0a0a23?style=flat-square" alt="Version 1.3.0">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-8.0%2B-96588a?style=flat-square" alt="WooCommerce 8.0+">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -113,12 +113,24 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 
 ## Known limitations
 
-- **Secondary price tiers** — The Holded API does not expose secondary price rates. Only the main price (Tarifa principal) is synced. We are active Holded users and will add support for additional price tiers as soon as the API makes them available.
+- **Variable products — flattened to simple in Holded** — Holded does not handle product variants reliably via API. Variable products in WooCommerce are pushed to Holded as separate simple products — one per variation — each with its own SKU. The parent variable product is never created in Holded. During pull (Holded → WC), each Holded product is matched by SKU to the corresponding WC variation; only stock and price are updated. The product structure in WooCommerce is never altered by the pull.
+- **Multiple price tiers** — The Holded API does not expose secondary price rates (e.g. Ho.re.ca). Only the main price is synced. Additional price tiers must be set manually in Holded for each product (including each variation pushed as a simple product). Support will be added as soon as Holded makes them available via API.
 - **Product images** — The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface.
 
 ---
 
 ## Changelog
+
+### 1.3.1
+
+- Fix: when "Append brand to name" is enabled, the product name is no longer overwritten in WooCommerce during pull — prevents the brand from being appended repeatedly on each push/pull cycle ("Averoldi Averoldi Averoldi…").
+
+### 1.3.0
+
+- Change: variable products in WooCommerce are now pushed to Holded as separate simple products — one per variation — instead of a single product with variants. Holded does not handle variant-type products correctly via API.
+- Change: Holded → WC pull now matches Holded products to WC variations by SKU and updates only stock and price; the product structure (parent/variation) in WooCommerce is never modified.
+- Change: `_cthls_product_id` is now stored on each WC variation directly (not on the parent). Stock sync for variations uses the variation's own Holded product ID.
+- Known limitation updated: variable product handling and price tiers.
 
 ### 1.2.3
 

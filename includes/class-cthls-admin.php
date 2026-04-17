@@ -415,19 +415,19 @@ class CTHLS_Admin {
                 </h2>
                 <ul class="cthls-limitations-list">
                     <li>
+                        <strong><?php esc_html_e( 'Variable products — flattened to simple in Holded', 'carttrigger-holded-sync' ); ?></strong>
+                        &mdash;
+                        <?php esc_html_e( 'Holded does not handle product variants reliably via API. Variable products in WooCommerce are pushed to Holded as separate simple products — one per variation — each with its own SKU. The parent variable product is never created in Holded. During pull (Holded → WC), each Holded product is matched by SKU to the corresponding WC variation; only stock and price are updated. The product structure in WooCommerce is never altered by the pull.', 'carttrigger-holded-sync' ); ?>
+                    </li>
+                    <li>
                         <strong><?php esc_html_e( 'Multiple price tiers', 'carttrigger-holded-sync' ); ?></strong>
                         &mdash;
-                        <?php esc_html_e( 'The Holded API does not currently expose product price rates (tariffe). Syncing secondary prices (e.g. Ho.re.ca) is not possible until Holded adds API support for this feature. This limitation will be addressed as soon as it becomes available.', 'carttrigger-holded-sync' ); ?>
+                        <?php esc_html_e( 'The Holded API does not expose secondary price rates (e.g. Ho.re.ca). Only the main price is synced. Additional price tiers must be set manually in Holded for each product (including each variation pushed as a simple product). This limitation will be addressed as soon as Holded adds API support.', 'carttrigger-holded-sync' ); ?>
                     </li>
                     <li>
                         <strong><?php esc_html_e( 'Product images', 'carttrigger-holded-sync' ); ?></strong>
                         &mdash;
                         <?php esc_html_e( 'The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface.', 'carttrigger-holded-sync' ); ?>
-                    </li>
-                    <li>
-                        <strong><?php esc_html_e( 'Variable product updates', 'carttrigger-holded-sync' ); ?></strong>
-                        &mdash;
-                        <?php esc_html_e( 'The Holded API does not support updating variable products (kind: variants) via PUT. After the initial creation, only stock is kept in sync. Name, price and description changes on variable products must be made manually in Holded.', 'carttrigger-holded-sync' ); ?>
                     </li>
                 </ul>
             </div>
@@ -527,7 +527,6 @@ class CTHLS_Admin {
                             <tr><td><code>pull_create</code></td><td><?php esc_html_e( 'A new product was created in WooCommerce from Holded data.', 'carttrigger-holded-sync' ); ?></td></tr>
                             <tr><td><code>pull_update</code></td><td><?php esc_html_e( 'An existing WooCommerce product was updated with data from Holded.', 'carttrigger-holded-sync' ); ?></td></tr>
                             <tr><td><code>pull_save_error</code></td><td><?php esc_html_e( 'Error while saving a product in WooCommerce during the pull.', 'carttrigger-holded-sync' ); ?></td></tr>
-                            <tr><td><code>variant_ids_synced</code></td><td><?php esc_html_e( 'Holded variant IDs fetched and stored on WC variations after a successful push.', 'carttrigger-holded-sync' ); ?></td></tr>
                         </tbody>
                     </table>
                 </details>

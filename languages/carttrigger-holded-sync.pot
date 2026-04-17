@@ -366,3 +366,31 @@ msgstr ""
 #: includes/class-cthls-admin.php
 msgid "Error while saving a product in WooCommerce during the pull."
 msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Known limitations"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Variable products — flattened to simple in Holded"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Holded does not handle product variants reliably via API. Variable products in WooCommerce are pushed to Holded as separate simple products — one per variation — each with its own SKU. The parent variable product is never created in Holded. During pull (Holded → WC), each Holded product is matched by SKU to the corresponding WC variation; only stock and price are updated. The product structure in WooCommerce is never altered by the pull."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Multiple price tiers"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "The Holded API does not expose secondary price rates (e.g. Ho.re.ca). Only the main price is synced. Additional price tiers must be set manually in Holded for each product (including each variation pushed as a simple product). This limitation will be addressed as soon as Holded adds API support."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Product images"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface."
+msgstr ""

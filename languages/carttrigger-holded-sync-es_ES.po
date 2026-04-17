@@ -294,8 +294,8 @@ msgstr "Imágenes de producto"
 msgid "The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface."
 msgstr "La API de Holded no permite establecer imágenes de producto vía REST API. Las imágenes deben subirse manualmente desde la interfaz de Holded."
 
-msgid "The Holded API does not currently expose product price rates (tariffe). Syncing secondary prices (e.g. Ho.re.ca) is not possible until Holded adds API support for this feature. This limitation will be addressed as soon as it becomes available."
-msgstr "La API de Holded no expone actualmente las tarifas de producto. La sincronización de tarifas adicionales a la Tarifa principal no es posible hasta que Holded añada soporte API para esta función. La limitación se resolverá en cuanto esté disponible."
+msgid "The Holded API does not expose secondary price rates (e.g. Ho.re.ca). Only the main price is synced. Additional price tiers must be set manually in Holded for each product (including each variation pushed as a simple product). This limitation will be addressed as soon as Holded adds API support."
+msgstr "La API de Holded no expone tarifas de precio secundarias (p. ej. Ho.re.ca). Solo se sincroniza el precio principal. Las tarifas adicionales deben configurarse manualmente en Holded para cada producto (incluida cada variación enviada como producto simple). La limitación se resolverá en cuanto Holded añada soporte API."
 
 msgid "Reschedule"
 msgstr "Reprogramar"
@@ -309,11 +309,8 @@ msgstr "Programado, pero no se pudo leer la próxima hora de ejecución."
 msgid "Existing Holded product found by SKU and linked to the WooCommerce product (avoids duplicate creation)."
 msgstr "Producto de Holded existente encontrado por SKU y vinculado al producto de WooCommerce (evita la creación de duplicados)."
 
-msgid "Holded variant IDs fetched and stored on WC variations after a successful push."
-msgstr "IDs de variantes de Holded obtenidos y guardados en las variaciones de WC tras un push exitoso."
+msgid "Variable products — flattened to simple in Holded"
+msgstr "Productos variables — aplanados como simples en Holded"
 
-msgid "Variable product updates"
-msgstr "Actualización de productos variables"
-
-msgid "The Holded API does not support updating variable products (kind: variants) via PUT. After the initial creation, only stock is kept in sync. Name, price and description changes on variable products must be made manually in Holded."
-msgstr "La API de Holded no permite actualizar productos variables (kind: variants) mediante PUT. Tras la creación inicial, solo se sincroniza el stock. Los cambios de nombre, precio y descripción en productos variables deben realizarse manualmente en Holded."
+msgid "Holded does not handle product variants reliably via API. Variable products in WooCommerce are pushed to Holded as separate simple products — one per variation — each with its own SKU. The parent variable product is never created in Holded. During pull (Holded → WC), each Holded product is matched by SKU to the corresponding WC variation; only stock and price are updated. The product structure in WooCommerce is never altered by the pull."
+msgstr "Holded no gestiona correctamente las variantes de producto mediante API. Los productos variables en WooCommerce se envían a Holded como productos simples independientes — uno por variación — cada uno con su propio SKU. El producto padre variable nunca se crea en Holded. Durante el pull (Holded → WC), cada producto de Holded se empareja por SKU con la variación de WC correspondiente; solo se actualizan el stock y el precio. La estructura de productos en WooCommerce nunca es modificada por el pull."
