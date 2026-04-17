@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,9 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.3.4 =
+* Enhancement: new "Variation name format" setting — choose between space ("Benaco Magnum 15 litros") or parentheses ("Benaco (Magnum 15 litros)") when pushing variation names to Holded.
 
 = 1.3.3 =
 * Fix: variation names pushed to Holded now use the readable attribute label instead of the taxonomy slug (e.g. "Magnum 15 litros" instead of "magnum-15-litros").

@@ -323,7 +323,12 @@ class CTHLS_Sync {
 
         $variation_name = $parent->get_name();
         if ( ! empty( $labels ) ) {
-            $variation_name .= ' ' . implode( ' / ', $labels );
+            $attr_string = implode( ' / ', $labels );
+            if ( 'parens' === get_option( 'cthls_variation_name_format', 'space' ) ) {
+                $variation_name .= ' (' . $attr_string . ')';
+            } else {
+                $variation_name .= ' ' . $attr_string;
+            }
         }
 
         if ( get_option( 'cthls_append_brand', false ) ) {

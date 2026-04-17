@@ -55,9 +55,10 @@ class CTHLS_Admin {
             'cthls_sync_desc',
             'cthls_desc_source',
             'cthls_append_brand',
+            'cthls_variation_name_format',
             'cthls_debug_log',
         ];
-        $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source' ];
+        $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source', 'cthls_variation_name_format' ];
 
         // Reschedule Action Scheduler when interval changes.
         add_action( 'update_option_cthls_pull_interval', function( $old, $new ) {
@@ -389,6 +390,21 @@ class CTHLS_Admin {
                                         <?php checked( get_option( 'cthls_append_brand', false ) ); ?> />
                                     <?php esc_html_e( 'Append the product brand (product_brand taxonomy) to the product name when syncing to Holded', 'carttrigger-holded-sync' ); ?>
                                 </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e( 'Variation name format', 'carttrigger-holded-sync' ); ?></th>
+                            <td>
+                                <?php $fmt = get_option( 'cthls_variation_name_format', 'space' ); ?>
+                                <select name="cthls_variation_name_format">
+                                    <option value="space" <?php selected( $fmt, 'space' ); ?>>
+                                        <?php esc_html_e( 'Space — Benaco Magnum 15 litros', 'carttrigger-holded-sync' ); ?>
+                                    </option>
+                                    <option value="parens" <?php selected( $fmt, 'parens' ); ?>>
+                                        <?php esc_html_e( 'Parentheses — Benaco (Magnum 15 litros)', 'carttrigger-holded-sync' ); ?>
+                                    </option>
+                                </select>
+                                <p class="description"><?php esc_html_e( 'How to append attribute values to the parent product name when syncing variations to Holded.', 'carttrigger-holded-sync' ); ?></p>
                             </td>
                         </tr>
                         <tr>
