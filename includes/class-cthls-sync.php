@@ -185,6 +185,91 @@ class CTHLS_Sync {
         // Optionally handle out-of-stock transitions.
     }
 
+    // ── WC → Holded / Holded → WC (single SKU) ──────────────────────────────
+
+    /**
+     * Push a single WC product or variation (by SKU) to Holded.
+     *
+     * @param  string $sku
+     * @return string|WP_Error  Success message or WP_Error.
+     */
+    public static function push_single_sku( $sku ) {
+        if ( ! self::$api ) {
+            self::$api = new CTHLS_API();
+        }
+
+        $product_id = wc_get_product_id_by_sku( $sku );
+        if ( ! $product_id ) {
+            return new WP_Error( 'cthls_sku_not_found', sprintf( 'SKU "%s" not found in WooCommerce.', $sku ) );
+        }
+
+        $product = wc_get_product( $product_id );
+        if ( ! $product ) {
+            return new WP_Error( 'cthls_product_not_found', sprintf( 'Product for SKU "%s" could not be loaded.', $sku ) );
+        }
+
+        self::$synced = [];
+
+        if ( $product instanceof WC_Product_Variation ) {
+            $parent = wc_get_product( $product->get_parent_id() );
+            if ( ! $parent ) {
+                return new WP_Error( 'cthls_parent_not_found', 'Parent product not found.' );
+            }
+            $holded_id = get_post_meta( $product_id, '_cthls_product_id', true );
+            $data      = self::variation_to_holded( $product, $parent );
+
+            if ( $holded_id ) {
+                $result = self::$api->update_product( $holded_id, $data );
+            } else {
+                $existing = self::$api->find_product_by_sku( $sku );
+                if ( $existing && isset( $existing['id'] ) ) {
+                    $holded_id = $existing['id'];
+                    update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
+                    $result = self::$api->update_product( $holded_id, $data );
+                } else {
+                    $result = self::$api->create_product( $data );
+                    if ( ! is_wp_error( $result ) && isset( $result['id'] ) ) {
+                        update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $result['id'] ) );
+                    }
+                }
+            }
+        } else {
+            // Simple or variable parent — delegate to existing logic.
+            self::on_product_saved( $product_id );
+            return sprintf( 'SKU "%s" pushed to Holded.', $sku );
+        }
+
+        if ( is_wp_error( $result ) ) {
+            return $result;
+        }
+        return sprintf( 'SKU "%s" pushed to Holded.', $sku );
+    }
+
+    /**
+     * Pull a single product from Holded by SKU and update WooCommerce.
+     *
+     * @param  string $sku
+     * @return string|WP_Error  Success message or WP_Error.
+     */
+    public static function pull_single_sku( $sku ) {
+        if ( ! self::$api ) {
+            self::$api = new CTHLS_API();
+        }
+
+        self::$pulled = [];
+
+        $holded_product = self::$api->find_product_by_sku( $sku );
+        if ( ! $holded_product ) {
+            return new WP_Error( 'cthls_sku_not_found_holded', sprintf( 'SKU "%s" not found in Holded.', $sku ) );
+        }
+        if ( is_wp_error( $holded_product ) ) {
+            return $holded_product;
+        }
+
+        self::holded_product_to_wc( $holded_product );
+        return sprintf( 'SKU "%s" pulled from Holded.', $sku );
+    }
+
     // ── WC → Holded (bulk) ──────────────────────────────────────────────────
 
     /**

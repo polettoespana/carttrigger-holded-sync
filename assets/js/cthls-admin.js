@@ -160,6 +160,44 @@
         });
     });
 
+    // ── Single SKU sync ──────────────────────────────────────────────────────
+    function skuSync(action, btnSelector) {
+        var $btn     = $(btnSelector);
+        var $result  = $('#cthls-sku-result');
+        var $input   = $('#cthls-sku-input');
+        var sku      = $.trim($input.val());
+        var origText = $btn.text();
+
+        if (!sku) {
+            $result.removeClass('success error').addClass('error').text('✗ SKU required');
+            return;
+        }
+
+        $btn.prop('disabled', true).text(cthls.i18n_loading);
+        $('#cthls-sku-push-btn, #cthls-sku-pull-btn').prop('disabled', true);
+        $result.removeClass('success error').text('');
+
+        $.post(ajaxurl, { action: action, nonce: cthls.nonce, sku: sku })
+        .done(function (res) {
+            if (res.success) {
+                $result.addClass('success').text('✓ ' + res.data.message);
+                setTimeout(function () { location.reload(); }, 1500);
+            } else {
+                $result.addClass('error').text('✗ ' + res.data.message);
+                $('#cthls-sku-push-btn, #cthls-sku-pull-btn').prop('disabled', false);
+                $btn.text(origText);
+            }
+        })
+        .fail(function () {
+            $result.addClass('error').text('✗ ' + cthls.i18n_error);
+            $('#cthls-sku-push-btn, #cthls-sku-pull-btn').prop('disabled', false);
+            $btn.text(origText);
+        });
+    }
+
+    $('#cthls-sku-push-btn').on('click', function () { skuSync('cthls_sync_sku_push', '#cthls-sku-push-btn'); });
+    $('#cthls-sku-pull-btn').on('click', function () { skuSync('cthls_sync_sku_pull', '#cthls-sku-pull-btn'); });
+
     // ── Clear log ────────────────────────────────────────────────────────────
     $('#cthls-clear-log').on('click', function () {
         $.post(ajaxurl, {

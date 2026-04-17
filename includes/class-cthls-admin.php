@@ -26,6 +26,8 @@ class CTHLS_Admin {
         add_action( 'wp_ajax_cthls_get_warehouses', [ __CLASS__, 'ajax_get_warehouses' ] );
         add_action( 'wp_ajax_cthls_manual_push', [ __CLASS__, 'ajax_manual_push' ] );
         add_action( 'wp_ajax_cthls_reschedule', [ __CLASS__, 'ajax_reschedule' ] );
+        add_action( 'wp_ajax_cthls_sync_sku_push', [ __CLASS__, 'ajax_sync_sku_push' ] );
+        add_action( 'wp_ajax_cthls_sync_sku_pull', [ __CLASS__, 'ajax_sync_sku_pull' ] );
     }
 
     public static function add_menu() {
@@ -180,6 +182,38 @@ class CTHLS_Admin {
         }
         delete_option( 'cthls_log' );
         wp_send_json_success();
+    }
+
+    public static function ajax_sync_sku_push() {
+        check_ajax_referer( 'cthls_admin', 'nonce' );
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Unauthorized', 'carttrigger-holded-sync' ) ] );
+        }
+        $sku = isset( $_POST['sku'] ) ? sanitize_text_field( wp_unslash( $_POST['sku'] ) ) : '';
+        if ( ! $sku ) {
+            wp_send_json_error( [ 'message' => __( 'SKU is required.', 'carttrigger-holded-sync' ) ] );
+        }
+        $result = CTHLS_Sync::push_single_sku( $sku );
+        if ( is_wp_error( $result ) ) {
+            wp_send_json_error( [ 'message' => $result->get_error_message() ] );
+        }
+        wp_send_json_success( [ 'message' => $result ] );
+    }
+
+    public static function ajax_sync_sku_pull() {
+        check_ajax_referer( 'cthls_admin', 'nonce' );
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Unauthorized', 'carttrigger-holded-sync' ) ] );
+        }
+        $sku = isset( $_POST['sku'] ) ? sanitize_text_field( wp_unslash( $_POST['sku'] ) ) : '';
+        if ( ! $sku ) {
+            wp_send_json_error( [ 'message' => __( 'SKU is required.', 'carttrigger-holded-sync' ) ] );
+        }
+        $result = CTHLS_Sync::pull_single_sku( $sku );
+        if ( is_wp_error( $result ) ) {
+            wp_send_json_error( [ 'message' => $result->get_error_message() ] );
+        }
+        wp_send_json_success( [ 'message' => $result ] );
     }
 
     public static function ajax_reschedule() {
@@ -428,6 +462,31 @@ class CTHLS_Admin {
 
                 <?php submit_button( __( 'Save settings', 'carttrigger-holded-sync' ) ); ?>
             </form>
+
+            <!-- ── Single SKU sync ── -->
+            <div class="cthls-card">
+                <h2>
+                    <span class="dashicons dashicons-search"></span>
+                    <?php esc_html_e( 'Single SKU sync', 'carttrigger-holded-sync' ); ?>
+                </h2>
+                <div class="cthls-sync-row">
+                    <p class="description"><?php esc_html_e( 'Sync a single product or variation by SKU without running a full push/pull.', 'carttrigger-holded-sync' ); ?></p>
+                    <div class="cthls-field-group" style="margin-bottom:10px;">
+                        <input type="text" id="cthls-sku-input" placeholder="<?php esc_attr_e( 'Enter SKU…', 'carttrigger-holded-sync' ); ?>" style="width:260px;" />
+                    </div>
+                    <div class="cthls-sync-actions">
+                        <button type="button" id="cthls-sku-push-btn" class="button button-primary">
+                            <span class="dashicons dashicons-upload"></span>
+                            <?php esc_html_e( 'Push to Holded', 'carttrigger-holded-sync' ); ?>
+                        </button>
+                        <button type="button" id="cthls-sku-pull-btn" class="button button-secondary">
+                            <span class="dashicons dashicons-download"></span>
+                            <?php esc_html_e( 'Pull from Holded', 'carttrigger-holded-sync' ); ?>
+                        </button>
+                        <span id="cthls-sku-result"></span>
+                    </div>
+                </div>
+            </div>
 
             <!-- ── Known limitations ── -->
             <div class="cthls-card cthls-card-notice">

@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.3.6
+Stable tag: 1.3.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,8 +59,11 @@ WooCommerce takes priority for real-time changes. Holded changes are applied eve
 
 == Changelog ==
 
+= 1.3.7 =
+* Enhancement: Single SKU sync — new card in settings page to push or pull a single product/variation by SKU without running a full bulk sync.
+
 = 1.3.6 =
-* Debug: added pull_price_check log event for variations — logs Holded raw price, converted WC price, current WC price and whether an update is triggered, to diagnose price sync issues.
+* Debug: added pull_price_check log event for variations — logs Holded raw price, converted WC price, current WC price and whether an update is triggered.
 
 = 1.3.5 =
 * Enhancement: new "Include draft products" option — when enabled, draft products are included in both real-time and bulk push (WC → Holded).
