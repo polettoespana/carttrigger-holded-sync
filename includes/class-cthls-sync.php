@@ -426,8 +426,18 @@ class CTHLS_Sync {
                 $fields_changed = false;
 
                 if ( isset( $holded_product['price'] ) ) {
-                    $new_price = self::holded_price_to_wc( $holded_product['price'], $wc_product );
-                    if ( $wc_product->get_regular_price() !== $new_price ) {
+                    $holded_raw = $holded_product['price'];
+                    $new_price  = self::holded_price_to_wc( $holded_raw, $wc_product );
+                    $wc_price   = $wc_product->get_regular_price();
+                    self::log( 'pull_price_check', $wc_product_id, sprintf(
+                        'SKU %s — Holded raw: %s → converted: %s | WC current: %s | match: %s',
+                        $sku,
+                        $holded_raw,
+                        $new_price,
+                        $wc_price,
+                        $wc_price === $new_price ? 'yes (no update)' : 'no (will update)'
+                    ) );
+                    if ( $wc_price !== $new_price ) {
                         $wc_product->set_regular_price( $new_price );
                         $fields_changed = true;
                     }
