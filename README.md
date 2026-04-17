@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.3.1-0a0a23?style=flat-square" alt="Version 1.3.0">
+  <img src="https://img.shields.io/badge/version-1.3.2-0a0a23?style=flat-square" alt="Version 1.3.0">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-8.0%2B-96588a?style=flat-square" alt="WooCommerce 8.0+">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -120,6 +120,11 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ---
 
 ## Changelog
+
+### 1.3.2
+
+- Fix: product name in WooCommerce is never overwritten from Holded — WC is the source of truth. A `pull_name_skipped` log entry is recorded when the name in Holded differs.
+- Fix: price of WC variations is now correctly synced from Holded during pull (variations are pushed as simple products, so their price is fully accessible via API).
 
 ### 1.3.1
 

@@ -443,14 +443,14 @@ class CTHLS_Sync {
 
         // ── Simple product: update all syncable fields ────────────────────────
 
-        // When "append brand" is on, the name in Holded is "WC name + brand" — a derived
-        // value that must never be written back to WC, otherwise each push/pull cycle
-        // appends the brand again ("Averoldi Averoldi Averoldi…").
-        if ( ! get_option( 'cthls_append_brand', false )
-            && isset( $holded_product['name'] )
-            && $wc_product->get_name() !== $holded_product['name'] ) {
-            $wc_product->set_name( sanitize_text_field( $holded_product['name'] ) );
-            $fields_changed = true;
+        // WC is the source of truth for product names — never overwrite from Holded.
+        // Log a notice if the name differs so the user is aware of the discrepancy.
+        if ( isset( $holded_product['name'] ) && $wc_product->get_name() !== $holded_product['name'] ) {
+            self::log( 'pull_name_skipped', $wc_product->get_id(), sprintf(
+                'Name in Holded differs — WC: "%s" / Holded: "%s"',
+                $wc_product->get_name(),
+                $holded_product['name']
+            ) );
         }
 
         if ( isset( $holded_product['price'] ) ) {
