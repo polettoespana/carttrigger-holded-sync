@@ -56,6 +56,7 @@ class CTHLS_Admin {
             'cthls_desc_source',
             'cthls_append_brand',
             'cthls_variation_name_format',
+            'cthls_sync_drafts',
             'cthls_debug_log',
         ];
         $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source', 'cthls_variation_name_format' ];
@@ -303,6 +304,11 @@ class CTHLS_Admin {
                                         <input type="checkbox" name="cthls_sync_pull" value="1"
                                             <?php checked( get_option( 'cthls_sync_pull' ) ); ?> />
                                         <?php esc_html_e( 'Holded → WooCommerce (scheduled pull every X minutes)', 'carttrigger-holded-sync' ); ?>
+                                    </label>
+                                    <label style="display:block;margin-top:6px;">
+                                        <input type="checkbox" name="cthls_sync_drafts" value="1"
+                                            <?php checked( get_option( 'cthls_sync_drafts' ) ); ?> />
+                                        <?php esc_html_e( 'Include draft products in WooCommerce → Holded sync (real-time and bulk push)', 'carttrigger-holded-sync' ); ?>
                                     </label>
                                 </fieldset>
                             </td>

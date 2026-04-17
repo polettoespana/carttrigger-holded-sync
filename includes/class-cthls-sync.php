@@ -52,7 +52,13 @@ class CTHLS_Sync {
 
         $product = wc_get_product( $product_id );
         if ( ! $product || $product->get_parent_id() ) {
-            return; // Skip variations (handled as variants inside the parent).
+            return; // Skip variations (handled inside the parent).
+        }
+
+        // Skip drafts unless the user explicitly enabled draft sync.
+        $status = $product->get_status();
+        if ( 'publish' !== $status && ! ( 'draft' === $status && get_option( 'cthls_sync_drafts', false ) ) ) {
+            return;
         }
 
         // Variable products: sync each variation as a separate simple product in Holded.
@@ -195,8 +201,9 @@ class CTHLS_Sync {
         self::log( 'push_start', 0, 'manual' );
         self::$synced = [];
 
+        $statuses    = get_option( 'cthls_sync_drafts', false ) ? [ 'publish', 'draft' ] : [ 'publish' ];
         $product_ids = wc_get_products( [
-            'status'  => 'publish',
+            'status'  => $statuses,
             'limit'   => -1,
             'return'  => 'ids',
             'type'    => [ 'simple', 'variable' ],

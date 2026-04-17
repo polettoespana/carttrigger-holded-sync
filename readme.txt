@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.3.4
+Stable tag: 1.3.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,9 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.3.5 =
+* Enhancement: new "Include draft products" option — when enabled, draft products are included in both real-time and bulk push (WC → Holded).
 
 = 1.3.4 =
 * Enhancement: new "Variation name format" setting — choose between space ("Benaco Magnum 15 litros") or parentheses ("Benaco (Magnum 15 litros)") when pushing variation names to Holded.
