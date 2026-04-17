@@ -304,11 +304,26 @@ class CTHLS_Sync {
      * @return array
      */
     private static function variation_to_holded( WC_Product $variation, WC_Product $parent ) {
-        // Build a descriptive name: parent name + attribute values (e.g. "Groppello 75cl / 6").
-        $attr_values    = array_filter( array_values( $variation->get_attributes() ) );
+        // Build a descriptive name: parent name + readable attribute labels.
+        // get_attributes() returns slugs for taxonomy-based attributes (e.g. "magnum-15-litros").
+        // We resolve each to its term name to get the human-readable label (e.g. "Magnum 15 litros").
+        $labels = [];
+        foreach ( $variation->get_variation_attributes() as $attribute_name => $attribute_value ) {
+            if ( '' === $attribute_value ) {
+                continue;
+            }
+            $taxonomy = str_replace( 'attribute_', '', $attribute_name );
+            if ( taxonomy_exists( $taxonomy ) ) {
+                $term = get_term_by( 'slug', $attribute_value, $taxonomy );
+                $labels[] = $term ? $term->name : $attribute_value;
+            } else {
+                $labels[] = $attribute_value;
+            }
+        }
+
         $variation_name = $parent->get_name();
-        if ( ! empty( $attr_values ) ) {
-            $variation_name .= ' ' . implode( ' / ', $attr_values );
+        if ( ! empty( $labels ) ) {
+            $variation_name .= ' ' . implode( ' / ', $labels );
         }
 
         if ( get_option( 'cthls_append_brand', false ) ) {

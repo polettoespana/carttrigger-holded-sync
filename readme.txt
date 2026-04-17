@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,9 +59,12 @@ WooCommerce takes priority for real-time changes. Holded changes are applied eve
 
 == Changelog ==
 
+= 1.3.3 =
+* Fix: variation names pushed to Holded now use the readable attribute label instead of the taxonomy slug (e.g. "Magnum 15 litros" instead of "magnum-15-litros").
+
 = 1.3.2 =
 * Fix: product name in WooCommerce is never overwritten from Holded — WC is the source of truth. A log entry (pull_name_skipped) is recorded when the name in Holded differs.
-* Fix: price of WC variations is now correctly synced from Holded during pull (variations are pushed as simple products, so their price is fully accessible via API).
+* Fix: price of WC variations now correctly synced from Holded during pull.
 
 = 1.3.1 =
 * Fix: when "Append brand to name" is enabled, the product name is no longer overwritten in WooCommerce during pull — prevents the brand from being appended repeatedly on each push/pull cycle ("Averoldi Averoldi Averoldi…").
