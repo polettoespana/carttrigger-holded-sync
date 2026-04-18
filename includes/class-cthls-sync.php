@@ -22,6 +22,13 @@ class CTHLS_Sync {
     /** @var int[] Products already synced in this request (prevent double fire). */
     private static $synced = [];
 
+    /**
+     * When true, on_product_saved() skips the push_enabled() check.
+     * Used by push_single_sku() so manual operations always run
+     * regardless of whether automatic push is enabled.
+     */
+    private static $force_push = false;
+
     public static function init() {
         self::$api = new CTHLS_API();
 
@@ -41,7 +48,7 @@ class CTHLS_Sync {
      * Sync a WC product (simple or variable) to Holded.
      */
     public static function on_product_saved( $product_id ) {
-        if ( ! self::push_enabled() ) {
+        if ( ! self::$force_push && ! self::push_enabled() ) {
             return;
         }
 
@@ -234,8 +241,10 @@ class CTHLS_Sync {
                 }
             }
         } else {
-            // Simple or variable parent — delegate to existing logic.
+            // Simple or variable parent — delegate to existing logic (force bypass enabled check).
+            self::$force_push = true;
             self::on_product_saved( $product_id );
+            self::$force_push = false;
             return sprintf( 'SKU "%s" pushed to Holded.', $sku );
         }
 
@@ -279,10 +288,7 @@ class CTHLS_Sync {
      * @return int Number of products processed.
      */
     public static function push_to_holded() {
-        if ( ! self::push_enabled() ) {
-            return 0;
-        }
-
+        // Manual bulk push always runs regardless of automatic push setting.
         self::log( 'push_start', 0, 'manual' );
         self::$synced = [];
 
@@ -294,11 +300,13 @@ class CTHLS_Sync {
             'type'    => [ 'simple', 'variable' ],
         ] );
 
-        $processed = 0;
+        $processed        = 0;
+        self::$force_push = true;
         foreach ( $product_ids as $product_id ) {
             self::on_product_saved( $product_id );
             $processed++;
         }
+        self::$force_push = false;
 
         self::log( 'push_complete', 0, sprintf( '%d products processed', $processed ) );
         return $processed;
@@ -311,7 +319,8 @@ class CTHLS_Sync {
      * Called by cron.
      */
     public static function pull_from_holded( $source = 'scheduled' ) {
-        if ( ! self::pull_enabled() ) {
+        // Manual pull always runs; automatic pull respects the pull enabled setting.
+        if ( 'manual' !== $source && ! self::pull_enabled() ) {
             return;
         }
 

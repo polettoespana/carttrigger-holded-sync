@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.3.7
+Stable tag: 1.3.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,10 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.3.8 =
+* Enhancement: Manual push, pull and single SKU sync now always run regardless of the automatic sync direction settings.
+* Enhancement: "Sync direction" setting renamed to "Automatic sync direction" with a note clarifying it only affects automatic sync.
 
 = 1.3.7 =
 * Enhancement: Single SKU sync — new card in settings page to push or pull a single product/variation by SKU without running a full bulk sync.

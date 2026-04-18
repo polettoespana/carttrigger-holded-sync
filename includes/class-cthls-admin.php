@@ -326,7 +326,7 @@ class CTHLS_Admin {
 
                     <table class="form-table">
                         <tr>
-                            <th><?php esc_html_e( 'Sync direction', 'carttrigger-holded-sync' ); ?></th>
+                            <th><?php esc_html_e( 'Automatic sync direction', 'carttrigger-holded-sync' ); ?></th>
                             <td>
                                 <fieldset>
                                     <label style="display:block;margin-bottom:6px;">
@@ -344,6 +344,9 @@ class CTHLS_Admin {
                                             <?php checked( get_option( 'cthls_sync_drafts' ) ); ?> />
                                         <?php esc_html_e( 'Include draft products in WooCommerce → Holded sync (real-time and bulk push)', 'carttrigger-holded-sync' ); ?>
                                     </label>
+                                    <p class="description" style="margin-top:8px;">
+                                        <?php esc_html_e( 'These settings control automatic sync only. Manual sync (bulk push/pull) and single SKU sync always run regardless of these checkboxes.', 'carttrigger-holded-sync' ); ?>
+                                    </p>
                                 </fieldset>
                             </td>
                         </tr>

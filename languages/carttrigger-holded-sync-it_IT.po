@@ -255,14 +255,20 @@ msgstr "Prossima esecuzione pianificata: %s"
 msgid "No scheduled run found. Enable sync to activate the scheduler."
 msgstr "Nessuna esecuzione pianificata trovata. Abilita la sincronizzazione per attivare lo scheduler."
 
-msgid "Sync direction"
-msgstr "Direzione della sincronizzazione"
+msgid "Automatic sync direction"
+msgstr "Direzione della sincronizzazione automatica"
 
 msgid "WooCommerce → Holded (real-time on product save / stock change)"
 msgstr "WooCommerce → Holded (in tempo reale al salvataggio prodotto / variazione scorte)"
 
 msgid "Holded → WooCommerce (scheduled pull every X minutes)"
 msgstr "Holded → WooCommerce (pull pianificato ogni X minuti)"
+
+msgid "Include draft products in WooCommerce → Holded sync (real-time and bulk push)"
+msgstr "Includi i prodotti in bozza nella sincronizzazione WooCommerce → Holded (in tempo reale e push in blocco)"
+
+msgid "These settings control automatic sync only. Manual sync (bulk push/pull) and single SKU sync always run regardless of these checkboxes."
+msgstr "Queste impostazioni controllano solo la sincronizzazione automatica. Il sync manuale (push/pull in blocco) e il sync per SKU singolo funzionano sempre, indipendentemente da questi checkbox."
 
 msgid "Sync sale price (WC → Holded): if a sale price is set in WooCommerce, send it to Holded instead of the regular price"
 msgstr "Sincronizza prezzo in offerta (WC → Holded): se in WooCommerce è impostato un prezzo in offerta, invialo a Holded al posto del prezzo normale"

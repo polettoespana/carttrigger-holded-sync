@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.3.7-0a0a23?style=flat-square" alt="Version 1.3.0">
+  <img src="https://img.shields.io/badge/version-1.3.8-0a0a23?style=flat-square" alt="Version 1.3.8">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-8.0%2B-96588a?style=flat-square" alt="WooCommerce 8.0+">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -120,6 +120,11 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ---
 
 ## Changelog
+
+### 1.3.8
+
+- Enhancement: Manual push, pull and single SKU sync now always run regardless of the automatic sync direction settings — disabling automatic sync no longer blocks manual operations.
+- Enhancement: "Sync direction" setting renamed to "Automatic sync direction" with an explanatory note to clarify the distinction.
 
 ### 1.3.7
 
