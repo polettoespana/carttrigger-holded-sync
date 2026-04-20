@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.3.8
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,15 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.4.0 =
+* Feature: Orders → Holded documents — on payment confirmation, the plugin finds or creates the Holded contact (matched by NIF/CIF then email) and creates an invoice or sales order with all line items, shipping and tax.
+* Feature: Document type setting — choose between Invoice (factura, reduces Holded stock) and Sales order (pedido de venta, does not affect Holded stock).
+* Feature: Avoid stock duplication — after creating an invoice, re-pushes WC stock to Holded to correct the stock reduction caused by the invoice. Allows keeping WC→Holded stock push active alongside invoice creation.
+* Feature: Variation name format — new "Dash" option (Benaco – Magnum (1,5 litros)) to avoid nested parentheses when attribute values already contain parentheses.
+* Enhancement: Holded contact ID stored in order meta (_cthls_contact_id) and WP user meta for reuse across orders.
+* Enhancement: configurable NIF/CIF meta key (default _billing_nif) and email meta key (optional override of WC billing email).
+* Enhancement: translations (ES, IT) updated for all new strings.
 
 = 1.3.8 =
 * Enhancement: Manual push, pull and single SKU sync now always run regardless of the automatic sync direction settings.
