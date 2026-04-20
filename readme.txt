@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,9 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.4.1 =
+* Enhancement: after a Holded → WC pull that updates at least one product, LiteSpeed Cache is automatically purged. No effect if LiteSpeed Cache is not installed.
 
 = 1.4.0 =
 * Feature: Orders → Holded documents — on payment confirmation, the plugin finds or creates the Holded contact (matched by NIF/CIF then email) and creates an invoice or sales order with all line items, shipping and tax.

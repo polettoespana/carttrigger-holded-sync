@@ -5,7 +5,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: CartTrigger – Holded Sync 1.4.0\n"
+"Project-Id-Version: CartTrigger – Holded Sync 1.4.1\n"
 "Report-Msgid-Bugs-To: https://poletto.es\n"
 "POT-Creation-Date: 2026-03-19 00:00+0000\n"
 "MIME-Version: 1.0\n"

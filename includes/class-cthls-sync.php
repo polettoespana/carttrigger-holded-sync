@@ -352,6 +352,11 @@ class CTHLS_Sync {
 
         update_option( 'cthls_last_pull', current_time( 'mysql' ) );
         self::log( 'pull_complete', 0, sprintf( '%d products processed', $processed ) );
+
+        // Purge LiteSpeed Cache if any WC products were actually updated.
+        if ( ! empty( self::$pulled ) ) {
+            do_action( 'litespeed_purge_all' );
+        }
     }
 
     // ── Data mapping ─────────────────────────────────────────────────────────
