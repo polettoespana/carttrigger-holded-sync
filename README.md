@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.3.8-0a0a23?style=flat-square" alt="Version 1.3.8">
+  <img src="https://img.shields.io/badge/version-1.4.0-0a0a23?style=flat-square" alt="Version 1.4.0">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-8.0%2B-96588a?style=flat-square" alt="WooCommerce 8.0+">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -20,8 +20,9 @@ Bidirectional sync between WooCommerce products/stock and Holded ERP.
 | --------------- | ----------------------------------------- | ---------------------------------------------------------- |
 | **WC → Holded** | Real-time on product save or stock change | Can also be triggered manually (bulk push)                 |
 | **Holded → WC** | Scheduled pull via Action Scheduler       | Default every 15 min — configurable. Manual pull available |
+| **Orders**      | On payment confirmation (`woocommerce_payment_complete`) | Creates a Holded document (invoice or sales order) for each paid order |
 
-Each direction can be enabled independently in settings.
+Each sync direction can be enabled independently in settings.
 
 ---
 
@@ -59,9 +60,31 @@ Each direction can be enabled independently in settings.
 | Sync description     | Enable description sync (both directions)                                        |
 | Description source   | Custom field (Holded Sync tab) or full WooCommerce description                   |
 | Append brand to name        | Appends `product_brand` taxonomy term to product name in Holded                  |
-| Sync image                  | Send the product featured image URL to Holded (WC → Holded only)                 |
-| Overwrite existing image    | If unchecked, image is sent only on first sync                                   |
+| Variation name format       | Space, Dash (`–`) or Parentheses separator between parent name and attribute values |
 | Enable log                  | Stores last 50 sync events for debugging                                         |
+
+### Orders → Holded documents
+
+| Option                    | Description                                                                                          |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Create document           | Enable automatic document creation in Holded on payment confirmation                                 |
+| Document type             | **Invoice** (factura, reduces Holded stock) or **Sales order** (pedido de venta, does not affect stock) |
+| Avoid stock duplication   | After creating an invoice, re-pushes WC stock to Holded to correct the reduction caused by the invoice. Use when WC→Holded stock push is also active |
+| NIF/CIF meta key          | Order meta key where the customer NIF/CIF/NIE is stored. Default: `_billing_nif`                     |
+| Email meta key            | Order meta key for the customer email. Leave empty to use the standard WooCommerce billing email     |
+
+---
+
+## Order meta
+
+When a document is created in Holded, the following meta keys are stored on the WC order:
+
+| Meta key             | Content                              |
+| -------------------- | ------------------------------------ |
+| `_cthls_contact_id`  | Holded contact ID (found or created) |
+| `_cthls_invoice_id`  | Holded document ID (invoice or sales order) |
+
+The Holded contact ID is also saved on the WP user (`_cthls_contact_id`) so subsequent orders by the same customer reuse the existing Holded contact without an extra API call.
 
 ---
 
@@ -120,6 +143,16 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ---
 
 ## Changelog
+
+### 1.4.0
+
+- Feature: **Orders → Holded documents** — on payment confirmation (`woocommerce_payment_complete`), the plugin automatically finds or creates the Holded contact (matched by NIF/CIF then email) and creates an invoice or sales order with all line items, shipping and tax.
+- Feature: **Document type** setting — choose between Invoice (factura, reduces Holded stock) and Sales order (pedido de venta, does not affect stock).
+- Feature: **Avoid stock duplication** — after creating an invoice, re-pushes WC stock to Holded to correct the stock reduction caused by the invoice. Allows keeping WC→Holded stock push active alongside invoice creation.
+- Feature: **Variation name format** — new "Dash" option (`Benaco – Magnum (1,5 litros)`) to avoid nested parentheses when attribute values already contain parentheses.
+- Enhancement: Holded contact ID stored in order meta (`_cthls_contact_id`) and WP user meta for reuse across orders.
+- Enhancement: new admin settings — NIF/CIF meta key (default `_billing_nif`), email meta key (optional override).
+- Translations (ES, IT) updated for all new strings.
 
 ### 1.3.8
 
