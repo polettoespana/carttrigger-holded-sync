@@ -5,7 +5,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: CartTrigger – Holded Sync 1.0.3\n"
+"Project-Id-Version: CartTrigger – Holded Sync 1.4.0\n"
 "Report-Msgid-Bugs-To: https://poletto.es\n"
 "POT-Creation-Date: 2026-03-19 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -393,4 +393,125 @@ msgstr ""
 
 #: includes/class-cthls-admin.php
 msgid "The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Variation name format"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Space — Benaco Magnum 15 litros"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Dash — Benaco – Magnum (1,5 litros)"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Parentheses — Benaco (Magnum 15 litros)"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "How to append attribute values to the parent product name when syncing variations to Holded."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Orders → Holded documents"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Create document"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Automatically create a document in Holded when a WooCommerce order is paid"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "For each paid order, the plugin finds or creates the Holded contact (matched by NIF then by email), then creates the selected document type with all line items and shipping. The Holded contact ID and document ID are stored in the order meta."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Document type"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Invoice (factura) — reduces Holded stock"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Sales order (pedido de venta) — does not affect Holded stock"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "If WooCommerce → Holded stock push is enabled, use Sales order to avoid double stock reduction. Use Invoice only if stock push is disabled and you want Holded to manage inventory via documents."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Avoid stock duplication"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "After creating an invoice, re-push WooCommerce stock to Holded to correct the stock reduction caused by the invoice"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Holded invoices automatically reduce stock. Enable this option to keep WooCommerce as the stock source of truth: after each invoice is created, the actual WC stock is sent back to Holded. Only applies to invoices — sales orders do not affect stock."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "WooCommerce stock re-pushed to Holded after invoice creation to correct the stock reduction."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Error while re-pushing stock to Holded after invoice creation."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "NIF/CIF meta key"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Order meta key where the customer NIF/CIF/NIE is stored. Default: _billing_nif. This value is sent to Holded as the contact code (used to find existing contacts and avoid duplicates)."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Email meta key"
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Order meta key where the customer email is stored. Leave empty to use the standard WooCommerce billing email. Set a custom key only if your checkout stores the email in a non-standard field."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Holded contact ID resolved for a WooCommerce order (found or created)."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "New contact created in Holded for a WooCommerce customer."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Error while finding or creating the Holded contact for an order."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Holded invoice created after payment confirmation. Message contains the Holded invoice ID."
+msgstr ""
+
+#: includes/class-cthls-admin.php
+msgid "Error returned by Holded when creating an invoice for an order."
+msgstr ""
+
+#: includes/class-cthls-orders.php
+msgid "Contact created but no ID returned by Holded."
+msgstr ""
+
+#: includes/class-cthls-orders.php
+#, php-format
+msgid "WooCommerce order #%s"
+msgstr ""
+
+#: includes/class-cthls-orders.php
+msgid "Shipping"
 msgstr ""

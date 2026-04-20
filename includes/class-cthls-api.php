@@ -81,6 +81,80 @@ class CTHLS_API {
         return $this->request( 'PUT', 'products/' . $holded_id . '/stock', [], $body );
     }
 
+    // ── Contacts ────────────────────────────────────────────────────────────
+
+    /**
+     * Search contacts by NIF/CIF (code field) or email.
+     * Returns first matching contact array, or null if not found.
+     *
+     * @param string $nif
+     * @param string $email
+     * @return array|null|WP_Error
+     */
+    public function find_contact( $nif = '', $email = '' ) {
+        if ( $nif ) {
+            $result = $this->request( 'GET', 'contacts', [ 'page' => 1, 'query' => $nif ] );
+            if ( is_wp_error( $result ) ) {
+                return $result;
+            }
+            foreach ( (array) $result as $c ) {
+                if ( ! empty( $c['code'] ) && strtoupper( trim( $c['code'] ) ) === strtoupper( trim( $nif ) ) ) {
+                    return $c;
+                }
+            }
+        }
+
+        if ( $email ) {
+            $result = $this->request( 'GET', 'contacts', [ 'page' => 1, 'query' => $email ] );
+            if ( is_wp_error( $result ) ) {
+                return $result;
+            }
+            foreach ( (array) $result as $c ) {
+                if ( ! empty( $c['email'] ) && strtolower( $c['email'] ) === strtolower( $email ) ) {
+                    return $c;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Create a contact in Holded.
+     *
+     * @param array $data
+     * @return array|WP_Error
+     */
+    public function create_contact( array $data ) {
+        return $this->request( 'POST', 'contacts', [], $data );
+    }
+
+    // ── Invoices ─────────────────────────────────────────────────────────────
+
+    /**
+     * Create an invoice (factura) in Holded.
+     *
+     * NOTE: invoices reduce Holded stock automatically.
+     *
+     * @param array $data
+     * @return array|WP_Error
+     */
+    public function create_invoice( array $data ) {
+        return $this->request( 'POST', 'documents/invoice', [], $data );
+    }
+
+    /**
+     * Create a sales order (pedido de venta) in Holded.
+     *
+     * Sales orders do NOT reduce Holded stock — safe to use alongside WC stock sync.
+     *
+     * @param array $data
+     * @return array|WP_Error
+     */
+    public function create_salesorder( array $data ) {
+        return $this->request( 'POST', 'documents/salesorder', [], $data );
+    }
+
     // ── Warehouses ──────────────────────────────────────────────────────────
 
     public function get_warehouses() {

@@ -59,9 +59,14 @@ class CTHLS_Admin {
             'cthls_append_brand',
             'cthls_variation_name_format',
             'cthls_sync_drafts',
+            'cthls_create_invoices',
+            'cthls_document_type',
+            'cthls_resync_stock_after_invoice',
+            'cthls_nif_meta_key',
+            'cthls_email_meta_key',
             'cthls_debug_log',
         ];
-        $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source', 'cthls_variation_name_format' ];
+        $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source', 'cthls_variation_name_format', 'cthls_document_type', 'cthls_nif_meta_key', 'cthls_email_meta_key' ];
 
         // Reschedule Action Scheduler when interval changes.
         add_action( 'update_option_cthls_pull_interval', function( $old, $new ) {
@@ -443,6 +448,9 @@ class CTHLS_Admin {
                                     <option value="space" <?php selected( $fmt, 'space' ); ?>>
                                         <?php esc_html_e( 'Space — Benaco Magnum 15 litros', 'carttrigger-holded-sync' ); ?>
                                     </option>
+                                    <option value="dash" <?php selected( $fmt, 'dash' ); ?>>
+                                        <?php esc_html_e( 'Dash — Benaco – Magnum (1,5 litros)', 'carttrigger-holded-sync' ); ?>
+                                    </option>
                                     <option value="parens" <?php selected( $fmt, 'parens' ); ?>>
                                         <?php esc_html_e( 'Parentheses — Benaco (Magnum 15 litros)', 'carttrigger-holded-sync' ); ?>
                                     </option>
@@ -458,6 +466,83 @@ class CTHLS_Admin {
                                         <?php checked( get_option( 'cthls_debug_log' ) ); ?> />
                                     <?php esc_html_e( 'Enable log (last 50 messages)', 'carttrigger-holded-sync' ); ?>
                                 </label>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- ── Orders / Invoices ── -->
+                <div class="cthls-card">
+                    <h2>
+                        <span class="dashicons dashicons-media-text"></span>
+                        <?php esc_html_e( 'Orders → Holded documents', 'carttrigger-holded-sync' ); ?>
+                    </h2>
+
+                    <table class="form-table">
+                        <tr>
+                            <th><?php esc_html_e( 'Create document', 'carttrigger-holded-sync' ); ?></th>
+                            <td>
+                                <label>
+                                    <input type="checkbox" name="cthls_create_invoices" value="1"
+                                        <?php checked( get_option( 'cthls_create_invoices', false ) ); ?> />
+                                    <?php esc_html_e( 'Automatically create a document in Holded when a WooCommerce order is paid', 'carttrigger-holded-sync' ); ?>
+                                </label>
+                                <p class="description">
+                                    <?php esc_html_e( 'For each paid order, the plugin finds or creates the Holded contact (matched by NIF then by email), then creates the selected document type with all line items and shipping. The Holded contact ID and document ID are stored in the order meta.', 'carttrigger-holded-sync' ); ?>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e( 'Document type', 'carttrigger-holded-sync' ); ?></th>
+                            <td>
+                                <?php $doc_type = get_option( 'cthls_document_type', 'invoice' ); ?>
+                                <select name="cthls_document_type">
+                                    <option value="invoice" <?php selected( $doc_type, 'invoice' ); ?>>
+                                        <?php esc_html_e( 'Invoice (factura) — reduces Holded stock', 'carttrigger-holded-sync' ); ?>
+                                    </option>
+                                    <option value="salesorder" <?php selected( $doc_type, 'salesorder' ); ?>>
+                                        <?php esc_html_e( 'Sales order (pedido de venta) — does not affect Holded stock', 'carttrigger-holded-sync' ); ?>
+                                    </option>
+                                </select>
+                                <p class="description">
+                                    <?php esc_html_e( 'If WooCommerce → Holded stock push is enabled, use Sales order to avoid double stock reduction. Use Invoice only if stock push is disabled and you want Holded to manage inventory via documents.', 'carttrigger-holded-sync' ); ?>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e( 'Avoid stock duplication', 'carttrigger-holded-sync' ); ?></th>
+                            <td>
+                                <label>
+                                    <input type="checkbox" name="cthls_resync_stock_after_invoice" value="1"
+                                        <?php checked( get_option( 'cthls_resync_stock_after_invoice', false ) ); ?> />
+                                    <?php esc_html_e( 'After creating an invoice, re-push WooCommerce stock to Holded to correct the stock reduction caused by the invoice', 'carttrigger-holded-sync' ); ?>
+                                </label>
+                                <p class="description">
+                                    <?php esc_html_e( 'Holded invoices automatically reduce stock. Enable this option to keep WooCommerce as the stock source of truth: after each invoice is created, the actual WC stock is sent back to Holded. Only applies to invoices — sales orders do not affect stock.', 'carttrigger-holded-sync' ); ?>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e( 'NIF/CIF meta key', 'carttrigger-holded-sync' ); ?></th>
+                            <td>
+                                <input type="text" name="cthls_nif_meta_key"
+                                    value="<?php echo esc_attr( get_option( 'cthls_nif_meta_key', '_billing_nif' ) ); ?>"
+                                    class="regular-text" />
+                                <p class="description">
+                                    <?php esc_html_e( 'Order meta key where the customer NIF/CIF/NIE is stored. Default: _billing_nif. This value is sent to Holded as the contact code (used to find existing contacts and avoid duplicates).', 'carttrigger-holded-sync' ); ?>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e( 'Email meta key', 'carttrigger-holded-sync' ); ?></th>
+                            <td>
+                                <input type="text" name="cthls_email_meta_key"
+                                    value="<?php echo esc_attr( get_option( 'cthls_email_meta_key', '' ) ); ?>"
+                                    class="regular-text"
+                                    placeholder="billing_email" />
+                                <p class="description">
+                                    <?php esc_html_e( 'Order meta key where the customer email is stored. Leave empty to use the standard WooCommerce billing email. Set a custom key only if your checkout stores the email in a non-standard field.', 'carttrigger-holded-sync' ); ?>
+                                </p>
                             </td>
                         </tr>
                     </table>
@@ -613,6 +698,13 @@ class CTHLS_Admin {
                             <tr><td><code>pull_save_error</code></td><td><?php esc_html_e( 'Error while saving a product in WooCommerce during the pull.', 'carttrigger-holded-sync' ); ?></td></tr>
                             <tr><td><code>pull_price_check</code></td><td><?php esc_html_e( 'Price comparison detail for a variation during pull: shows Holded raw price, converted WC price, current WC price, and whether an update was triggered.', 'carttrigger-holded-sync' ); ?></td></tr>
                             <tr><td><code>pull_name_skipped</code></td><td><?php esc_html_e( 'The product name in Holded differs from WooCommerce but was not applied — WC is the source of truth for names.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>order_contact_resolved</code></td><td><?php esc_html_e( 'Holded contact ID resolved for a WooCommerce order (found or created).', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>order_contact_created</code></td><td><?php esc_html_e( 'New contact created in Holded for a WooCommerce customer.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>order_contact_error</code></td><td><?php esc_html_e( 'Error while finding or creating the Holded contact for an order.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>order_invoice_created</code></td><td><?php esc_html_e( 'Holded invoice created after payment confirmation. Message contains the Holded invoice ID.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>order_invoice_error</code></td><td><?php esc_html_e( 'Error returned by Holded when creating an invoice for an order.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>order_stock_resynced</code></td><td><?php esc_html_e( 'WooCommerce stock re-pushed to Holded after invoice creation to correct the stock reduction.', 'carttrigger-holded-sync' ); ?></td></tr>
+                            <tr><td><code>order_stock_resync_error</code></td><td><?php esc_html_e( 'Error while re-pushing stock to Holded after invoice creation.', 'carttrigger-holded-sync' ); ?></td></tr>
                         </tbody>
                     </table>
                 </details>

@@ -3,7 +3,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: CartTrigger – Holded Sync 1.1.7\n"
+"Project-Id-Version: CartTrigger – Holded Sync 1.4.0\n"
 "Report-Msgid-Bugs-To: https://poletto.es\n"
 "POT-Creation-Date: 2026-03-19 00:00+0000\n"
 "PO-Revision-Date: 2026-03-19 00:00+0000\n"
@@ -320,3 +320,94 @@ msgstr "Productos variables — aplanados como simples en Holded"
 
 msgid "Holded does not handle product variants reliably via API. Variable products in WooCommerce are pushed to Holded as separate simple products — one per variation — each with its own SKU. The parent variable product is never created in Holded. During pull (Holded → WC), each Holded product is matched by SKU to the corresponding WC variation; only stock and price are updated. The product structure in WooCommerce is never altered by the pull."
 msgstr "Holded no gestiona correctamente las variantes de producto mediante API. Los productos variables en WooCommerce se envían a Holded como productos simples independientes — uno por variación — cada uno con su propio SKU. El producto padre variable nunca se crea en Holded. Durante el pull (Holded → WC), cada producto de Holded se empareja por SKU con la variación de WC correspondiente; solo se actualizan el stock y el precio. La estructura de productos en WooCommerce nunca es modificada por el pull."
+
+msgid "Variation name format"
+msgstr "Formato del nombre de variación"
+
+msgid "Space — Benaco Magnum 15 litros"
+msgstr "Espacio — Benaco Magnum 15 litros"
+
+msgid "Dash — Benaco – Magnum (1,5 litros)"
+msgstr "Guión — Benaco – Magnum (1,5 litros)"
+
+msgid "Parentheses — Benaco (Magnum 15 litros)"
+msgstr "Paréntesis — Benaco (Magnum 15 litros)"
+
+msgid "How to append attribute values to the parent product name when syncing variations to Holded."
+msgstr "Cómo añadir los valores de atributo al nombre del producto padre al sincronizar variaciones con Holded."
+
+msgid "Orders → Holded documents"
+msgstr "Pedidos → Documentos en Holded"
+
+msgid "Create document"
+msgstr "Crear documento"
+
+msgid "Automatically create a document in Holded when a WooCommerce order is paid"
+msgstr "Crear automáticamente un documento en Holded cuando se confirma el pago de un pedido en WooCommerce"
+
+msgid "For each paid order, the plugin finds or creates the Holded contact (matched by NIF then by email), then creates the selected document type with all line items and shipping. The Holded contact ID and document ID are stored in the order meta."
+msgstr "Para cada pedido pagado, el plugin busca o crea el contacto en Holded (por NIF primero, luego por email) y genera el tipo de documento seleccionado con todas las líneas de producto y el envío. El ID de contacto y el ID de documento de Holded se guardan en los metadatos del pedido."
+
+msgid "Document type"
+msgstr "Tipo de documento"
+
+msgid "Invoice (factura) — reduces Holded stock"
+msgstr "Factura — reduce el stock en Holded"
+
+msgid "Sales order (pedido de venta) — does not affect Holded stock"
+msgstr "Pedido de venta — no afecta al stock en Holded"
+
+msgid "If WooCommerce → Holded stock push is enabled, use Sales order to avoid double stock reduction. Use Invoice only if stock push is disabled and you want Holded to manage inventory via documents."
+msgstr "Si la sincronización de stock WooCommerce → Holded está activa, usa Pedido de venta para evitar la doble reducción de stock. Usa Factura solo si el push de stock está desactivado y quieres que Holded gestione el inventario a través de los documentos."
+
+msgid "Avoid stock duplication"
+msgstr "Evitar duplicación de stock"
+
+msgid "After creating an invoice, re-push WooCommerce stock to Holded to correct the stock reduction caused by the invoice"
+msgstr "Al crear una factura, reenviar el stock de WooCommerce a Holded para corregir la reducción de stock causada por la factura"
+
+msgid "Holded invoices automatically reduce stock. Enable this option to keep WooCommerce as the stock source of truth: after each invoice is created, the actual WC stock is sent back to Holded. Only applies to invoices — sales orders do not affect stock."
+msgstr "Las facturas de Holded reducen el stock automáticamente. Activa esta opción para que WooCommerce sea la fuente de verdad del stock: tras crear cada factura, el stock real de WC se reenvía a Holded. Solo aplica a facturas — los pedidos de venta no afectan al stock."
+
+msgid "WooCommerce stock re-pushed to Holded after invoice creation to correct the stock reduction."
+msgstr "Stock de WooCommerce reenviado a Holded tras la creación de la factura para corregir la reducción de stock."
+
+msgid "Error while re-pushing stock to Holded after invoice creation."
+msgstr "Error al reenviar el stock a Holded tras la creación de la factura."
+
+msgid "NIF/CIF meta key"
+msgstr "Meta key del NIF/CIF"
+
+msgid "Order meta key where the customer NIF/CIF/NIE is stored. Default: _billing_nif. This value is sent to Holded as the contact code (used to find existing contacts and avoid duplicates)."
+msgstr "Clave de meta del pedido donde se almacena el NIF/CIF/NIE del cliente. Por defecto: _billing_nif. Este valor se envía a Holded como código del contacto (para encontrar contactos existentes y evitar duplicados)."
+
+msgid "Email meta key"
+msgstr "Meta key del email"
+
+msgid "Order meta key where the customer email is stored. Leave empty to use the standard WooCommerce billing email. Set a custom key only if your checkout stores the email in a non-standard field."
+msgstr "Clave de meta del pedido donde se almacena el email del cliente. Dejar vacío para usar el email de facturación estándar de WooCommerce. Indicar una clave personalizada solo si el checkout almacena el email en un campo no estándar."
+
+msgid "Holded contact ID resolved for a WooCommerce order (found or created)."
+msgstr "ID de contacto de Holded resuelto para un pedido de WooCommerce (encontrado o creado)."
+
+msgid "New contact created in Holded for a WooCommerce customer."
+msgstr "Nuevo contacto creado en Holded para un cliente de WooCommerce."
+
+msgid "Error while finding or creating the Holded contact for an order."
+msgstr "Error al buscar o crear el contacto en Holded para un pedido."
+
+msgid "Holded invoice created after payment confirmation. Message contains the Holded invoice ID."
+msgstr "Factura creada en Holded tras la confirmación del pago. El mensaje contiene el ID de factura en Holded."
+
+msgid "Error returned by Holded when creating an invoice for an order."
+msgstr "Error devuelto por Holded al crear una factura para un pedido."
+
+msgid "Contact created but no ID returned by Holded."
+msgstr "Contacto creado, pero Holded no ha devuelto ningún ID."
+
+#, php-format
+msgid "WooCommerce order #%s"
+msgstr "Pedido WooCommerce n.º %s"
+
+msgid "Shipping"
+msgstr "Envío"

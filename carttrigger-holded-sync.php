@@ -4,7 +4,7 @@
  * Plugin Name:  CartTrigger – Holded Sync
  * Plugin URI:   https://poletto.es
  * Description:  Bidirectional sync between WooCommerce products/stock and Holded ERP.
- * Version:      1.3.8
+ * Version:      1.4.0
  * Author:       Poletto 1976 S.L.U.
  * Author URI:   https://poletto.es
  * License:      GPLv2 or later
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CTHLS_VERSION', '1.3.8' );
+define( 'CTHLS_VERSION', '1.4.0' );
 define( 'CTHLS_FILE', __FILE__ );
 define( 'CTHLS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CTHLS_URL', plugin_dir_url( __FILE__ ) );
@@ -26,6 +26,7 @@ require_once CTHLS_DIR . 'includes/class-cthls-sync.php';
 require_once CTHLS_DIR . 'includes/class-cthls-admin.php';
 require_once CTHLS_DIR . 'includes/class-cthls-cron.php';
 require_once CTHLS_DIR . 'includes/class-cthls-product-meta.php';
+require_once CTHLS_DIR . 'includes/class-cthls-orders.php';
 
 /**
  * Bootstrap the plugin after all plugins are loaded.
@@ -42,6 +43,7 @@ function cthls_init() {
     CTHLS_Sync::init();
     CTHLS_Cron::init();
     CTHLS_Product_Meta::init();
+    CTHLS_Orders::init();
 
     // Migrate: remove any Action Scheduler actions registered under the old
     // group 'ctholded' (used before v1.0.4). Self-healing is handled in CTHLS_Cron::init().

@@ -425,8 +425,11 @@ class CTHLS_Sync {
         $variation_name = $parent->get_name();
         if ( ! empty( $labels ) ) {
             $attr_string = implode( ' / ', $labels );
-            if ( 'parens' === get_option( 'cthls_variation_name_format', 'space' ) ) {
+            $fmt         = get_option( 'cthls_variation_name_format', 'space' );
+            if ( 'parens' === $fmt ) {
                 $variation_name .= ' (' . $attr_string . ')';
+            } elseif ( 'dash' === $fmt ) {
+                $variation_name .= ' – ' . $attr_string;
             } else {
                 $variation_name .= ' ' . $attr_string;
             }
