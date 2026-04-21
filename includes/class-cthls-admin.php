@@ -505,7 +505,9 @@ class CTHLS_Admin {
                                     </option>
                                 </select>
                                 <p class="description">
-                                    <?php esc_html_e( 'If WooCommerce → Holded stock push is enabled, use Sales order to avoid double stock reduction. Use Invoice only if stock push is disabled and you want Holded to manage inventory via documents.', 'carttrigger-holded-sync' ); ?>
+                                    <?php esc_html_e( 'Invoice (recommended): Holded creates a proper accounting document and reduces its stock automatically. Enable "Avoid stock duplication" below to push the actual WooCommerce stock back to Holded after each invoice, keeping WooCommerce as the source of truth.', 'carttrigger-holded-sync' ); ?>
+                                    <br>
+                                    <?php esc_html_e( 'Sales order: Holded does not reduce stock. Use only if you manage invoicing outside Holded. Warning: converting a sales order to an invoice manually in Holded will reduce Holded stock a second time.', 'carttrigger-holded-sync' ); ?>
                                 </p>
                             </td>
                         </tr>
@@ -518,7 +520,7 @@ class CTHLS_Admin {
                                     <?php esc_html_e( 'After creating a document, re-push WooCommerce stock to Holded to keep them in sync', 'carttrigger-holded-sync' ); ?>
                                 </label>
                                 <p class="description">
-                                    <?php esc_html_e( 'Invoice: Holded reduces stock automatically — re-syncing corrects the double reduction when WC→Holded push is also active. Sales order: Holded does not reduce stock — re-syncing prevents the Holded→WC pull from restoring the pre-sale quantity in WooCommerce.', 'carttrigger-holded-sync' ); ?>
+                                    <?php esc_html_e( 'Recommended when using Invoice: after Holded reduces stock via the invoice, the plugin re-pushes the actual WooCommerce stock to Holded so both systems stay aligned. Without this, the two stock values will diverge after each order.', 'carttrigger-holded-sync' ); ?>
                                 </p>
                             </td>
                         </tr>
