@@ -93,6 +93,9 @@ class CTHLS_API {
             return null; // Already in sync — nothing to do.
         }
 
+        // Store for caller logging.
+        $this->last_stock_debug = [ 'holded_current' => $current, 'delta' => $delta ];
+
         $body = [ 'stock' => $delta ];
         $warehouse_id = get_option( 'cthls_warehouse_id', '' );
         if ( $warehouse_id ) {
