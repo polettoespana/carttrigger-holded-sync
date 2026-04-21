@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.4.1-0a0a23?style=flat-square" alt="Version 1.4.1">
+  <img src="https://img.shields.io/badge/version-1.4.3-0a0a23?style=flat-square" alt="Version 1.4.3">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-8.0%2B-96588a?style=flat-square" alt="WooCommerce 8.0+">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -143,6 +143,14 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ---
 
 ## Changelog
+
+### 1.4.3
+
+- Fix: stock of variable product variations was not updated in Holded even when the payload correctly contained `stock: 0`. Root cause: Holded ignores the `stock` field in `PUT /products/{id}`. Stock is now updated via the dedicated `PUT /products/{id}/stock` endpoint after every variation sync.
+
+### 1.4.2
+
+- Fix: when all variations of a variable product are set to stock 0 in WooCommerce, only the last variation was synced to Holded. Root cause: WooCommerce fires `woocommerce_update_product` for the parent on every variation save; the deduplication guard caused `sync_variable_product` to run before all variation stocks were committed to the database. Fixed by deferring the sync to the `shutdown` hook, ensuring all DB writes are complete before stock values are read.
 
 ### 1.4.1
 

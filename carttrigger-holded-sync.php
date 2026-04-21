@@ -4,7 +4,7 @@
  * Plugin Name:  CartTrigger – Holded Sync
  * Plugin URI:   https://poletto.es
  * Description:  Bidirectional sync between WooCommerce products/stock and Holded ERP.
- * Version:      1.4.1
+ * Version:      1.4.3
  * Author:       Poletto 1976 S.L.U.
  * Author URI:   https://poletto.es
  * License:      GPLv2 or later
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CTHLS_VERSION', '1.4.1' );
+define( 'CTHLS_VERSION', '1.4.3' );
 define( 'CTHLS_FILE', __FILE__ );
 define( 'CTHLS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CTHLS_URL', plugin_dir_url( __FILE__ ) );

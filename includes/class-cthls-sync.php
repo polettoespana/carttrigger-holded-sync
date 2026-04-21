@@ -68,9 +68,18 @@ class CTHLS_Sync {
             return;
         }
 
-        // Variable products: sync each variation as a separate simple product in Holded.
+        // Variable products: defer sync to shutdown so all variation stock values are
+        // committed to the database before we read them. When saving from WC admin,
+        // woocommerce_update_product fires for the parent on every variation save
+        // (to re-sync parent price/stock caches); the $synced guard above ensures
+        // we schedule only one shutdown callback per parent product per request.
         if ( $product->is_type( 'variable' ) ) {
-            self::sync_variable_product( $product );
+            add_action( 'shutdown', static function() use ( $product_id ) {
+                $refreshed = wc_get_product( $product_id );
+                if ( $refreshed ) {
+                    self::sync_variable_product( $refreshed );
+                }
+            }, 0 );
             return;
         }
 
@@ -151,13 +160,24 @@ class CTHLS_Sync {
                     self::log( 'product_payload', $variation_id, wp_json_encode( $data ) );
                     $result = self::$api->create_product( $data );
                     if ( ! is_wp_error( $result ) && isset( $result['id'] ) ) {
-                        update_post_meta( $variation_id, '_cthls_product_id', sanitize_text_field( $result['id'] ) );
+                        $holded_id = $result['id'];
+                        update_post_meta( $variation_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
                     }
                 }
             }
 
             if ( is_wp_error( $result ) ) {
                 self::log( 'product_save', $variation_id, $result->get_error_message() );
+                continue;
+            }
+
+            // Holded ignores the `stock` field in PUT /products/{id}.
+            // Stock must be updated via the dedicated /stock endpoint.
+            if ( $holded_id && $variation->managing_stock() && null !== $variation->get_stock_quantity() ) {
+                $stock_result = self::$api->update_stock( $holded_id, (int) $variation->get_stock_quantity(), '' );
+                if ( is_wp_error( $stock_result ) ) {
+                    self::log( 'stock_change', $variation_id, $stock_result->get_error_message() );
+                }
             }
         }
     }
