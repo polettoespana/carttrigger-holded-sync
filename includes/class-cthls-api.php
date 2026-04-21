@@ -96,7 +96,13 @@ class CTHLS_API {
         // Store for caller logging.
         $this->last_stock_debug = [ 'holded_current' => $current, 'delta' => $delta ];
 
-        $body = [ 'stock' => $delta ];
+        // Holded expects: {"stock": {"<warehouseId>": delta}}
+        // where delta is positive to add units, negative to remove.
+        $warehouse_id = get_option( 'cthls_warehouse_id', '' );
+        if ( ! $warehouse_id ) {
+            return new WP_Error( 'cthls_no_warehouse', 'No warehouse configured — cannot update stock.' );
+        }
+        $body = [ 'stock' => [ $warehouse_id => $delta ] ];
         return $this->request( 'PUT', 'products/' . $holded_id . '/stock', [], $body );
     }
 
