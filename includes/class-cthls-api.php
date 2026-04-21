@@ -67,17 +67,33 @@ class CTHLS_API {
     }
 
     /**
-     * Update stock for a product (or variant).
+     * Set absolute stock for a product in Holded.
+     *
+     * The Holded /stock endpoint is delta-based (positive = add, negative = remove).
+     * This method fetches the current Holded stock first and sends the required delta.
+     * If the stock is already at the desired value, no API call is made.
      *
      * @param string $holded_id   Holded product ID.
-     * @param int    $stock       Absolute stock quantity.
-     * @param string $variant_id  Optional Holded variant ID.
+     * @param int    $stock       Desired absolute stock quantity.
+     * @param string $variant_id  Unused (kept for backwards compatibility).
+     * @return array|WP_Error|null  API response, WP_Error on failure, null if no update needed.
      */
     public function update_stock( $holded_id, $stock, $variant_id = '' ) {
-        $body = [ 'stock' => (int) $stock ];
-        if ( $variant_id ) {
-            $body['variantId'] = $variant_id;
+        $desired = (int) $stock;
+
+        // Fetch current Holded stock to compute the delta.
+        $product = $this->get_product( $holded_id );
+        if ( is_wp_error( $product ) ) {
+            return $product;
         }
+        $current = isset( $product['stock'] ) ? (int) $product['stock'] : 0;
+        $delta   = $desired - $current;
+
+        if ( 0 === $delta ) {
+            return null; // Already in sync — nothing to do.
+        }
+
+        $body = [ 'stock' => $delta ];
         $warehouse_id = get_option( 'cthls_warehouse_id', '' );
         if ( $warehouse_id ) {
             $body['warehouseId'] = $warehouse_id;

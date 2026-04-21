@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.4.4-0a0a23?style=flat-square" alt="Version 1.4.4">
+  <img src="https://img.shields.io/badge/version-1.4.5-0a0a23?style=flat-square" alt="Version 1.4.5">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-8.0%2B-96588a?style=flat-square" alt="WooCommerce 8.0+">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -143,6 +143,10 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ---
 
 ## Changelog
+
+### 1.4.5
+
+- Fix: stock updates were not working because the Holded `/stock` endpoint is **delta-based** (positive = add units, negative = remove), not an absolute setter. The plugin now fetches the current Holded stock first, computes the required delta (`desired − current`), and sends that. If stock is already at the desired value, no API call is made.
 
 ### 1.4.4
 
