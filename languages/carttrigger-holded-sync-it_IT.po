@@ -357,17 +357,20 @@ msgstr "Fattura — riduce lo stock in Holded"
 msgid "Sales order (pedido de venta) — does not affect Holded stock"
 msgstr "Ordine di vendita — non modifica lo stock in Holded"
 
-msgid "If WooCommerce → Holded stock push is enabled, use Sales order to avoid double stock reduction. Use Invoice only if stock push is disabled and you want Holded to manage inventory via documents."
-msgstr "Se la sincronizzazione stock WooCommerce → Holded è attiva, usa Ordine di vendita per evitare la doppia riduzione dello stock. Usa Fattura solo se il push stock è disabilitato e vuoi che Holded gestisca l'inventario tramite i documenti."
+msgid "Invoice (recommended): Holded creates a proper accounting document and reduces its stock automatically. Enable \"Avoid stock duplication\" below to push the actual WooCommerce stock back to Holded after each invoice, keeping WooCommerce as the source of truth."
+msgstr "Fattura (consigliato): Holded crea un documento contabile corretto e riduce automaticamente il suo stock. Abilita «Evita duplicazione stock» per reinviare lo stock reale di WooCommerce a Holded dopo ogni fattura, mantenendo WooCommerce come fonte di verità."
+
+msgid "Sales order: Holded does not reduce stock. Use only if you manage invoicing outside Holded. Warning: converting a sales order to an invoice manually in Holded will reduce Holded stock a second time."
+msgstr "Ordine di vendita: Holded non riduce lo stock. Usalo solo se gestisci la fatturazione al di fuori di Holded. Attenzione: convertire un ordine di vendita in fattura manualmente in Holded ridurrà lo stock di Holded una seconda volta."
 
 msgid "Avoid stock duplication"
 msgstr "Evita duplicazione stock"
 
-msgid "After creating an invoice, re-push WooCommerce stock to Holded to correct the stock reduction caused by the invoice"
-msgstr "Dopo la creazione della fattura, reinvia lo stock di WooCommerce a Holded per correggere la riduzione causata dalla fattura"
+msgid "After creating a document, re-push WooCommerce stock to Holded to keep them in sync"
+msgstr "Dopo la creazione del documento, reinvia lo stock di WooCommerce a Holded per mantenerli sincronizzati"
 
-msgid "Holded invoices automatically reduce stock. Enable this option to keep WooCommerce as the stock source of truth: after each invoice is created, the actual WC stock is sent back to Holded. Only applies to invoices — sales orders do not affect stock."
-msgstr "Le fatture di Holded riducono automaticamente lo stock. Abilita questa opzione per mantenere WooCommerce come fonte di verità dello stock: dopo ogni fattura creata, lo stock reale di WC viene reinviato a Holded. Si applica solo alle fatture — gli ordini di vendita non modificano lo stock."
+msgid "Recommended when using Invoice: after Holded reduces stock via the invoice, the plugin re-pushes the actual WooCommerce stock to Holded so both systems stay aligned. Without this, the two stock values will diverge after each order."
+msgstr "Consigliato con Fattura: dopo che Holded riduce lo stock tramite la fattura, il plugin reinvia lo stock reale di WooCommerce a Holded in modo che entrambi i sistemi rimangano allineati. Senza questa opzione, i valori di stock divergeranno dopo ogni ordine."
 
 msgid "WooCommerce stock re-pushed to Holded after invoice creation to correct the stock reduction."
 msgstr "Stock WooCommerce reinviato a Holded dopo la creazione della fattura per correggere la riduzione."
