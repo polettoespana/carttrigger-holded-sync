@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,10 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.4.4 =
+* Fix: stock of simple products was never updated in Holded — only the general product update (PUT /products/{id}) was called, which Holded ignores for stock. Now also calls PUT /products/{id}/stock after every product save.
+* Fix: stock updates now include warehouseId when a warehouse is configured in the plugin settings. Without it, Holded was updating a different warehouse than the one visible in the UI.
 
 = 1.4.3 =
 * Fix: stock of variable product variations was not updated in Holded even when the payload correctly contained stock:0. Root cause: Holded ignores the stock field in PUT /products/{id}. Stock is now updated via the dedicated PUT /products/{id}/stock endpoint after every variation sync.

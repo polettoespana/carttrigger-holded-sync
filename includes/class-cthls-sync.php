@@ -119,6 +119,21 @@ class CTHLS_Sync {
 
         if ( is_wp_error( $result ) ) {
             self::log( 'product_save', $product_id, $result->get_error_message() );
+            return;
+        }
+
+        // Holded ignores the `stock` field in PUT /products/{id}.
+        // Use the dedicated /stock endpoint for simple products too.
+        $holded_id = $holded_id ?: get_post_meta( $product_id, '_cthls_product_id', true );
+        if ( $holded_id && $product->managing_stock() && null !== $product->get_stock_quantity() ) {
+            $qty          = (int) $product->get_stock_quantity();
+            self::log( 'stock_payload', $product_id, wp_json_encode( [ 'holded_id' => $holded_id, 'stock' => $qty ] ) );
+            $stock_result = self::$api->update_stock( $holded_id, $qty, '' );
+            if ( is_wp_error( $stock_result ) ) {
+                self::log( 'stock_change', $product_id, $stock_result->get_error_message() );
+            } else {
+                self::log( 'stock_change', $product_id, wp_json_encode( $stock_result ) );
+            }
         }
     }
 

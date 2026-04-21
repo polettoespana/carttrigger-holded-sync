@@ -78,6 +78,10 @@ class CTHLS_API {
         if ( $variant_id ) {
             $body['variantId'] = $variant_id;
         }
+        $warehouse_id = get_option( 'cthls_warehouse_id', '' );
+        if ( $warehouse_id ) {
+            $body['warehouseId'] = $warehouse_id;
+        }
         return $this->request( 'PUT', 'products/' . $holded_id . '/stock', [], $body );
     }
 
