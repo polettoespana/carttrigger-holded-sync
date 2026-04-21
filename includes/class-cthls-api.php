@@ -70,6 +70,7 @@ class CTHLS_API {
      * Set absolute stock for a product in Holded.
      *
      * The Holded /stock endpoint is delta-based (positive = add, negative = remove).
+     * Body format: {"stock": {"<warehouseId>": {"<productId>": delta}}}
      * This method fetches the current Holded stock first and sends the required delta.
      * If the stock is already at the desired value, no API call is made.
      *
@@ -80,6 +81,11 @@ class CTHLS_API {
      */
     public function update_stock( $holded_id, $stock, $variant_id = '' ) {
         $desired = (int) $stock;
+
+        $warehouse_id = get_option( 'cthls_warehouse_id', '' );
+        if ( ! $warehouse_id ) {
+            return new WP_Error( 'cthls_no_warehouse', 'No warehouse configured — cannot update stock.' );
+        }
 
         // Fetch current Holded stock to compute the delta.
         $product = $this->get_product( $holded_id );
@@ -96,13 +102,8 @@ class CTHLS_API {
         // Store for caller logging.
         $this->last_stock_debug = [ 'holded_current' => $current, 'delta' => $delta ];
 
-        // Holded expects: {"stock": {"<warehouseId>": delta}}
-        // where delta is positive to add units, negative to remove.
-        $warehouse_id = get_option( 'cthls_warehouse_id', '' );
-        if ( ! $warehouse_id ) {
-            return new WP_Error( 'cthls_no_warehouse', 'No warehouse configured — cannot update stock.' );
-        }
-        $body = [ 'stock' => [ $warehouse_id => $delta ] ];
+        // Correct Holded format: {"stock": {"warehouseId": {"productId": delta}}}
+        $body = [ 'stock' => [ $warehouse_id => [ $holded_id => $delta ] ] ];
         return $this->request( 'PUT', 'products/' . $holded_id . '/stock', [], $body );
     }
 
