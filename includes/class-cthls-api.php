@@ -97,10 +97,6 @@ class CTHLS_API {
         $this->last_stock_debug = [ 'holded_current' => $current, 'delta' => $delta ];
 
         $body = [ 'stock' => $delta ];
-        $warehouse_id = get_option( 'cthls_warehouse_id', '' );
-        if ( $warehouse_id ) {
-            $body['warehouseId'] = $warehouse_id;
-        }
         return $this->request( 'PUT', 'products/' . $holded_id . '/stock', [], $body );
     }
 
