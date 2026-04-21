@@ -174,10 +174,21 @@ class CTHLS_Sync {
             // Holded ignores the `stock` field in PUT /products/{id}.
             // Stock must be updated via the dedicated /stock endpoint.
             if ( $holded_id && $variation->managing_stock() && null !== $variation->get_stock_quantity() ) {
-                $stock_result = self::$api->update_stock( $holded_id, (int) $variation->get_stock_quantity(), '' );
+                $qty          = (int) $variation->get_stock_quantity();
+                self::log( 'stock_payload', $variation_id, wp_json_encode( [ 'holded_id' => $holded_id, 'stock' => $qty ] ) );
+                $stock_result = self::$api->update_stock( $holded_id, $qty, '' );
                 if ( is_wp_error( $stock_result ) ) {
                     self::log( 'stock_change', $variation_id, $stock_result->get_error_message() );
+                } else {
+                    self::log( 'stock_change', $variation_id, wp_json_encode( $stock_result ) );
                 }
+            } else {
+                self::log( 'stock_change', $variation_id, sprintf(
+                    'skip — holded_id:%s managing:%s qty:%s',
+                    $holded_id ?: 'empty',
+                    $variation->managing_stock() ? 'yes' : 'no',
+                    var_export( $variation->get_stock_quantity(), true )
+                ) );
             }
         }
     }
