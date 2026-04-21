@@ -127,7 +127,7 @@ class CTHLS_Sync {
         $holded_id = $holded_id ?: get_post_meta( $product_id, '_cthls_product_id', true );
         if ( $holded_id && $product->managing_stock() && null !== $product->get_stock_quantity() ) {
             $qty          = (int) $product->get_stock_quantity();
-            self::log( 'stock_payload', $product_id, wp_json_encode( [ 'holded_id' => $holded_id, 'stock' => $qty ] ) );
+            self::log( 'stock_payload', $product_id, wp_json_encode( [ 'holded_id' => $holded_id, 'stock' => $qty, 'warehouseId' => get_option( 'cthls_warehouse_id', '' ) ] ) );
             $stock_result = self::$api->update_stock( $holded_id, $qty, '' );
             if ( is_wp_error( $stock_result ) ) {
                 self::log( 'stock_change', $product_id, $stock_result->get_error_message() );
@@ -190,7 +190,7 @@ class CTHLS_Sync {
             // Stock must be updated via the dedicated /stock endpoint.
             if ( $holded_id && $variation->managing_stock() && null !== $variation->get_stock_quantity() ) {
                 $qty          = (int) $variation->get_stock_quantity();
-                self::log( 'stock_payload', $variation_id, wp_json_encode( [ 'holded_id' => $holded_id, 'stock' => $qty ] ) );
+                self::log( 'stock_payload', $variation_id, wp_json_encode( [ 'holded_id' => $holded_id, 'stock' => $qty, 'warehouseId' => get_option( 'cthls_warehouse_id', '' ) ] ) );
                 $stock_result = self::$api->update_stock( $holded_id, $qty, '' );
                 if ( is_wp_error( $stock_result ) ) {
                     self::log( 'stock_change', $variation_id, $stock_result->get_error_message() );
