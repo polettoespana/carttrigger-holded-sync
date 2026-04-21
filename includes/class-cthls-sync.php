@@ -144,7 +144,9 @@ class CTHLS_Sync {
             [ 'holded_id' => $holded_id, 'target_stock' => $target ],
             $debug
         ) ) );
-        if ( is_wp_error( $result ) ) {
+        if ( null === $result ) {
+            self::log( 'stock_change', $product_id, 'already in sync (delta = 0)' );
+        } elseif ( is_wp_error( $result ) ) {
             self::log( 'stock_change', $product_id, $result->get_error_message() );
         } else {
             self::log( 'stock_change', $product_id, wp_json_encode( $result ) );
