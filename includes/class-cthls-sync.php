@@ -851,7 +851,7 @@ class CTHLS_Sync {
             'product_id' => $product_id,
             'message'    => $message,
         ] );
-        // Keep last 50 entries.
-        update_option( 'cthls_log', array_slice( $log, 0, 50 ) );
+        $limit = max( 10, (int) get_option( 'cthls_log_limit', 50 ) );
+        update_option( 'cthls_log', array_slice( $log, 0, $limit ) );
     }
 }

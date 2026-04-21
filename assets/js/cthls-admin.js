@@ -169,7 +169,7 @@
         var origText = $btn.text();
 
         if (!sku) {
-            $result.removeClass('success error').addClass('error').text('✗ SKU required');
+            $result.removeClass('success error').addClass('error').text('✗ ' + cthls.i18n_sku_required);
             return;
         }
 
@@ -197,6 +197,34 @@
 
     $('#cthls-sku-push-btn').on('click', function () { skuSync('cthls_sync_sku_push', '#cthls-sku-push-btn'); });
     $('#cthls-sku-pull-btn').on('click', function () { skuSync('cthls_sync_sku_pull', '#cthls-sku-pull-btn'); });
+
+    // ── Export log ───────────────────────────────────────────────────────────
+    $('#cthls-export-log').on('click', function () {
+        var $btn = $(this);
+        $btn.prop('disabled', true);
+
+        $.post(ajaxurl, {
+            action: 'cthls_export_log',
+            nonce:  cthls.nonce,
+        })
+        .done(function (res) {
+            if (res.success && res.data.log) {
+                var json     = JSON.stringify(res.data.log, null, 2);
+                var blob     = new Blob([json], { type: 'application/json' });
+                var url      = URL.createObjectURL(blob);
+                var a        = document.createElement('a');
+                a.href       = url;
+                a.download   = res.data.filename || 'cthls-log.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        })
+        .always(function () {
+            $btn.prop('disabled', false);
+        });
+    });
 
     // ── Clear log ────────────────────────────────────────────────────────────
     $('#cthls-clear-log').on('click', function () {

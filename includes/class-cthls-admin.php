@@ -28,6 +28,7 @@ class CTHLS_Admin {
         add_action( 'wp_ajax_cthls_reschedule', [ __CLASS__, 'ajax_reschedule' ] );
         add_action( 'wp_ajax_cthls_sync_sku_push', [ __CLASS__, 'ajax_sync_sku_push' ] );
         add_action( 'wp_ajax_cthls_sync_sku_pull', [ __CLASS__, 'ajax_sync_sku_pull' ] );
+        add_action( 'wp_ajax_cthls_export_log',    [ __CLASS__, 'ajax_export_log' ] );
     }
 
     public static function add_menu() {
@@ -65,8 +66,9 @@ class CTHLS_Admin {
             'cthls_nif_meta_key',
             'cthls_email_meta_key',
             'cthls_debug_log',
+            'cthls_log_limit',
         ];
-        $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source', 'cthls_variation_name_format', 'cthls_document_type', 'cthls_nif_meta_key', 'cthls_email_meta_key' ];
+        $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source', 'cthls_variation_name_format', 'cthls_document_type', 'cthls_nif_meta_key', 'cthls_email_meta_key', 'cthls_log_limit' ];
 
         // Reschedule Action Scheduler when interval changes.
         add_action( 'update_option_cthls_pull_interval', function( $old, $new ) {
@@ -115,6 +117,7 @@ class CTHLS_Admin {
             'i18n_error'           => esc_html__( 'Error', 'carttrigger-holded-sync' ),
             'i18n_select_warehouse' => esc_html__( '— Select warehouse —', 'carttrigger-holded-sync' ),
             'i18n_no_warehouses'   => esc_html__( 'No warehouses found.', 'carttrigger-holded-sync' ),
+            'i18n_sku_required'    => esc_html__( 'SKU is required.', 'carttrigger-holded-sync' ),
         ] );
     }
 
@@ -241,6 +244,16 @@ class CTHLS_Admin {
         } else {
             wp_send_json_error( [ 'message' => __( 'Scheduled but could not read next run time.', 'carttrigger-holded-sync' ) ] );
         }
+    }
+
+    public static function ajax_export_log() {
+        check_ajax_referer( 'cthls_admin', 'nonce' );
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            wp_send_json_error();
+        }
+        $log      = get_option( 'cthls_log', [] );
+        $filename = 'cthls-log-' . date( 'Y-m-d' ) . '.json';
+        wp_send_json_success( [ 'log' => $log, 'filename' => $filename ] );
     }
 
     // ── Settings page ────────────────────────────────────────────────────────
@@ -464,8 +477,17 @@ class CTHLS_Admin {
                                 <label>
                                     <input type="checkbox" name="cthls_debug_log" value="1"
                                         <?php checked( get_option( 'cthls_debug_log' ) ); ?> />
-                                    <?php esc_html_e( 'Enable log (last 50 messages)', 'carttrigger-holded-sync' ); ?>
+                                    <?php esc_html_e( 'Record sync events in the system log', 'carttrigger-holded-sync' ); ?>
                                 </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e( 'Log entries limit', 'carttrigger-holded-sync' ); ?></th>
+                            <td>
+                                <input type="number" name="cthls_log_limit"
+                                    value="<?php echo esc_attr( get_option( 'cthls_log_limit', 50 ) ); ?>"
+                                    min="10" max="500" step="10" style="width:80px" />
+                                <p class="description"><?php esc_html_e( 'Maximum number of log entries to keep. Default: 50.', 'carttrigger-holded-sync' ); ?></p>
                             </td>
                         </tr>
                     </table>
@@ -677,6 +699,10 @@ class CTHLS_Admin {
                         <span class="dashicons dashicons-list-view"></span>
                         <?php esc_html_e( 'System log', 'carttrigger-holded-sync' ); ?>
                     </h2>
+                    <button type="button" id="cthls-export-log" class="button button-secondary">
+                        <span class="dashicons dashicons-download"></span>
+                        <?php esc_html_e( 'Export log (JSON)', 'carttrigger-holded-sync' ); ?>
+                    </button>
                     <button type="button" id="cthls-clear-log" class="cthls-btn-danger">
                         <span class="dashicons dashicons-trash"></span>
                         <?php esc_html_e( 'Clear log', 'carttrigger-holded-sync' ); ?>

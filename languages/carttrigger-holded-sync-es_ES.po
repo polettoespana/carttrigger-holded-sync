@@ -109,8 +109,17 @@ msgstr "Sobrescribir imagen existente en Holded (si no está marcado, la imagen 
 msgid "Enable log"
 msgstr "Activar registro"
 
-msgid "Enable log (last 50 messages)"
-msgstr "Activar registro (últimos 50 mensajes)"
+msgid "Record sync events in the system log"
+msgstr "Registrar eventos de sincronización en el registro del sistema"
+
+msgid "Log entries limit"
+msgstr "Límite de entradas del registro"
+
+msgid "Maximum number of log entries to keep. Default: 50."
+msgstr "Número máximo de entradas del registro a conservar. Por defecto: 50."
+
+msgid "Export log (JSON)"
+msgstr "Exportar registro (JSON)"
 
 msgid "Save settings"
 msgstr "Guardar ajustes"
@@ -335,6 +344,36 @@ msgstr "Paréntesis — Benaco (Magnum 15 litros)"
 
 msgid "How to append attribute values to the parent product name when syncing variations to Holded."
 msgstr "Cómo añadir los valores de atributo al nombre del producto padre al sincronizar variaciones con Holded."
+
+msgid "Single SKU sync"
+msgstr "Sincronización por SKU individual"
+
+msgid "Sync a single product or variation by SKU without running a full push/pull."
+msgstr "Sincroniza un producto o variación individual por SKU sin ejecutar un push/pull completo."
+
+msgid "Enter SKU…"
+msgstr "Introduce el SKU…"
+
+msgid "Push to Holded"
+msgstr "Enviar a Holded"
+
+msgid "Pull from Holded"
+msgstr "Importar desde Holded"
+
+msgid "SKU is required."
+msgstr "El SKU es obligatorio."
+
+msgid "Manual push to Holded started."
+msgstr "Push manual a Holded iniciado."
+
+msgid "Manual push finished. Message shows how many products were sent."
+msgstr "Push manual finalizado. El mensaje indica cuántos productos se han enviado."
+
+msgid "Price comparison detail for a variation during pull: shows Holded raw price, converted WC price, current WC price, and whether an update was triggered."
+msgstr "Detalle de comparación de precio para una variación durante la importación: muestra el precio bruto de Holded, el precio WC convertido, el precio WC actual y si se ha activado una actualización."
+
+msgid "The product name in Holded differs from WooCommerce but was not applied — WC is the source of truth for names."
+msgstr "El nombre del producto en Holded es diferente al de WooCommerce pero no se ha aplicado — WC es la fuente de verdad para los nombres."
 
 msgid "Orders → Holded documents"
 msgstr "Pedidos → Documentos en Holded"

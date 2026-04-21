@@ -327,6 +327,7 @@ class CTHLS_Orders {
             'product_id' => $order_id,
             'message'    => $message,
         ] );
-        update_option( 'cthls_log', array_slice( $log, 0, 50 ) );
+        $limit = max( 10, (int) get_option( 'cthls_log_limit', 50 ) );
+        update_option( 'cthls_log', array_slice( $log, 0, $limit ) );
     }
 }

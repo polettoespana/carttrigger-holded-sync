@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.4.7
+Stable tag: 1.4.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,11 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.4.8 =
+* Enhancement: configurable log entries limit — new "Log entries limit" field (default 50, range 10–500) replaces the hardcoded 50.
+* Enhancement: "Export log (JSON)" button in the system log — downloads the current log as a JSON file.
+* Fix: missing translations for Single SKU sync card and several event reference descriptions.
 
 = 1.4.7 =
 * Fix: "Avoid stock duplication" now also applies to sales orders. When Holded→WC pull is active and the document type is Sales order, the pull was restoring the pre-sale quantity in WooCommerce (because Holded stock had not been reduced). The re-sync now runs after both invoices and sales orders.
