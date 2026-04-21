@@ -515,10 +515,10 @@ class CTHLS_Admin {
                                 <label>
                                     <input type="checkbox" name="cthls_resync_stock_after_invoice" value="1"
                                         <?php checked( get_option( 'cthls_resync_stock_after_invoice', false ) ); ?> />
-                                    <?php esc_html_e( 'After creating an invoice, re-push WooCommerce stock to Holded to correct the stock reduction caused by the invoice', 'carttrigger-holded-sync' ); ?>
+                                    <?php esc_html_e( 'After creating a document, re-push WooCommerce stock to Holded to keep them in sync', 'carttrigger-holded-sync' ); ?>
                                 </label>
                                 <p class="description">
-                                    <?php esc_html_e( 'Holded invoices automatically reduce stock. Enable this option to keep WooCommerce as the stock source of truth: after each invoice is created, the actual WC stock is sent back to Holded. Only applies to invoices — sales orders do not affect stock.', 'carttrigger-holded-sync' ); ?>
+                                    <?php esc_html_e( 'Invoice: Holded reduces stock automatically — re-syncing corrects the double reduction when WC→Holded push is also active. Sales order: Holded does not reduce stock — re-syncing prevents the Holded→WC pull from restoring the pre-sale quantity in WooCommerce.', 'carttrigger-holded-sync' ); ?>
                                 </p>
                             </td>
                         </tr>

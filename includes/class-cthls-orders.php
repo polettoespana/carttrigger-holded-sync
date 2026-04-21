@@ -91,12 +91,14 @@ class CTHLS_Orders {
             self::log( 'order_invoice_created', $order_id, $doc_type . ':' . $result['id'] );
         }
 
-        // ── 3. Re-sync stock to Holded (only for invoices, optional) ─────────
-        // Holded invoices automatically reduce stock. If WC→Holded stock push is
-        // also active, this would cause a double reduction. When this option is
-        // enabled, we push the actual WC stock back to Holded after the document
-        // is created, so Holded always reflects WooCommerce as the source of truth.
-        if ( 'invoice' === $doc_type && self::resync_stock_enabled() ) {
+        // ── 3. Re-sync stock to Holded (optional) ───────────────────────────
+        // Invoices: Holded reduces stock automatically — if WC→Holded push is also
+        // active this causes a double reduction. Re-syncing restores the correct value.
+        // Sales orders: Holded does NOT reduce stock — if Holded→WC pull is active
+        // it will pull the stale (pre-sale) Holded stock back into WooCommerce.
+        // Re-syncing pushes the actual post-sale WC stock to Holded so the next pull
+        // sees delta=0 and does nothing.
+        if ( self::resync_stock_enabled() ) {
             self::resync_order_stock( $order );
         }
     }

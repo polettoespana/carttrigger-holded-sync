@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.4.6-0a0a23?style=flat-square" alt="Version 1.4.6">
+  <img src="https://img.shields.io/badge/version-1.4.7-0a0a23?style=flat-square" alt="Version 1.4.7">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-8.0%2B-96588a?style=flat-square" alt="WooCommerce 8.0+">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -69,7 +69,7 @@ Each sync direction can be enabled independently in settings.
 | ------------------------- | ---------------------------------------------------------------------------------------------------- |
 | Create document           | Enable automatic document creation in Holded on payment confirmation                                 |
 | Document type             | **Invoice** (factura, reduces Holded stock) or **Sales order** (pedido de venta, does not affect stock) |
-| Avoid stock duplication   | After creating an invoice, re-pushes WC stock to Holded to correct the reduction caused by the invoice. Use when WC→Holded stock push is also active |
+| Avoid stock duplication   | After creating a document, re-pushes WC stock to Holded. For invoices: corrects the reduction caused by the invoice. For sales orders: prevents the Holded→WC pull from restoring the pre-sale quantity |
 | NIF/CIF meta key          | Order meta key where the customer NIF/CIF/NIE is stored. Default: `_billing_nif`                     |
 | Email meta key            | Order meta key for the customer email. Leave empty to use the standard WooCommerce billing email     |
 
@@ -143,6 +143,10 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ---
 
 ## Changelog
+
+### 1.4.7
+
+- Fix: "Avoid stock duplication" now also applies to sales orders. When Holded→WC pull is active and the document type is Sales order, the pull was restoring the pre-sale quantity in WooCommerce (Holded stock not reduced → pull sees old value → overwrites WC). The re-sync now runs after both invoices and sales orders.
 
 ### 1.4.6
 
