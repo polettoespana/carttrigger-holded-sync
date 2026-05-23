@@ -548,13 +548,13 @@ class CTHLS_Admin {
                             </td>
                         </tr>
                         <tr>
-                            <th><?php esc_html_e( 'Document notes', 'carttrigger-holded-sync' ); ?></th>
+                            <th><?php esc_html_e( 'Notas del documento', 'carttrigger-holded-sync' ); ?></th>
                             <td>
                                 <input type="text" name="cthls_document_notes_template"
                                     value="<?php echo esc_attr( get_option( 'cthls_document_notes_template', 'Pedido realizado desde el sitio web (poletto.es) n.º %s' ) ); ?>"
                                     class="large-text" />
                                 <p class="description">
-                                    <?php esc_html_e( 'Text added to the Holded document notes field. Use %s as placeholder for the order number (e.g. P-00001).', 'carttrigger-holded-sync' ); ?>
+                                    <?php esc_html_e( 'Texto que se añade al campo de notas del documento en Holded. Usa %s como marcador para el número de pedido (p. ej. P-00001).', 'carttrigger-holded-sync' ); ?>
                                 </p>
                             </td>
                         </tr>
