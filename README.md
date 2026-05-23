@@ -146,12 +146,12 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 
 ### 1.5.1
 
-- New: campo "Notas del documento" nelle impostazioni — permette di personalizzare il testo delle note del documento Holded; usa `%s` come placeholder per il numero ordine.
-- Fix: icone nei pulsanti admin allineate in basso dopo aggiornamento WP 7 — aggiunto `!important` su `display:inline-flex` e `align-items:center`.
+- New: "Document notes" setting — customise the text added to the Holded document notes field; use `%s` as a placeholder for the order number.
+- Fix: admin button icons aligned to the bottom after WP 7 update — added `!important` to `display:inline-flex` and `align-items:center` to prevent core style override.
 
 ### 1.5.0
 
-- Fix: la dicitura del documento Holded cambiata da "Pedido WooCommerce n.º X" a "Pedido realizado desde el sitio web (poletto.es) n.º X".
+- Fix: Holded document notes text changed from "Pedido WooCommerce n.º X" to a configurable site-specific label.
 
 ### 1.4.9
 
