@@ -291,8 +291,7 @@ class CTHLS_Orders {
             'contactId' => $contact_id,
             'date'      => $order->get_date_created() ? $order->get_date_created()->getTimestamp() : time(),
             'notes'     => sprintf(
-                /* translators: %s: WooCommerce order number */
-                __( 'WooCommerce order #%s', 'carttrigger-holded-sync' ),
+                'Pedido realizado desde el sitio web (poletto.es) n.º %s',
                 $order->get_order_number()
             ),
             'currency'  => $order->get_currency(),

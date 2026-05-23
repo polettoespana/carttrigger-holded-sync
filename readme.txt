@@ -6,7 +6,7 @@ Tested up to: 7.0
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.4.9
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,9 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.5.0 =
+* Fix: la dicitura del documento Holded cambiata da "Pedido WooCommerce n.º X" a "Pedido realizado desde el sitio web (poletto.es) n.º X".
 
 = 1.4.8 =
 * Enhancement: configurable log entries limit — new "Log entries limit" field (default 50, range 10–500) replaces the hardcoded 50.
