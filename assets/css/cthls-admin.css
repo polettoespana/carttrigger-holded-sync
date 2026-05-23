@@ -184,7 +184,6 @@
 
 .cthls-wrap .submit .button-primary {
     height: 38px;
-    line-height: 36px;
     padding: 0 20px;
     font-size: 13px;
 }
@@ -255,9 +254,10 @@
 /* ── Button icon alignment ── */
 .cthls-wrap .button,
 .cthls-wrap .cthls-btn-danger {
-    display: inline-flex;
-    align-items: center;
+    display: inline-flex !important;
+    align-items: center !important;
     gap: 4px;
+    line-height: 1 !important;
 }
 
 .cthls-wrap .button .dashicons,
@@ -267,6 +267,7 @@
     height: 14px;
     margin: 0;
     flex-shrink: 0;
+    line-height: 1;
 }
 
 /* ── Manual sync card ── */

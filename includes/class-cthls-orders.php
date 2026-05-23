@@ -291,7 +291,7 @@ class CTHLS_Orders {
             'contactId' => $contact_id,
             'date'      => $order->get_date_created() ? $order->get_date_created()->getTimestamp() : time(),
             'notes'     => sprintf(
-                'Pedido realizado desde el sitio web (poletto.es) n.º %s',
+                get_option( 'cthls_document_notes_template', 'Pedido realizado desde el sitio web (poletto.es) n.º %s' ),
                 $order->get_order_number()
             ),
             'currency'  => $order->get_currency(),

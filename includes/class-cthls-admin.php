@@ -63,12 +63,13 @@ class CTHLS_Admin {
             'cthls_create_invoices',
             'cthls_document_type',
             'cthls_resync_stock_after_invoice',
+            'cthls_document_notes_template',
             'cthls_nif_meta_key',
             'cthls_email_meta_key',
             'cthls_debug_log',
             'cthls_log_limit',
         ];
-        $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source', 'cthls_variation_name_format', 'cthls_document_type', 'cthls_nif_meta_key', 'cthls_email_meta_key', 'cthls_log_limit' ];
+        $text_options = [ 'cthls_api_key', 'cthls_warehouse_id', 'cthls_warehouse_name', 'cthls_default_tax_rate', 'cthls_prices_include_tax', 'cthls_pull_interval', 'cthls_desc_source', 'cthls_variation_name_format', 'cthls_document_type', 'cthls_document_notes_template', 'cthls_nif_meta_key', 'cthls_email_meta_key', 'cthls_log_limit' ];
 
         // Reschedule Action Scheduler when interval changes.
         add_action( 'update_option_cthls_pull_interval', function( $old, $new ) {
@@ -543,6 +544,17 @@ class CTHLS_Admin {
                                 </label>
                                 <p class="description">
                                     <?php esc_html_e( 'Recommended when using Invoice: after Holded reduces stock via the invoice, the plugin re-pushes the actual WooCommerce stock to Holded so both systems stay aligned. Without this, the two stock values will diverge after each order.', 'carttrigger-holded-sync' ); ?>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php esc_html_e( 'Document notes', 'carttrigger-holded-sync' ); ?></th>
+                            <td>
+                                <input type="text" name="cthls_document_notes_template"
+                                    value="<?php echo esc_attr( get_option( 'cthls_document_notes_template', 'Pedido realizado desde el sitio web (poletto.es) n.º %s' ) ); ?>"
+                                    class="large-text" />
+                                <p class="description">
+                                    <?php esc_html_e( 'Text added to the Holded document notes field. Use %s as placeholder for the order number (e.g. P-00001).', 'carttrigger-holded-sync' ); ?>
                                 </p>
                             </td>
                         </tr>
