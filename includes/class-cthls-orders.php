@@ -261,7 +261,7 @@ class CTHLS_Orders {
             if ( $product ) {
                 $holded_product_id = get_post_meta( $product->get_id(), '_cthls_product_id', true );
                 if ( $holded_product_id ) {
-                    $line['productId'] = $holded_product_id;
+                    $line['product_id'] = $holded_product_id;
                 }
             }
 
@@ -288,14 +288,16 @@ class CTHLS_Orders {
         }
 
         $invoice = [
-            'contactId' => $contact_id,
-            'date'      => $order->get_date_created() ? $order->get_date_created()->getTimestamp() : time(),
-            'notes'     => sprintf(
+            'contact_id' => $contact_id,
+            'date'       => $order->get_date_created()
+                                ? $order->get_date_created()->date( 'Y-m-d' )
+                                : gmdate( 'Y-m-d' ),
+            'notes'      => sprintf(
                 get_option( 'cthls_document_notes_template', 'Pedido realizado desde el sitio web (poletto.es) n.º %s' ),
                 $order->get_order_number()
             ),
-            'currency'  => $order->get_currency(),
-            'items'     => $items,
+            'currency'   => $order->get_currency(),
+            'items'      => $items,
         ];
 
         return $invoice;
