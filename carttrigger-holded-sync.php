@@ -4,7 +4,7 @@
  * Plugin Name:  CartTrigger – Holded Sync
  * Plugin URI:   https://poletto.es
  * Description:  Bidirectional sync between WooCommerce products/stock and Holded ERP.
- * Version:      1.5.1
+ * Version:      1.6.2
  * Author:       Poletto 1976 S.L.U.
  * Author URI:   https://poletto.es
  * License:      GPLv2 or later
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CTHLS_VERSION', '1.5.1' );
+define( 'CTHLS_VERSION', '1.6.2' );
 define( 'CTHLS_FILE', __FILE__ );
 define( 'CTHLS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CTHLS_URL', plugin_dir_url( __FILE__ ) );
@@ -32,7 +32,7 @@ require_once CTHLS_DIR . 'includes/class-cthls-orders.php';
  * Bootstrap the plugin after all plugins are loaded.
  */
 function cthls_init() {
-    load_plugin_textdomain( 'carttrigger-holded-sync', false, dirname( plugin_basename( CTHLS_FILE ) ) . '/languages' );
+    load_plugin_textdomain( 'carttrigger-holded-sync', false, dirname( plugin_basename( CTHLS_FILE ) ) . '/languages' ); // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound
 
     if ( ! class_exists( 'WooCommerce' ) ) {
         add_action( 'admin_notices', 'cthls_woocommerce_missing_notice' );

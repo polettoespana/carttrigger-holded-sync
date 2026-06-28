@@ -306,8 +306,8 @@ msgstr "Prezzi multipli (tariffe)"
 msgid "Product images"
 msgstr "Immagini prodotto"
 
-msgid "The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface."
-msgstr "L'API di Holded non supporta l'impostazione delle immagini prodotto tramite REST API. Le immagini devono essere caricate manualmente dall'interfaccia di Holded."
+msgid "Product images are uploaded automatically to Holded when a product is first created via sync. Image updates are not synced — only the initial upload is performed."
+msgstr "Le immagini di prodotto vengono caricate automaticamente su Holded quando il prodotto viene creato per la prima volta tramite sincronizzazione. Gli aggiornamenti dell'immagine non vengono sincronizzati — viene eseguito solo il caricamento iniziale."
 
 msgid "The Holded API does not expose secondary price rates (e.g. Ho.re.ca). Only the main price is synced. Additional price tiers must be set manually in Holded for each product (including each variation pushed as a simple product). This limitation will be addressed as soon as Holded adds API support."
 msgstr "L'API di Holded non espone le tariffe secondarie (es. Ho.re.ca). Viene sincronizzato solo il prezzo principale. Le tariffe aggiuntive devono essere impostate manualmente in Holded per ogni prodotto (inclusa ogni variante inviata come prodotto semplice). La limitazione verrà risolta non appena Holded aggiungerà il supporto API."
@@ -327,8 +327,8 @@ msgstr "Prodotto Holded esistente trovato tramite SKU e collegato al prodotto Wo
 msgid "Variable products — flattened to simple in Holded"
 msgstr "Prodotti variabili — appiattiti come semplici in Holded"
 
-msgid "Holded does not handle product variants reliably via API. Variable products in WooCommerce are pushed to Holded as separate simple products — one per variation — each with its own SKU. The parent variable product is never created in Holded. During pull (Holded → WC), each Holded product is matched by SKU to the corresponding WC variation; only stock and price are updated. The product structure in WooCommerce is never altered by the pull."
-msgstr "Holded non gestisce correttamente le varianti di prodotto tramite API. I prodotti variabili in WooCommerce vengono inviati a Holded come prodotti semplici separati — uno per variante — ciascuno con il proprio SKU. Il prodotto padre variabile non viene mai creato in Holded. Durante il pull (Holded → WC), ogni prodotto Holded viene abbinato tramite SKU alla variazione WC corrispondente; vengono aggiornati solo stock e prezzo. La struttura dei prodotti in WooCommerce non viene mai modificata dal pull."
+msgid "Holded does not handle product variants reliably via API. Variable products in WooCommerce are pushed to Holded as separate simple products — one per variation — each with its own SKU. The parent variable product is never created in Holded. Variations without a SKU are skipped. During pull (Holded → WC), each Holded product is matched by SKU to the corresponding WC variation; only stock and price are updated. The product structure in WooCommerce is never altered by the pull."
+msgstr "Holded non gestisce correttamente le varianti di prodotto tramite API. I prodotti variabili in WooCommerce vengono inviati a Holded come prodotti semplici separati — uno per variante — ciascuno con il proprio SKU. Il prodotto padre variabile non viene mai creato in Holded. Le varianti senza SKU vengono saltate. Durante il pull (Holded → WC), ogni prodotto Holded viene abbinato tramite SKU alla variazione WC corrispondente; vengono aggiornati solo stock e prezzo. La struttura dei prodotti in WooCommerce non viene mai modificata dal pull."
 
 msgid "Variation name format"
 msgstr "Formato nome variazione"
@@ -453,3 +453,6 @@ msgstr "Ordine WooCommerce n. %s"
 
 msgid "Shipping"
 msgstr "Spedizione"
+
+msgid "Requires Holded API v2 (June 2026). Make sure your key has \"all:all.full\" permissions."
+msgstr "Richiede le API Holded v2 (giugno 2026). Assicurati che la chiave abbia i permessi \"all:all.full\"."

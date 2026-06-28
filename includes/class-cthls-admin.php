@@ -253,7 +253,7 @@ class CTHLS_Admin {
             wp_send_json_error();
         }
         $log      = get_option( 'cthls_log', [] );
-        $filename = 'cthls-log-' . date( 'Y-m-d' ) . '.json';
+        $filename = 'cthls-log-' . gmdate( 'Y-m-d' ) . '.json';
         wp_send_json_success( [ 'log' => $log, 'filename' => $filename ] );
     }
 
@@ -297,6 +297,9 @@ class CTHLS_Admin {
                                     </button>
                                     <span id="cthls-test-result"></span>
                                 </div>
+                                <p class="description">
+                                    <?php esc_html_e( 'Requires Holded API v2 (June 2026). Make sure your key has "all:all.full" permissions.', 'carttrigger-holded-sync' ); ?>
+                                </p>
                             </td>
                         </tr>
                         <tr>
@@ -554,7 +557,10 @@ class CTHLS_Admin {
                                     value="<?php echo esc_attr( get_option( 'cthls_document_notes_template', 'Pedido realizado desde el sitio web (poletto.es) n.º %s' ) ); ?>"
                                     class="large-text" />
                                 <p class="description">
-                                    <?php esc_html_e( 'Texto que se añade al campo de notas del documento en Holded. Usa %s como marcador para el número de pedido (p. ej. P-00001).', 'carttrigger-holded-sync' ); ?>
+                                    <?php
+                                    // translators: %s is a placeholder for the order number, e.g. P-00001.
+                                    esc_html_e( 'Texto que se añade al campo de notas del documento en Holded. Usa %s como marcador para el número de pedido (p. ej. P-00001).', 'carttrigger-holded-sync' );
+                                    ?>
                                 </p>
                             </td>
                         </tr>
@@ -622,7 +628,7 @@ class CTHLS_Admin {
                     <li>
                         <strong><?php esc_html_e( 'Variable products — flattened to simple in Holded', 'carttrigger-holded-sync' ); ?></strong>
                         &mdash;
-                        <?php esc_html_e( 'Holded does not handle product variants reliably via API. Variable products in WooCommerce are pushed to Holded as separate simple products — one per variation — each with its own SKU. The parent variable product is never created in Holded. During pull (Holded → WC), each Holded product is matched by SKU to the corresponding WC variation; only stock and price are updated. The product structure in WooCommerce is never altered by the pull.', 'carttrigger-holded-sync' ); ?>
+                        <?php esc_html_e( 'Holded does not handle product variants reliably via API. Variable products in WooCommerce are pushed to Holded as separate simple products — one per variation — each with its own SKU. The parent variable product is never created in Holded. Variations without a SKU are skipped. During pull (Holded → WC), each Holded product is matched by SKU to the corresponding WC variation; only stock and price are updated. The product structure in WooCommerce is never altered by the pull.', 'carttrigger-holded-sync' ); ?>
                     </li>
                     <li>
                         <strong><?php esc_html_e( 'Multiple price tiers', 'carttrigger-holded-sync' ); ?></strong>
@@ -632,7 +638,7 @@ class CTHLS_Admin {
                     <li>
                         <strong><?php esc_html_e( 'Product images', 'carttrigger-holded-sync' ); ?></strong>
                         &mdash;
-                        <?php esc_html_e( 'The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface.', 'carttrigger-holded-sync' ); ?>
+                        <?php esc_html_e( 'Product images are uploaded automatically to Holded when a product is first created via sync. Image updates are not synced — only the initial upload is performed.', 'carttrigger-holded-sync' ); ?>
                     </li>
                 </ul>
             </div>
@@ -715,7 +721,7 @@ class CTHLS_Admin {
                         <span class="dashicons dashicons-download"></span>
                         <?php esc_html_e( 'Export log (JSON)', 'carttrigger-holded-sync' ); ?>
                     </button>
-                    <button type="button" id="cthls-clear-log" class="cthls-btn-danger">
+                    <button type="button" id="cthls-clear-log" class="button button-secondary">
                         <span class="dashicons dashicons-trash"></span>
                         <?php esc_html_e( 'Clear log', 'carttrigger-holded-sync' ); ?>
                     </button>

@@ -6,7 +6,7 @@ Tested up to: 7.0
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.5.1
+Stable tag: 1.6.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,12 +59,31 @@ WooCommerce takes priority for real-time changes. Holded changes are applied eve
 
 == Changelog ==
 
+= 1.6.2 =
+* Fix: variations sharing the parent's SKU are now skipped — they were all being linked to the same Holded product.
+* Fix: `tax` field replaced with `taxes[]` (array of Holded tax ID strings) — the v2 API ignores the old numeric field; IDs are auto-fetched from `GET /api/v2/taxes` and matched by rate.
+* Fix: `price` field now sent as a decimal string as required by the v2 API.
+* Fix: stale `_cthls_product_id` (404 from Holded on update) is cleared and the product is automatically recreated or re-linked by SKU.
+* Notice: settings page now shows a notice that Holded API v2 (June 2026) with full permissions is required.
+
+= 1.6.1 =
+* Fix: variations without a SKU are now skipped during sync — they are no longer created in Holded.
+* Fix: admin panel notes updated — SKU-less variations and image upload (EN/ES/IT).
+
+= 1.6.0 =
+* Breaking: migrated to Holded API v2 — base URL updated to `/api/v2/`, authentication changed from `key:` header to `Authorization: Bearer`.
+* Enhancement: automatic upload of the WooCommerce product image to Holded on first product creation.
+* Fix: product pagination now uses cursor-based pagination (removes the practical 50-products-per-page limit of v1).
+* Fix: prices pulled from Holded are now handled correctly (v2 returns decimal strings with comma, e.g. "16,53").
+* Fix: invoice/sales-order endpoints updated (`invoices`, `sales-orders`); `contact_id` field and date in `YYYY-MM-DD` format.
+* Fix: contact search by NIF now uses the native `?code=` filter of v2.
+
 = 1.5.1 =
-* New: campo "Document notes" nelle impostazioni — permette di personalizzare il testo delle note del documento Holded; usa %s come placeholder per il numero ordine.
-* Fix: icone nei pulsanti admin allineate in basso dopo aggiornamento WP 7 — aggiunto !important su display:inline-flex e align-items:center per resistere all'override del core.
+* New: "Document notes" field in settings — allows customising the Holded document notes text; use %s as a placeholder for the order number.
+* Fix: admin button icons aligned after WP 7 update — added !important on display:inline-flex and align-items:center to resist core override.
 
 = 1.5.0 =
-* Fix: la dicitura del documento Holded cambiata da "Pedido WooCommerce n.º X" a "Pedido realizado desde el sitio web (poletto.es) n.º X".
+* Fix: Holded document label changed from "Pedido WooCommerce n.º X" to "Pedido realizado desde el sitio web (poletto.es) n.º X".
 
 = 1.4.8 =
 * Enhancement: configurable log entries limit — new "Log entries limit" field (default 50, range 10–500) replaces the hardcoded 50.

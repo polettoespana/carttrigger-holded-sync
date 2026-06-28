@@ -138,11 +138,33 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 
 - **Variable products — flattened to simple in Holded** — Holded does not handle product variants reliably via API. Variable products in WooCommerce are pushed to Holded as separate simple products — one per variation — each with its own SKU. The parent variable product is never created in Holded. During pull (Holded → WC), each Holded product is matched by SKU to the corresponding WC variation; only stock and price are updated. The product structure in WooCommerce is never altered by the pull.
 - **Multiple price tiers** — The Holded API does not expose secondary price rates (e.g. Ho.re.ca). Only the main price is synced. Additional price tiers must be set manually in Holded for each product (including each variation pushed as a simple product). Support will be added as soon as Holded makes them available via API.
-- **Product images** — The Holded API does not support setting product images via REST API. Images must be uploaded manually through the Holded interface.
+- **Product images** — Product images are uploaded automatically to Holded when a product is first created. Updates to the image are not synced (Holded does not support replacing existing images via API).
 
 ---
 
 ## Changelog
+
+### 1.6.2
+
+- Fix: variations sharing the parent's SKU are now skipped (they were all being linked to the same Holded product).
+- Fix: `tax` field replaced with `taxes[]` (array of Holded tax ID strings) — the v2 API ignores the old numeric field; IDs are auto-fetched from `GET /api/v2/taxes` and matched by rate.
+- Fix: `price` field now sent as a decimal string as required by the v2 API.
+- Fix: stale `_cthls_product_id` (404 from Holded) is cleared and the product is automatically recreated or re-linked by SKU.
+- Notice: settings page now shows a notice that Holded API v2 (June 2026) with full permissions is required.
+
+### 1.6.1
+
+- Fix: variations without a SKU are now skipped during sync — they are no longer created in Holded.
+- Fix: admin panel notes updated to reflect SKU requirement for variations and automatic image upload behaviour.
+
+### 1.6.0
+
+- Breaking: migrated to Holded API v2 — base URL updated to `/api/v2/`, auth changed from `key:` header to `Authorization: Bearer`.
+- New: product image uploaded automatically to Holded on first product creation.
+- Fix: product pagination now cursor-based (removes the practical 50-products-per-page cap of v1).
+- Fix: pull prices now parsed correctly (v2 returns comma-decimal strings, e.g. `"16,53"`).
+- Fix: invoice/sales-order endpoints updated (`invoices`, `sales-orders`); `contact_id` field and `YYYY-MM-DD` date format.
+- Fix: contact search by NIF now uses the native `?code=` filter of v2.
 
 ### 1.5.1
 

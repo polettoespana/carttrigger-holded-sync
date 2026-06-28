@@ -22,6 +22,9 @@ class CTHLS_Sync {
     /** @var int[] Products already synced in this request (prevent double fire). */
     private static $synced = [];
 
+    /** @var array|null Map of tax rate (float as string) → Holded tax ID, built once per request. */
+    private static $holded_taxes_map = null;
+
     /**
      * When true, on_product_saved() skips the push_enabled() check.
      * Used by push_single_sku() so manual operations always run
@@ -86,11 +89,20 @@ class CTHLS_Sync {
         // Simple product.
         $holded_id = get_post_meta( $product_id, '_cthls_product_id', true );
 
+        $data = self::wc_product_to_holded( $product, $product_id );
+        self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
+
         if ( $holded_id ) {
-            $data   = self::wc_product_to_holded( $product, $product_id );
-            self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
             $result = self::$api->update_product( $holded_id, $data );
-        } else {
+            // Product deleted in Holded externally — clear stale ID and fall through to create.
+            if ( is_wp_error( $result ) && 'cthls_api_error_404' === $result->get_error_code() ) {
+                delete_post_meta( $product_id, '_cthls_product_id' );
+                $holded_id = '';
+                $result    = null;
+            }
+        }
+
+        if ( ! $holded_id ) {
             $result = null;
 
             // Before creating, check if a product with the same SKU already exists in Holded.
@@ -100,19 +112,17 @@ class CTHLS_Sync {
                 if ( $existing && isset( $existing['id'] ) ) {
                     $holded_id = $existing['id'];
                     update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
-                    $data   = self::wc_product_to_holded( $product, $product_id );
-                    self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
                     $result = self::$api->update_product( $holded_id, $data );
                     self::log( 'product_linked', $product_id, $holded_id );
                 }
             }
 
             if ( null === $result ) {
-                $data   = self::wc_product_to_holded( $product, $product_id );
-                self::log( 'product_payload', $product_id, wp_json_encode( $data ) );
                 $result = self::$api->create_product( $data );
                 if ( ! is_wp_error( $result ) && isset( $result['id'] ) ) {
-                    update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $result['id'] ) );
+                    $new_holded_id = $result['id'];
+                    update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $new_holded_id ) );
+                    self::maybe_upload_image( $new_holded_id, $product );
                 }
             }
         }
@@ -154,19 +164,58 @@ class CTHLS_Sync {
     }
 
     private static function sync_variable_product( WC_Product $product ) {
+        // Images are uploaded in a separate pass after all variations are synced so that
+        // a slow upload cannot block or interrupt the main sync loop.
+        $pending_images = [];
+
+        // Pre-compute SKUs that are NOT unique across all variations of this product.
+        // A SKU shared by more than one variation (or matching the parent SKU) was assigned
+        // by WC "generate all variations" bulk action — these are placeholders and must never
+        // be pushed to Holded, even if they were previously linked.
+        $parent_sku = $product->get_sku();
+        $sku_counts = [];
+        foreach ( $product->get_children() as $vid ) {
+            $v = wc_get_product( $vid );
+            $s = $v ? $v->get_sku() : '';
+            if ( $s ) {
+                $sku_counts[ $s ] = ( $sku_counts[ $s ] ?? 0 ) + 1;
+            }
+        }
+        if ( $parent_sku ) {
+            $sku_counts[ $parent_sku ] = ( $sku_counts[ $parent_sku ] ?? 0 ) + 1;
+        }
+        $skip_skus = array_keys( array_filter( $sku_counts, fn( $n ) => $n > 1 ) );
+
         foreach ( $product->get_children() as $variation_id ) {
             $variation = wc_get_product( $variation_id );
             if ( ! $variation ) {
                 continue;
             }
 
+            $variation_sku = $variation->get_sku();
+
+            // Skip variations without a SKU, or with a non-unique SKU.
+            if ( ! $variation_sku || in_array( $variation_sku, $skip_skus, true ) ) {
+                self::log( 'product_skip', $variation_id, 'variation has no unique SKU — skipped' );
+                continue;
+            }
+
             $holded_id = get_post_meta( $variation_id, '_cthls_product_id', true );
-            $data      = self::variation_to_holded( $variation, $product );
+
+            $data = self::variation_to_holded( $variation, $product );
+            self::log( 'product_payload', $variation_id, wp_json_encode( $data ) );
 
             if ( $holded_id ) {
-                self::log( 'product_payload', $variation_id, wp_json_encode( $data ) );
                 $result = self::$api->update_product( $holded_id, $data );
-            } else {
+                // Product deleted in Holded externally — clear stale ID and fall through to create.
+                if ( is_wp_error( $result ) && 'cthls_api_error_404' === $result->get_error_code() ) {
+                    delete_post_meta( $variation_id, '_cthls_product_id' );
+                    $holded_id = '';
+                    $result    = null;
+                }
+            }
+
+            if ( ! $holded_id ) {
                 $result = null;
 
                 $sku = $variation->get_sku();
@@ -175,18 +224,17 @@ class CTHLS_Sync {
                     if ( $existing && isset( $existing['id'] ) ) {
                         $holded_id = $existing['id'];
                         update_post_meta( $variation_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
-                        self::log( 'product_payload', $variation_id, wp_json_encode( $data ) );
                         $result = self::$api->update_product( $holded_id, $data );
                         self::log( 'product_linked', $variation_id, $holded_id );
                     }
                 }
 
                 if ( null === $result ) {
-                    self::log( 'product_payload', $variation_id, wp_json_encode( $data ) );
                     $result = self::$api->create_product( $data );
                     if ( ! is_wp_error( $result ) && isset( $result['id'] ) ) {
                         $holded_id = $result['id'];
                         update_post_meta( $variation_id, '_cthls_product_id', sanitize_text_field( $holded_id ) );
+                        $pending_images[] = [ $holded_id, $variation ];
                     }
                 }
             }
@@ -207,9 +255,14 @@ class CTHLS_Sync {
                     'skip — holded_id:%s managing:%s qty:%s',
                     $holded_id ?: 'empty',
                     $variation->managing_stock() ? 'yes' : 'no',
-                    var_export( $variation->get_stock_quantity(), true )
+                    var_export( $variation->get_stock_quantity(), true ) // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
                 ) );
             }
+        }
+
+        // Upload images after all sync/stock operations are complete.
+        foreach ( $pending_images as [ $holded_id, $variation ] ) {
+            self::maybe_upload_image( $holded_id, $variation, $product );
         }
     }
 
@@ -278,7 +331,20 @@ class CTHLS_Sync {
 
             if ( $holded_id ) {
                 $result = self::$api->update_product( $holded_id, $data );
-            } else {
+                // Product deleted in Holded externally — clear stale ID and fall through to create.
+                if ( is_wp_error( $result ) && 'cthls_api_error_404' === $result->get_error_code() ) {
+                    delete_post_meta( $product_id, '_cthls_product_id' );
+                    $holded_id = '';
+                    $result    = null;
+                }
+            }
+
+            if ( ! $holded_id ) {
+                // Don't create a new Holded product for a variation using the parent's SKU.
+                if ( $sku === $parent->get_sku() ) {
+                    return sprintf( 'SKU "%s" matches parent SKU — variation skipped.', $sku );
+                }
+
                 $existing = self::$api->find_product_by_sku( $sku );
                 if ( $existing && isset( $existing['id'] ) ) {
                     $holded_id = $existing['id'];
@@ -287,7 +353,9 @@ class CTHLS_Sync {
                 } else {
                     $result = self::$api->create_product( $data );
                     if ( ! is_wp_error( $result ) && isset( $result['id'] ) ) {
-                        update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $result['id'] ) );
+                        $new_holded_id = $result['id'];
+                        update_post_meta( $product_id, '_cthls_product_id', sanitize_text_field( $new_holded_id ) );
+                        self::maybe_upload_image( $new_holded_id, $product, $parent );
                     }
                 }
             }
@@ -378,16 +446,18 @@ class CTHLS_Sync {
         self::log( 'pull_start', 0, $source );
 
         self::$pulled = [];
-        $page         = 1;
+        $cursor       = '';
         $processed    = 0;
 
         do {
-            $products = self::$api->get_products( $page );
+            $page_result = self::$api->get_products( $cursor );
 
-            if ( is_wp_error( $products ) ) {
-                self::log( 'pull_error', 0, $products->get_error_message() );
+            if ( is_wp_error( $page_result ) ) {
+                self::log( 'pull_error', 0, $page_result->get_error_message() );
                 break;
             }
+
+            $products = isset( $page_result['items'] ) ? $page_result['items'] : [];
 
             if ( empty( $products ) ) {
                 break;
@@ -398,15 +468,15 @@ class CTHLS_Sync {
                 $processed++;
             }
 
-            $page++;
-        } while ( count( $products ) >= 50 && $page <= 50 );
+            $cursor = isset( $page_result['cursor'] ) ? $page_result['cursor'] : '';
+        } while ( ! empty( $page_result['has_more'] ) );
 
         update_option( 'cthls_last_pull', current_time( 'mysql' ) );
         self::log( 'pull_complete', 0, sprintf( '%d products processed', $processed ) );
 
         // Purge LiteSpeed Cache if any WC products were actually updated.
         if ( ! empty( self::$pulled ) ) {
-            do_action( 'litespeed_purge_all' );
+            do_action( 'litespeed_purge_all' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
         }
     }
 
@@ -425,19 +495,20 @@ class CTHLS_Sync {
         }
 
         $data = [
-            'kind'     => 'simple',
-            'name'     => self::product_name_with_brand( $product ),
-            'desc'     => 'full' === get_option( 'cthls_desc_source', 'custom' )
-                            ? $product->get_description()
-                            : $product->get_meta( '_cthls_description' ),
-            'sku'      => $product->get_sku(),
-            'price'    => self::resolve_price_for_holded( $product ),
-            'tax'      => self::get_tax_rate( $product ),
-            'cost'     => (float) $product->get_meta( '_cost_price' ),
-            'barcode'  => $product->get_meta( '_barcode' ),
-            'weight'   => (float) $product->get_weight(),
-            'hasStock' => $product->managing_stock(),
-            'forSale'  => $product->is_purchasable(),
+            'kind'         => 'simple',
+            'name'         => self::product_name_with_brand( $product ),
+            'description'  => 'full' === get_option( 'cthls_desc_source', 'custom' )
+                                ? $product->get_description()
+                                : $product->get_meta( '_cthls_description' ),
+            'sku'          => $product->get_sku(),
+            'price'        => number_format( self::resolve_price_for_holded( $product ), 2, '.', '' ),
+            'taxes'        => self::resolve_taxes_field( $product ),
+            'cost'         => (float) $product->get_meta( '_cost_price' ),
+            'barcode'      => $product->get_meta( '_barcode' ),
+            'weight'       => (float) $product->get_weight(),
+            'has_stock'    => $product->managing_stock(),
+            'for_sale'     => $product->is_purchasable(),
+            'for_purchase' => false,
         ];
 
         // NOTE: Holded API silently ignores the `image` field.
@@ -512,17 +583,18 @@ class CTHLS_Sync {
         }
 
         $data = [
-            'kind'     => 'simple',
-            'name'     => $variation_name,
-            'desc'     => $desc,
-            'sku'      => $variation->get_sku(),
-            'price'    => self::resolve_price_for_holded( $variation ),
-            'tax'      => self::get_tax_rate( $variation ),
-            'cost'     => $cost,
-            'barcode'  => $variation->get_meta( '_barcode' ) ?: $parent->get_meta( '_barcode' ),
-            'weight'   => (float) ( $variation->get_weight() ?: $parent->get_weight() ),
-            'hasStock' => $variation->managing_stock(),
-            'forSale'  => $variation->is_purchasable(),
+            'kind'         => 'simple',
+            'name'         => $variation_name,
+            'description'  => $desc,
+            'sku'          => $variation->get_sku(),
+            'price'        => number_format( self::resolve_price_for_holded( $variation ), 2, '.', '' ),
+            'taxes'        => self::resolve_taxes_field( $variation ),
+            'cost'         => $cost,
+            'barcode'      => $variation->get_meta( '_barcode' ) ?: $parent->get_meta( '_barcode' ),
+            'weight'       => (float) ( $variation->get_weight() ?: $parent->get_weight() ),
+            'has_stock'    => $variation->managing_stock(),
+            'for_sale'     => $variation->is_purchasable(),
+            'for_purchase' => false,
         ];
 
         if ( $variation->managing_stock() ) {
@@ -651,8 +723,9 @@ class CTHLS_Sync {
             }
         }
 
-        if ( isset( $holded_product['desc'] ) ) {
-            $desc = wp_kses_post( $holded_product['desc'] );
+        $holded_desc = $holded_product['description'] ?? $holded_product['desc'] ?? null;
+        if ( isset( $holded_desc ) ) {
+            $desc = wp_kses_post( $holded_desc );
             if ( 'full' === get_option( 'cthls_desc_source', 'custom' ) ) {
                 if ( $wc_product->get_description() !== $desc ) {
                     $wc_product->set_description( $desc );
@@ -749,6 +822,53 @@ class CTHLS_Sync {
     }
 
     /**
+     * Return the taxes[] array for a Holded product payload.
+     *
+     * Holded v2 requires an array of tax identifier strings (not a percentage number).
+     * Identifiers are fetched once per request from GET /api/v2/taxes and matched by rate.
+     * Returns null (→ field omitted) when no matching identifier is found, so existing
+     * Holded taxes are left untouched rather than cleared.
+     *
+     * @param WC_Product $product
+     * @return string[]|null
+     */
+    private static function resolve_taxes_field( WC_Product $product ) {
+        $rate = self::get_tax_rate( $product );
+
+        if ( null === self::$holded_taxes_map ) {
+            self::$holded_taxes_map = [];
+            $taxes = self::$api->get_taxes();
+            foreach ( $taxes as $tax ) {
+                // Only map active sales-IVA rates (scope=sales, group=iva, type=percentage).
+                // Holded v2 uses the 'amount' field (string) for the tax percentage.
+                if ( ( $tax['scope'] ?? '' ) !== 'sales'
+                    || ( $tax['group'] ?? '' ) !== 'iva'
+                    || ( $tax['type'] ?? '' ) !== 'percentage'
+                    || ! ( $tax['status'] ?? false )
+                    || ! isset( $tax['id'], $tax['amount'] )
+                    || null === $tax['amount'] ) {
+                    continue;
+                }
+                $rate_f = (float) str_replace( ',', '.', (string) $tax['amount'] );
+                if ( $rate_f < 0 ) {
+                    continue;
+                }
+                $key = (string) $rate_f;
+                if ( ! isset( self::$holded_taxes_map[ $key ] ) ) {
+                    self::$holded_taxes_map[ $key ] = $tax['id'];
+                }
+            }
+        }
+
+        if ( $rate <= 0 ) {
+            return [];
+        }
+
+        $key = (string) $rate;
+        return isset( self::$holded_taxes_map[ $key ] ) ? [ self::$holded_taxes_map[ $key ] ] : null;
+    }
+
+    /**
      * Determine which price to send to Holded for a product.
      * Uses sale price if "Sync sale price" is enabled and the product is currently on sale
      * (WC handles date range checks internally via is_on_sale()).
@@ -799,7 +919,8 @@ class CTHLS_Sync {
      * @return string  Price string to pass to set_regular_price() / set_sale_price().
      */
     private static function holded_price_to_wc( $holded_price, WC_Product $product ) {
-        $price              = (float) $holded_price;
+        // v2 returns prices as strings with comma decimal separator (e.g. "16,53").
+        $price = (float) str_replace( ',', '.', (string) $holded_price );
         $prices_include_tax = 'yes' === get_option( 'cthls_prices_include_tax', get_option( 'woocommerce_prices_include_tax', 'no' ) );
 
         if ( $prices_include_tax
@@ -838,6 +959,34 @@ class CTHLS_Sync {
 
         // Last resort: use the default rate configured in plugin settings.
         return (float) get_option( 'cthls_default_tax_rate', 21 );
+    }
+
+    /**
+     * Upload the WC product image to Holded after a new product is created.
+     * Falls back to $parent image for variations.
+     *
+     * @param string          $holded_id
+     * @param WC_Product      $product
+     * @param WC_Product|null $parent
+     */
+    private static function maybe_upload_image( $holded_id, WC_Product $product, WC_Product $parent = null ) {
+        $image_id = $product->get_image_id();
+        if ( ! $image_id && $parent ) {
+            $image_id = $parent->get_image_id();
+        }
+        if ( ! $image_id ) {
+            return;
+        }
+        $file_path = get_attached_file( $image_id );
+        if ( ! $file_path || ! file_exists( $file_path ) ) {
+            return;
+        }
+        $result = self::$api->upload_product_image( $holded_id, $file_path );
+        if ( is_wp_error( $result ) ) {
+            self::log( 'product_image_error', 0, $holded_id . ': ' . $result->get_error_message() );
+        } else {
+            self::log( 'product_image_uploaded', 0, $holded_id );
+        }
     }
 
     private static function log( $event, $product_id, $message ) {
