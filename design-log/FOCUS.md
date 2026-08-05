@@ -5,4 +5,4 @@
 
 ## In flight
 
-- 🔄 Commit today's work (version bump to 1.6.5 + design-log setup) — add .gitignore for .locks/ and hook log, stage, commit. Done = clean `git status`, commit created.
+*(empty)*
