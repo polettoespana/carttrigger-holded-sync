@@ -6,4 +6,4 @@
 
 ## Behavioral Rules
 
-[Empty]
+- Rispondere in italiano in questo progetto (richiesto dall'utente 2026-08-09).

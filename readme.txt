@@ -6,7 +6,7 @@ Tested up to: 7.0
 Requires PHP: 7.4
 WC tested up to: 10.6.1
 Requires Plugins: woocommerce
-Stable tag: 1.6.5
+Stable tag: 1.6.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,9 @@ Yes. Each sync field (stock, prices, description) can be enabled or disabled ind
 WooCommerce takes priority for real-time changes. Holded changes are applied every 15 minutes and only update fields that have actually changed.
 
 == Changelog ==
+
+= 1.6.6 =
+* Fix: Holded→WooCommerce price pull could drift by 1 cent on tax-inclusive setups. Holded's `price` field is truncated to 2 decimals; when tax-inclusive pricing is enabled, the plugin now uses Holded's own precomputed gross (`total` field) instead of recomputing it from the truncated net, falling back to the previous behavior if `total` is not present.
 
 = 1.6.5 =
 * Housekeeping: version bump only, no functional changes — reconciles the version number with the code already deployed to production (previous production deploys were built from an out-of-sync local clone at v1.6.4).

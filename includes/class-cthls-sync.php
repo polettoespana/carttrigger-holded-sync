@@ -652,7 +652,7 @@ class CTHLS_Sync {
 
                 if ( isset( $holded_product['price'] ) ) {
                     $holded_raw = $holded_product['price'];
-                    $new_price  = self::holded_price_to_wc( $holded_raw, $wc_product );
+                    $new_price  = self::holded_price_to_wc( $holded_raw, $wc_product, $holded_product['total'] ?? null );
                     $wc_price   = $wc_product->get_regular_price();
                     self::log( 'pull_price_check', $wc_product_id, sprintf(
                         'SKU %s — Holded raw: %s → converted: %s | WC current: %s | match: %s',
@@ -716,7 +716,7 @@ class CTHLS_Sync {
         }
 
         if ( isset( $holded_product['price'] ) ) {
-            $new_price = self::holded_price_to_wc( $holded_product['price'], $wc_product );
+            $new_price = self::holded_price_to_wc( $holded_product['price'], $wc_product, $holded_product['total'] ?? null );
             if ( $wc_product->get_regular_price() !== $new_price ) {
                 $wc_product->set_regular_price( $new_price );
                 $fields_changed = true;
@@ -914,18 +914,29 @@ class CTHLS_Sync {
     /**
      * Convert a Holded net price to the WC price format (adds tax if needed, rounds to 2 decimals).
      *
-     * @param float|string $holded_price  Net price from Holded.
-     * @param WC_Product   $product
+     * Holded's `price` field is truncated to 2 decimals, so recomputing gross from
+     * `price * (1 + tax_rate/100)` can drift by a cent off the true total. `total` is
+     * Holded's own already-computed gross at full precision — prefer it when present.
+     *
+     * @param float|string      $holded_price  Net price from Holded.
+     * @param WC_Product        $product
+     * @param float|string|null $holded_total  Holded's precomputed gross ('total'), if present.
      * @return string  Price string to pass to set_regular_price() / set_sale_price().
      */
-    private static function holded_price_to_wc( $holded_price, WC_Product $product ) {
+    private static function holded_price_to_wc( $holded_price, WC_Product $product, $holded_total = null ) {
+        $prices_include_tax = 'yes' === get_option( 'cthls_prices_include_tax', get_option( 'woocommerce_prices_include_tax', 'no' ) );
+        $taxable             = 'taxable' === $product->get_tax_status() && wc_tax_enabled();
+
+        if ( $prices_include_tax && $taxable
+            && null !== $holded_total && '' !== $holded_total ) {
+            $total = (float) str_replace( ',', '.', (string) $holded_total );
+            return (string) round( $total, 2 );
+        }
+
         // v2 returns prices as strings with comma decimal separator (e.g. "16,53").
         $price = (float) str_replace( ',', '.', (string) $holded_price );
-        $prices_include_tax = 'yes' === get_option( 'cthls_prices_include_tax', get_option( 'woocommerce_prices_include_tax', 'no' ) );
 
-        if ( $prices_include_tax
-            && 'taxable' === $product->get_tax_status()
-            && wc_tax_enabled() ) {
+        if ( $prices_include_tax && $taxable ) {
             $tax_rate = self::get_tax_rate( $product );
             if ( $tax_rate > 0 ) {
                 $price = $price * ( 1 + $tax_rate / 100 );
