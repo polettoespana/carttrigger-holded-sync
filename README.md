@@ -1,7 +1,7 @@
 # CartTrigger – Holded Sync
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.6.6-0a0a23?style=flat-square" alt="Version 1.6.6">
+  <img src="https://img.shields.io/badge/version-1.6.7-0a0a23?style=flat-square" alt="Version 1.6.7">
   <img src="https://img.shields.io/badge/WordPress-6.3%2B-3858e9?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress 6.3+">
   <img src="https://img.shields.io/badge/WooCommerce-8.0%2B-96588a?style=flat-square" alt="WooCommerce 8.0+">
   <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+">
@@ -121,7 +121,7 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ## Requirements
 
 - WordPress **6.3+**
-- WooCommerce _(required, 8.0+ recommended)_ — tested up to **10.7.0**
+- WooCommerce _(required, 8.0+ recommended)_ — tested up to **11.0.0**
 - PHP **7.4+**
 
 ---
@@ -143,6 +143,10 @@ Products are matched by **SKU**. On first sync the Holded product ID is stored i
 ---
 
 ## Changelog
+
+### 1.6.7
+
+- Housekeeping: compatibility declarations updated — tested up to WordPress 7.0.3 and WooCommerce 11.0.0.
 
 ### 1.6.6
 
